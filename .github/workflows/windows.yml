@@ -34,7 +34,8 @@ jobs:
           Copy-Item -Recurse -Force desktop/app/fonts "$out/resources/app/app/fonts"
           Copy-Item app/index.html "$out/resources/app/app/index.html"
           Copy-Item -Recurse -Force desktop/build "$out/resources/app/build"
-          npx --yes rcedit "$out/Saturday Sweater.exe" --set-icon desktop/build/icon.ico --set-version-string ProductName "Saturday Sweater" --set-version-string FileDescription "Saturday Sweater" --set-file-version "${{ steps.v.outputs.version }}" --set-product-version "${{ steps.v.outputs.version }}"
+          npm install --no-save --no-audit --no-fund rcedit@4.0.1
+          node -e "require('rcedit')(process.argv[1],{icon:process.argv[2],'file-version':process.argv[3],'product-version':process.argv[3],'version-string':{ProductName:'Saturday Sweater',FileDescription:'Saturday Sweater',CompanyName:'Saturday Sweater'}}).then(()=>console.log('rcedit ok'),e=>{console.error(e);process.exit(1)})" "$out/Saturday Sweater.exe" desktop/build/icon.ico "${{ steps.v.outputs.version }}"
           Compress-Archive -Path "$out" -DestinationPath SaturdaySweater-Windows.zip -Force
       - name: Publish release
         uses: softprops/action-gh-release@v2
