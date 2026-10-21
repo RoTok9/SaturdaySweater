@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.2.1">
+<meta name="app-version" content="1.3.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -70,6 +70,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .tabs button{position:relative}
 .tabs .dot{position:absolute;top:8px;right:calc(50% - 22px);width:8px;height:8px;border-radius:50%;background:var(--bad)}
 :root[data-theme="light"] .top .pill, .top .pill{color:var(--team-fg)}
+.top .pill.alert{color:var(--team)}
 .simbtn{margin-left:auto;background:var(--team-fg);color:var(--team);border:0;border-radius:8px;padding:9px 14px;font-family:var(--display);font-size:18px;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
 .simbtn:disabled{opacity:.5;cursor:not-allowed}
 main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px calc(84px + env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-width:0}
@@ -147,6 +148,9 @@ tr.me td{background:color-mix(in srgb,var(--team) 12%,transparent);font-weight:6
 .confirmbox{background:color-mix(in srgb,var(--bad) 10%,var(--surface));border:1px solid var(--bad);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px}
 .ok{color:var(--good)} .no{color:var(--bad)}
 .presser{border-left:5px solid var(--team)}
+.rivban{background:linear-gradient(90deg,var(--team),color-mix(in srgb,var(--team) 55%,#000));color:var(--team-fg);border-radius:8px;padding:10px 12px}
+.rivban.feud{background:linear-gradient(90deg,#7a0d0d,#2a0404);color:#fff}
+.hero.rivhero{border-left-color:var(--bad);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad) 40%,transparent)}
 /* iMessage-style thread: gray incoming on the left, blue outgoing on the right, tails on the last bubble of a run */
 .convo{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px}
 .imsg{--in:#e9e9eb;--in-fg:#111;--out:#1b8bff;--out-fg:#fff;background:var(--msg-bg,#fff);border:1px solid var(--line);border-radius:18px;padding:0;overflow:hidden;max-width:420px;width:100%;align-self:center;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif}
@@ -355,6 +359,14 @@ const ADJ={SE:['MA','SW'],NE:['MA','MW'],MA:['SE','NE'],MW:['NE','SW'],SW:['SE',
 const BOWL_NAMES=['Sunshine','Frontier','Harbor','Prairie','Summit','Bayou','Coastal','Canyon','Lakeside','Pioneer','Redwood','Magnolia','Granite','Heartland','Lone Star','Palmetto','Bluegrass','Cascade','Desert','Tidewater','Sawgrass','Ozark','Hilltop','Riverfront','Copper','Timber','Blue Ridge','Gulf Coast','Great Plains','Capital','Delta','Sierra','Keystone','Peach Tree','Dunes','Harvest','Iron City','Foothills','Meadowlands','Seaside'];
 // Press conference templates. ctx picks which apply; fx is the approval shift for fans, locker room, AD and media.
 const PRESS=[
+ {ctx:i=>i.riv&&i.riv.name&&i.won,q:i=>`${i.riv.name} stays here another year. What does that mean to this town?`,opts:[
+   {t:'Everything. These people live with this result for 365 days. So do I.',fx:{fans:6,locker:3,admin:2,media:2},r:'The clip runs on every local station.'},
+   {t:'It\u2019s one game. We have bigger goals.',fx:{fans:-4,locker:0,admin:2,media:1},r:'Technically true. The fan base does not want to hear it.'},
+   {t:'Tell them to enjoy it. And tell the other side we\u2019ll see them next year.',fx:{fans:5,locker:2,admin:-2,media:0},r:'Bulletin board material, lovingly provided.'}]},
+ {ctx:i=>i.riv&&i.riv.name&&!i.won,q:i=>`Another year without ${i.riv.name}. The fans are asking if you understand this game.`,opts:[
+   {t:'I understand it. I own it. And I will not hide from it.',fx:{fans:2,locker:3,admin:3,media:2},r:'Accountability, on the worst night to have to show it.'},
+   {t:'It\u2019s a rivalry. They were due.',fx:{fans:-6,locker:-1,admin:-2,media:-2},r:'The word \u201cdue\u201d trends for all the wrong reasons.'},
+   {t:'Ask the players who missed tackles.',fx:{fans:-2,locker:-7,admin:-2,media:0},r:'Three starters stop following the program account.'}]},
  {ctx:i=>i.won&&i.close,q:i=>`You escaped ${i.opp} by ${i.margin}. Are you worried about how close that was?`,opts:[
    {t:'A win is a win. I’m not apologizing for it.',fx:{fans:2,locker:1,admin:0,media:-2},r:'The beat writers roll their eyes, but the fan boards love it.'},
    {t:'We have a lot to clean up on tape this week.',fx:{fans:0,locker:0,admin:2,media:2},r:'Measured and honest. The AD nods along.'},
@@ -440,6 +452,9 @@ const FAMILYQ={time:{q:'Dad, after the tour: \u201cBe straight with us. Does he 
  pro:{q:'Dad: \u201cHow do you get him to the league?\u201d',a:[{t:'Same way we did it for the last ones: a plan for every year he\u2019s here. Here it is.',v:2},{t:'Play well and scouts find you.',v:0},{t:'Let\u2019s get him to campus first.',v:-1}]}};
 const COACH_FIRST=['Mike','Dan','Kirby','Lincoln','Lane','Brian','Ryan','Steve','Josh','Matt','Kalen','Marcus','Deion','Jeff','Dabo','Curt','Hugh','Jonathan','Bret','Luke','Billy','Chris','Eli','Mack','Dave','Pat','Kyle','Sonny','Will','Rhett','Jedd','Troy','Jamey','Tony','Blake','Clark','Jay','Scott','Tom','Bo','Jerry','Gus','Butch','Dino','Neal','Ken','Barry','Brent','Willie','Sam','Thomas','Kenny','Drew','Andy','Trent','Charles','Jake','Manny','Justin','Bronco','Ryan','Shane','Kevin','Derek','Rich','Joey','Tim','Tyson','Mario','Jason'];
 const COACH_LAST=['Norvell','Freeze','Kiffin','Riley','Day','Smart','Sarkisian','Drinkwitz','Cristobal','Pittman','Lea','Beamer','Venables','Elko','Brennan','Dillingham','Sitake','McGuire','Whittingham','Campbell','Klieman','Dykes','Rhule','Aranda','Gundy','Leipold','Satterfield','Brown','Fritz','Hafley','Lashlee','Brohm','Key','Pry','Belichick','Odom','Narduzzi','Doeren','Cignetti','Castellanos','Moore','Fickell','Locksley','Schiano','Walters','Braun','DeBoer','Lanning','Kelly','Franklin','Allen','Ferentz','Petersen','Herman','Stoops','Golesh','Grimes','Taggart','Chadwell','Harsin','Kill','Niumatalolo','Calhoun','Mullen','Scott','Hughes','Reeder','Kane','Vaughn','Avery','Holloway','Pruitt','Dawson','Whitfield','Ingram','Booker','Sutton','Maddox'];
+const TROPHY_THINGS=['Bell','Axe','Jug','Bucket','Skillet','Paddle','Cannon','Lantern','Boot','Wagon Wheel','Shillelagh','Hammer','Anvil','Spur','Saddle','Keg','Pickaxe','Oar','Milk Can','Megaphone','Shovel','Bronze Pig','Brass Spittoon','Iron Kettle','Golden Egg','Cowbell','Goalpost','Telephone','Victory Bell','Apple Cup','River Rock','Rail Spike'];
+const TROPHY_ADJ=['Old','Iron','Brass','Bronze','Golden','Little Brown','Wooden','Silver','Rusty','Copper'];
+const RIV_TIERS=[[85,'Blood feud'],[60,'Rivalry'],[35,'Budding rivalry'],[0,'']];
 const ROSTER_CAP=52, CLASS_CAP=25, PORTAL_CAP=6;
 
 /* ===================== UTILS ===================== */
@@ -466,7 +481,7 @@ const UI={leagueConf:'ALL',leagueQ:'',leagueOpen:false,leagueIO:null,leagueMsg:'
 const KEY='gridiron-dynasty-save-v1';
 function save(){try{localStorage.setItem(KEY,JSON.stringify(G));}catch(e){}}
 function load(){try{const s=localStorage.getItem(KEY);if(s){G=JSON.parse(s);migrate();return true;}}catch(e){}return false;}
-function migrate(){if(!G)return;if(!G.app)G.app={fans:60,locker:60,admin:60,media:55};if(!G.pressLog)G.pressLog=[];if(G.presser===undefined)G.presser=null;if(G.heisman===undefined)G.heisman=null;G.teams.forEach(t=>{if(!t.coach)t.coach=makeCoach(t.prestige);});Object.values(G.players).forEach(p=>{if(!p.tr)p.tr=rollTraits();});G.portal.forEach(p=>{if(!p.tr)p.tr=rollTraits();});if(!G.lh)G.lh=[];if(!G.carousel)G.carousel=[];G.recruits.forEach(r=>{if(!r.persona){r.persona=pick(Object.keys(PERSONAS));r.tr=rollTraits();r.texted=0;r.convo=null;}});}
+function migrate(){if(!G)return;if(!G.app)G.app={fans:60,locker:60,admin:60,media:55};if(!G.pressLog)G.pressLog=[];if(G.presser===undefined)G.presser=null;if(G.heisman===undefined)G.heisman=null;G.teams.forEach(t=>{if(!t.coach)t.coach=makeCoach(t.prestige);});Object.values(G.players).forEach(p=>{if(!p.tr)p.tr=rollTraits();});G.portal.forEach(p=>{if(!p.tr)p.tr=rollTraits();});if(!G.lh)G.lh=[];if(!G.carousel)G.carousel=[];G.recruits.forEach(r=>{if(!r.persona){r.persona=pick(Object.keys(PERSONAS));r.tr=rollTraits();r.texted=0;r.convo=null;}});if(!G.riv){G.riv={};seedRivalries();}if(!G.diff)G.diff='normal';if(G.losingRun==null)G.losingRun=0;}
 function news(text,hot){G.news.unshift({w:G.week,s:G.season,text,hot:!!hot});if(G.news.length>60)G.news.length=60;}
 
 /* ===================== TEAMS & PLAYERS ===================== */
@@ -483,17 +498,48 @@ function unitOvr(team,list){let s=0,w=0;list.forEach(pos=>{const d=depth(team,po
 const teamOvr=t=>unitOvr(t,POS);
 function teamElo(t){const base=1000+(teamOvr(t)-60)*17+t.prestige*8;return t.lastElo==null?base:base*0.75+t.lastElo*0.25;}
 const potGrade=p=>{const r=p.pot-p.ovr;return r>=14?'A':r>=9?'B':r>=5?'C':'D';};
-const isUser=t=>t.id===G.user;
+const isUser=t=>!!G&&t.id===G.user;
 const userTeam=()=>T(G.user);
 const regionGrade=(a,b)=>a===b?10:(ADJ[a]||[]).includes(b)?5:1;
+/* ===================== RIVALRIES ===================== */
+const rkey=(a,b)=>a<b?a+'-'+b:b+'-'+a;
+function rivalry(a,b,create){const k=rkey(a,b);let r=G.riv[k];if(!r&&create){r=G.riv[k]={a:Math.min(a,b),b:Math.max(a,b),heat:0,name:'',w:{},streak:null,games:[],born:null,lastSeason:G.season};}return r;}
+function rivTier(r){return RIV_TIERS.find(t=>r.heat>=t[0])[1];}
+function rivName(a,b){const used=new Set(Object.values(G.riv).map(r=>r.name));const ta=T(a),tb=T(b);const cands=[];
+  const thing=()=>pick(TROPHY_THINGS);
+  for(let i=0;i<30;i++){const kind=rint(0,5);let n;const th=thing();
+    if(kind===0)n=`The ${pick(TROPHY_ADJ)} ${th}`;else if(kind===1)n=`Battle for the ${th}`;else if(kind===2)n=`The ${th} Game`;else if(kind===3)n=`The ${REGION_NAMES[ta.region]===REGION_NAMES[tb.region]?REGION_NAMES[ta.region]:(ta.conf===tb.conf?CONFS[ta.conf].name:'Border')} ${pick(['Showdown','Brawl','Classic','War','Clash'])}`;else if(kind===4)n=`The ${pick([ta.nick,tb.nick]).split(' ').pop()} Bowl`;else n=`${pick(TROPHY_ADJ)} ${th} Trophy`;
+    if(!used.has(n)){cands.push(n);break;}}
+  return cands[0]||`The ${ta.name}-${tb.name} Game`;}
+function rivUpdate(g,r){ // called after a game between the two teams
+  const R=rivalry(g.home,g.away,true);const h=T(g.home),a=T(g.away);const hr=g.hrank||99,ar=g.arank||99;const margin=Math.abs(g.hs-g.as);
+  g.rivPre={heat:R.heat,name:R.name,w:Object.assign({},R.w),streak:R.streak?Object.assign({},R.streak):null,n:R.games.length};
+  let add=1.5;if(hr<=25&&ar<=25)add+=5;if(hr<=10&&ar<=10)add+=7;if(hr<=5&&ar<=5)add+=5;if(margin<=3)add+=7;else if(margin<=7)add+=4;else if(margin<=14)add+=1;
+  if(g.conf)add+=1;if(h.region===a.region)add+=1;if(g.type==='ccg')add+=6;if(g.type==='po')add+=9;
+  const upset=(g.hs>g.as&&hr>ar+10)||(g.as>g.hs&&ar>hr+10);if(upset)add+=4;
+  if(R.streak&&R.streak.n>=3&&R.streak.team!==r.w.id)add+=6; // revenge
+  if(R.games.length<2)add*=0.6; // first meetings mean less
+  const wasTier=rivTier(R);R.heat=clamp(R.heat+add,0,100);R.lastSeason=G.season;
+  R.w[r.w.id]=(R.w[r.w.id]||0)+1;R.streak=R.streak&&R.streak.team===r.w.id?{team:r.w.id,n:R.streak.n+1}:{team:r.w.id,n:1};
+  R.games.push({s:G.season,w:r.w.id,ws:r.ws,ls:r.ls,hr,ar,wk:g.week});if(R.games.length>12)R.games.shift();
+  const tier=rivTier(R);
+  const namedA=Object.values(G.riv).filter(x=>x.name&&(x.a===R.a||x.b===R.a)).length,namedB=Object.values(G.riv).filter(x=>x.name&&(x.a===R.b||x.b===R.b)).length;
+  if(!R.name&&R.heat>=60&&R.games.length>=3&&((namedA<2&&namedB<2)||R.heat>=90)){R.name=rivName(R.a,R.b);R.born=G.season;const mine=g.home===G.user||g.away===G.user;news(`${h.name} and ${a.name} have a rivalry now. After ${R.games.length} meetings that keep mattering, the series gets a name: ${R.name}.${mine?' Circle it every year.':''}`,mine);}
+  else if(tier!==wasTier&&tier==='Blood feud'){const mine=g.home===G.user||g.away===G.user;news(`${R.name||h.name+'-'+a.name} is a blood feud now. Nobody in either town talks about anything else that week.`,mine);}
+  return R;}
+function seedRivalries(){G.teams.forEach(t=>{const same=G.teams.filter(x=>x.id!==t.id&&x.conf===t.conf&&x.region===t.region&&!G.riv[rkey(t.id,x.id)]);if(same.length&&Math.random()<0.6){const x=pick(same);const r=rivalry(t.id,x.id,true);r.heat=rint(12,38);}});}
+function rivDecay(){Object.keys(G.riv).forEach(k=>{const r=G.riv[k];r.heat=clamp(r.heat-(r.lastSeason<G.season?10:(r.name?7:3)),0,100);if(r.heat<=0&&!r.name)delete G.riv[k];if(r.name&&r.heat<35){const mine=r.a===G.user||r.b===G.user;news(`${r.name} has gone cold. ${T(r.a).name} and ${T(r.b).name} have not given it a reason to matter lately.`,mine);r.name='';r.born=null;}});}
+function myRivals(){const u=G.user;return Object.values(G.riv).filter(r=>(r.a===u||r.b===u)&&r.heat>=35).sort((x,y)=>y.heat-x.heat);}
+function gameRiv(g){const r=G.riv[rkey(g.home,g.away)];if(g.played&&g.rivPre){const p=g.rivPre;return p.heat>=35||p.name?Object.assign({a:Math.min(g.home,g.away),b:Math.max(g.home,g.away),games:[]},p):null;}return r&&r.heat>=35?r:null;}
 
 /* ===================== NEW DYNASTY ===================== */
-function newDynasty(teamId,coachName){
+function newDynasty(teamId,coachName,diff){
   G={season:2026,week:1,phase:'season',pid:1,gid:1,rid:1,user:teamId,teams:[],players:{},games:[],recruits:[],portal:[],news:[],history:[],poll:[],playoff:null,bowls:[],offers:[],fired:false,
     coach:{name:coachName||'Coach',rep:0,seat:20,years:1,w:0,l:0,titles:0,playoffs:0,confTitles:0},
-    hours:0,hoursMax:0,nil:0,budget:0,staff:{coach:1,recruit:1},mediaLeft:3,adLobbied:false,boosterUsed:false,lastResult:null,summary:null,portalAdds:0,classRank:null,pendingTeam:null,app:{fans:60,locker:60,admin:60,media:55},presser:null,pressLog:[],heisman:null,lh:[],carousel:[]};
+    hours:0,hoursMax:0,nil:0,budget:0,staff:{coach:1,recruit:1},mediaLeft:3,adLobbied:false,boosterUsed:false,lastResult:null,summary:null,portalAdds:0,classRank:null,pendingTeam:null,app:{fans:60,locker:60,admin:60,media:55},presser:null,pressLog:[],heisman:null,lh:[],carousel:[],riv:{},diff:diff||'normal',losingRun:0};
   G.teams=makeTeams();
   G.teams.forEach(t=>fillRoster(t,false));
+  seedRivalries();
   const u=userTeam();
   G.coach.rep=u.prestige*6;
   G.nil=80+u.prestige*30;
@@ -526,15 +572,20 @@ function genSchedule(){
 function genScheduleOnce(){
   const teams=G.teams,played=new Set(),key=(a,b)=>a<b?a+'-'+b:b+'-'+a,games=[],need={},home={};
   teams.forEach(t=>{need[t.id]=12;home[t.id]=0;});
+  const rivGames=new Set();
   const add=(a,b,conf)=>{let h=a,aw=b;if(home[a]>home[b]||(home[a]===home[b]&&Math.random()<0.5)){h=b;aw=a;}home[h]++;played.add(key(a,b));need[a]--;need[b]--;games.push({id:G.gid++,week:0,home:h,away:aw,conf,type:'reg',played:false,hs:0,as:0});};
-  Object.keys(CONFS).forEach(c=>{if(c==='IND')return;const mem=teams.filter(t=>t.conf===c).map(t=>t.id);const k=Math.min(CONFS[c].games,mem.length-1);const cn={};mem.forEach(id=>cn[id]=k);
+  const cnAll={};
+  // named rivalries are protected: they play every year
+  const rivCount={};
+  Object.values(G.riv||{}).filter(r=>r.name||r.heat>=35).sort((x,y)=>(y.name?1:0)-(x.name?1:0)||y.heat-x.heat).forEach(r=>{const cap=r.name?2:1;if(played.has(key(r.a,r.b))||need[r.a]<=0||need[r.b]<=0||(rivCount[r.a]||0)>=cap||(rivCount[r.b]||0)>=cap)return;if(!r.name&&(r.heat<45||Math.random()<0.5))return;rivCount[r.a]=(rivCount[r.a]||0)+1;rivCount[r.b]=(rivCount[r.b]||0)+1;const conf=T(r.a).conf===T(r.b).conf&&T(r.a).conf!=='IND';add(r.a,r.b,conf);rivGames.add(key(r.a,r.b));if(conf){cnAll[r.a]=(cnAll[r.a]||0)+1;cnAll[r.b]=(cnAll[r.b]||0)+1;}});
+  Object.keys(CONFS).forEach(c=>{if(c==='IND')return;const mem=teams.filter(t=>t.conf===c).map(t=>t.id);const k=Math.min(CONFS[c].games,mem.length-1);const cn={};mem.forEach(id=>cn[id]=k-(cnAll[id]||0));
     let guard=0;while(guard++<3000){const open=mem.filter(id=>cn[id]>0);if(!open.length)break;shuffle(open);open.sort((a,b)=>cn[b]-cn[a]);const a=open[0];const cands=open.filter(b=>b!==a&&!played.has(key(a,b)));if(!cands.length){cn[a]=0;continue;}const b=pick(cands);cn[a]--;cn[b]--;add(a,b,true);}});
   let guard=0;while(guard++<6000){const open=teams.filter(t=>need[t.id]>0).map(t=>t.id);if(!open.length)break;shuffle(open);open.sort((a,b)=>need[b]-need[a]);const a=open[0],ta=T(a);const cands=open.filter(b=>b!==a&&!played.has(key(a,b))&&(T(b).conf!==ta.conf||ta.conf==='IND'));if(!cands.length){need[a]=0;continue;}
     const b=weightedPick(cands,bid=>{const tb=T(bid);const p4a=!!CONFS[ta.conf].p4||ta.conf==='IND',p4b=!!CONFS[tb.conf].p4||tb.conf==='IND';return (p4a===p4b?1:1.6)*(regionGrade(ta.region,tb.region)>1?2:1);});add(a,b,false);}
   const busy={},load=new Array(15).fill(0);teams.forEach(t=>busy[t.id]=new Set());
-  shuffle(games);const kept=[];
+  shuffle(games);games.sort((x,y)=>(rivGames.has(key(y.home,y.away))?1:0)-(rivGames.has(key(x.home,x.away))?1:0));const kept=[];
   const dropped=[];
-  games.forEach(g=>{const free=[];for(let w=1;w<=14;w++)if(!busy[g.home].has(w)&&!busy[g.away].has(w))free.push(w);if(!free.length){dropped.push(g);return;}const min=Math.min(...free.map(w=>load[w]));const w=pick(free.filter(x=>load[x]===min));g.week=w;load[w]++;busy[g.home].add(w);busy[g.away].add(w);kept.push(g);});
+  games.forEach(g=>{const free=[];for(let w=1;w<=14;w++)if(!busy[g.home].has(w)&&!busy[g.away].has(w))free.push(w);if(!free.length){dropped.push(g);return;}const isRiv=rivGames.has(key(g.home,g.away));const min=Math.min(...free.map(w=>load[w]));const w=isRiv&&free.includes(14)?14:isRiv&&free.includes(13)?13:pick(free.filter(x=>load[x]===min));if(isRiv)g.riv=true;g.week=w;load[w]++;busy[g.home].add(w);busy[g.away].add(w);kept.push(g);});
   // repair: move one of a team's games to a different week to open a slot
   dropped.forEach(g=>{for(let w=1;w<=14;w++){const sides=[[g.home,g.away],[g.away,g.home]];for(const [x,y] of sides){if(busy[x].has(w)||!busy[y].has(w))continue;const g2=kept.find(k=>k.week===w&&(k.home===y||k.away===y));if(!g2)continue;const z=g2.home===y?g2.away:g2.home;let w2=0;for(let v=1;v<=14;v++)if(v!==w&&!busy[y].has(v)&&!busy[z].has(v)){w2=v;break;}if(!w2)continue;busy[y].delete(w);busy[z].delete(w);g2.week=w2;busy[y].add(w2);busy[z].add(w2);g.week=w;busy[x].add(w);busy[y].add(w);kept.push(g);return;}}});
   return kept.sort((a,b)=>a.week-b.week);
@@ -590,8 +641,11 @@ function signingDay(){
 
 /* ===================== GAMES ===================== */
 function simGame(g){
-  const h=T(g.home),a=T(g.away);const adv=g.neutral?0:60;const diff=h.elo+adv-a.elo+(teamForm(h)-teamForm(a))*25;const hElo0=h.elo,aElo0=a.elo;
-  const margin=diff/17+gauss()*15;let total=clamp(Math.round(50+gauss()*12),17,95);
+  const h=T(g.home),a=T(g.away);const R=gameRiv(g);const rivF=R?clamp(R.heat/100,0.35,1):0;
+  const adv=(g.neutral?0:60)*(1+rivF*0.4);let diff=h.elo+adv-a.elo+(teamForm(h)-teamForm(a))*25;const hElo0=h.elo,aElo0=a.elo;
+  diff+=targetEdge(g);
+  if(R)diff*=1-rivF*0.3; // rivalry games tighten
+  const margin=diff/17+gauss()*(15+rivF*6);let total=clamp(Math.round(50+gauss()*12),17,95);
   let hs=Math.round((total+margin)/2),as=total-hs;if(hs<0){as-=hs;hs=0;}if(as<0){hs-=as;as=0;}
   const snap=s=>s===1?3:s===4?6:s;hs=snap(hs);as=snap(as);if(hs===as){if(Math.random()<0.5)hs+=3;else as+=3;}
   g.hs=hs;g.as=as;g.played=true;
@@ -683,14 +737,23 @@ function awardHeisman(){const w=heismanWatch(1)[0];if(!w)return;const p=w.p;p.he
 function rollBreakouts(){G.teams.forEach(t=>{t.roster.forEach(id=>{const p=P(id);p.form=0;delete p.st;p.inj=0;delete p.injN;if(p.yr>=1&&p.pot-p.ovr>=7&&Math.random()<((isUser(t)?0.075+G.staff.coach*0.012:0.07)*(hasT(p,'bloomer')?2.2:1))){const g=rint(5,10);p.ovr=clamp(Math.min(p.pot+2,p.ovr+g),40,99);p.breakout=G.season;if(isUser(t))news(`Camp buzz: ${p.pos} ${p.n} looks like a different player (${p.ovr-g} to ${p.ovr}). Breakout season incoming.`,true);}else if(p.breakout&&p.breakout!==G.season)delete p.breakout;});});}
 function injuryTick(){G.teams.forEach(t=>{t.roster.forEach(id=>{const p=P(id);if(p.inj>0){p.inj--;if(p.inj===0&&isUser(t))news(`${p.pos} ${p.n} is cleared to return.`);}});
   if(G.week>19)return;POS.forEach(pos=>{depth(t,pos).slice(0,STARTERS[pos]).forEach(p=>{let c=0.014;if(hasT(p,'fragile'))c*=3;if(hasT(p,'workhorse'))c*=0.5;if(pos==='K')c*=0.2;if(Math.random()<c){p.inj=rint(1,6);p.injN=pick(['hamstring','ankle','shoulder','knee','concussion protocol','wrist','back']);if(isUser(t))news(`${p.pos} ${p.n} (${p.ovr}) out ${p.inj} week${p.inj>1?'s':''} with a ${p.injN} injury.`,true);}});});});}
-function winProb(home,away,neutral){const diff=home.elo+(neutral?0:60)-away.elo+(teamForm(home)-teamForm(away))*25;return 1/(1+Math.pow(10,-diff/400));}
+function diffMult(){const d=G?G.diff:(UI.diff||'normal');return d==='brutal'?2:d==='hard'?1:0;}
+function targetEdge(g){ // everyone plays up against the user when the user is ranked; harder difficulties stack more
+  const u=G.user;if(g.home!==u&&g.away!==u)return 0;const me=T(u);const rank=me.rank||99;let e=rank===1?40:rank<=5?26:rank<=10?14:rank<=25?6:0;e+=diffMult()*22;return g.home===u?-e:e;}
+function winProb(home,away,neutral,g){let diff=home.elo+(neutral?0:60)-away.elo+(teamForm(home)-teamForm(away))*25;if(g){diff+=targetEdge(g);const R=gameRiv(g);if(R)diff*=1-clamp(R.heat/100,0.35,1)*0.3;}return 1/(1+Math.pow(10,-diff/400));}
 function teamForm(t){let s=0,w=0;['QB','RB','WR','TE'].forEach(pos=>{depth(t,pos).slice(0,STARTERS[pos]).forEach(p=>{s+=(p.form||0)*WEIGHT[pos];w+=WEIGHT[pos];});});return w?s/w:0;}
 function postGame(g,r){
   const u=G.user;const uIn=g.home===u||g.away===u;
+  const R=rivUpdate(g,r);const rivHot=R.heat>=35;
+  if(uIn&&rivHot){const won=r.w.id===u;const A=G.app;const f=R.heat/100;A.fans=clamp(A.fans+(won?6*f+2:-(9*f+3)),0,100);A.locker=clamp(A.locker+(won?2:-1),0,100);
+    const mine=R.streak&&R.streak.team===u?R.streak.n:0,theirs=R.streak&&R.streak.team!==u?R.streak.n:0;
+    if(theirs>=3){G.coach.seat=clamp(G.coach.seat+6,0,100);A.admin=clamp(A.admin-4,0,100);news(`Boosters are restless: that is ${theirs} straight losses to ${T(r.w.id).name}. The AD took calls all night.`,true);}
+    if(mine>=3&&R.name)news(`${userTeam().name} owns ${R.name}: ${mine} in a row. Recruits in the ${REGION_NAMES[userTeam().region]} noticed.`);
+    const reg=userTeam().region;G.recruits.forEach(rc=>{if(rc.committed==null&&rc.region===reg&&(u in rc.interest))rc.interest[u]+=won?3*f+1:-(2*f);});}
   if(uIn){const won=r.w.id===u;G.lastResult={won,opp:r.w.id===u?r.l.id:r.w.id,ws:r.ws,ls:r.ls,week:g.week};G.coach[won?'w':'l']++;
     const opp=T(won?r.l.id:r.w.id);const orank=opp.rank;news(`${won?'W':'L'} ${r.ws}-${r.ls} ${won?'over':'to'} ${orank<=25?'No. '+orank+' ':''}${opp.name}${g.type==='ccg'?' in the '+CONFS[g.confName].name+' title game':g.type==='po'?' in the playoff':g.type==='bowl'?' in the '+g.name+' Bowl':''}.`,true);
     const margin=r.ws-r.ls;const me=T(u);const A=G.app;A.fans=clamp(A.fans+(won?2+(orank<=25?2:0):-(margin>=21?5:3)),0,100);A.locker=clamp(A.locker+(won?1:-1),0,100);
-    makePresser(g,{won,margin,opp:opp.name,oppRank:orank,myRank:me.rank,type:g.type,close:margin<=4,blowout:margin>=21,upset:won&&orank<=25&&(me.rank>orank+8||orank<=10&&me.rank>10),upsetLoss:!won&&(orank>me.rank+15||(me.rank<=10&&orank>25))});}
+    makePresser(g,{won,margin,opp:opp.name,oppRank:orank,myRank:me.rank,type:g.type,riv:rivHot?R:null,close:margin<=4,blowout:margin>=21,upset:won&&orank<=25&&(me.rank>orank+8||orank<=10&&me.rank>10),upsetLoss:!won&&(orank>me.rank+15||(me.rank<=10&&orank>25))});}
   else if(g.type==='reg'&&r.l.rank<=10&&(r.w.rank>r.l.rank+10)){news(`Upset: ${r.w.name} knocks off No. ${r.l.rank} ${r.l.name} ${r.ws}-${r.ls}.`);}
   if(g.type==='ccg'){r.w.confChamp=true;if(r.w.id===u)G.coach.confTitles++;}
   if(g.type==='bowl'){r.w.bowl='W';r.l.bowl='L';}
@@ -757,7 +820,7 @@ function simWeek(){
 function weekLabel(w){return w<=14?`Week ${w}`:w===15?'Championship Week':w===16?'Playoff First Round':w===17?'Quarterfinals':w===18?'Semifinals':'National Championship';}
 
 /* ===================== SEASON END & OFFSEASON ===================== */
-function expectedWins(t){return 2+t.prestige*0.8;}
+function expectedWins(t){return 2+t.prestige*0.8+(isUser(t)?diffMult()*0.75:0);}
 function finishSeason(){
   const u=userTeam();const E=expectedWins(u);
   const poRes=u.po==='champ'?'National champion':u.po?('Lost in '+({r1:'first round',qf:'quarterfinals',sf:'semifinals',f:'the final'})[String(u.po).replace('out-','')]):u.bowl?'Bowl '+(u.bowl==='W'?'win':'loss'):'No postseason';
@@ -791,6 +854,7 @@ function runOffseason(){
   const u=userTeam();const E=expectedWins(u);
   // coach evaluation
   const delta=u.w-E+(u.po?1.5:0)+(u.po==='champ'?3:0);
+  G.losingRun=u.l>u.w?(G.losingRun||0)+1:0;if(G.losingRun>=3){G.coach.seat=100;news(`Three losing seasons in a row. The AD did not need a meeting.`,true);}
   const A=G.app;G.coach.seat=clamp(Math.round(G.coach.seat-delta*9+(50-A.fans)/6+(50-A.admin)/6),0,100);
   G.coach.rep=clamp(Math.round(G.coach.rep+delta*3+(u.confChamp?3:0)+(u.po==='champ'?10:0)),0,100);
   G.offers=[];
@@ -798,7 +862,7 @@ function runOffseason(){
   else if((delta>=2||u.po==='champ')&&perception()>=45){const pc=clamp((perception()-40)/40,0.15,1);const higher=G.teams.filter(t=>!isUser(t)&&t.prestige>u.prestige&&Math.random()<0.4*pc);G.offers=shuffle(higher).slice(0,rint(1,3)).map(t=>t.id);if(G.offers.length)news(`Your phone is ringing: ${G.offers.map(id=>T(id).name).join(', ')} want to talk about their head coaching job.`,true);}
   else if(delta>=2&&perception()<45)news('Athletic directors around the country admire the wins but not the press conferences. No calls this winter.');
   // prestige drift
-  coachingCarousel();
+  coachingCarousel();rivDecay();
   G.teams.forEach(t=>{const p4=!!CONFS[t.conf].p4||t.conf==='IND';let perf=clamp(11-t.rank/8+(t.po==='champ'?1:0)+(!isUser(t)&&t.coach?(t.coach.rep-50)/100:0),1,10);if(!p4)perf=Math.min(7,perf*0.75);t.prestige=clamp(Math.round((t.prestige+(perf-t.prestige)*0.3)*10)/10,1,10);t.lastElo=t.elo;});
   // departures, progression, signees
   const signees={};G.recruits.forEach(r=>{if(r.committed!=null){(signees[r.committed]=signees[r.committed]||[]).push(r);}});
@@ -833,13 +897,14 @@ function acceptOffer(tid){
 /* ===================== USER ACTIONS ===================== */
 function spend(h){if(G.hours<h)return false;G.hours-=h;return true;}
 function actOffer(rec){if(rec.committed!=null||rec.offer)return;if(userCommits()+G.recruits.filter(r=>r.offer&&r.committed==null).length>=CLASS_CAP+10)return;const u=userTeam();rec.offer=true;rec.interest[u.id]=(rec.interest[u.id]||0)+8+u.prestige*2+regionGrade(rec.region,u.region)+G.coach.rep*0.08;}
-function actCall(rec){if(!rec.offer||rec.committed!=null||!spend(3))return;rec.interest[G.user]+=4+userTeam().prestige*0.5+rnd(0,2);}
+const dgain=v=>v*(G.diff==='brutal'?0.65:G.diff==='hard'?0.82:1);
+function actCall(rec){if(!rec.offer||rec.committed!=null||!spend(3))return;rec.interest[G.user]+=dgain(4+userTeam().prestige*0.5+rnd(0,2));}
 function actScout(rec){if(rec.scouted||!spend(2))return;rec.scouted=true;}
 function actText(rec){if(!rec.offer||rec.committed!=null||rec.convo||rec.texted===G.week||!spend(2))return;const pool=TEXTS[rec.persona]||TEXTS.quiet;const t=pool[(rec.texted||0)%pool.length>=0?rint(0,pool.length-1):0];rec.convo={m:t.m,r:t.r.map(x=>({t:x.t,v:x.v})),done:false,stamp:`${weekLabel(G.week)} · ${pick(['Mon','Tue','Wed','Thu'])} ${rint(3,9)}:${String(rint(0,59)).padStart(2,'0')} PM`};rec.texted=G.week;}
-function actReply(rec,idx){const c=rec.convo;if(!c||c.done)return;const r=c.r[idx];if(!r)return;const u=userTeam();const gain=r.v>=2?6+u.prestige*0.6+rnd(0,3):r.v>=1?3+rnd(0,2):r.v===0?1:r.v===-1?-2:-5;rec.interest[u.id]=Math.max(0,(rec.interest[u.id]||0)+gain);c.done=true;c.picked=idx;c.reply=r.v>=2?(rec.persona==='quiet'?'\ud83d\udc4d':rec.persona==='confident'?'thats what i like to hear':rec.persona==='family'?'ok. my mom says thank you':rec.persona==='business'?'appreciate the straight answer':'bet. see you saturday'):r.v>=1?'ok cool':r.v===0?'ok':r.v===-1?'hm. ok':(rec.persona==='family'?'...':'wow ok');}
+function actReply(rec,idx){const c=rec.convo;if(!c||c.done)return;const r=c.r[idx];if(!r)return;const u=userTeam();const gain=r.v>=2?6+u.prestige*0.6+rnd(0,3):r.v>=1?3+rnd(0,2):r.v===0?1:r.v===-1?-2:-5;rec.interest[u.id]=Math.max(0,(rec.interest[u.id]||0)+dgain(gain));c.done=true;c.picked=idx;c.reply=r.v>=2?(rec.persona==='quiet'?'\ud83d\udc4d':rec.persona==='confident'?'thats what i like to hear':rec.persona==='family'?'ok. my mom says thank you':rec.persona==='business'?'appreciate the straight answer':'bet. see you saturday'):r.v>=1?'ok cool':r.v===0?'ok':r.v===-1?'hm. ok':(rec.persona==='family'?'...':'wow ok');}
 function actVisitStart(rec){if(!rec.offer||rec.committed!=null||rec.visited||rec.visitQ||!spend(10))return;const key=rec.wants[0];const q=FAMILYQ[key]||FAMILYQ.coach;rec.visitQ={key,q:q.q,a:q.a.map(x=>({t:x.t,v:x.v}))};}
-function actVisitAnswer(rec,idx){const vq=rec.visitQ;if(!vq)return;const a=vq.a[idx];if(!a)return;rec.visited=true;rec.visitQ=null;const u=userTeam();const base=16+u.facilities*0.6+(G.lastResult&&G.lastResult.won?8:0)+(u.rank<=25?4:0);const mult=a.v>=2?1.4:a.v>=1?1.1:a.v===0?0.9:a.v===-1?0.6:0.3;rec.interest[u.id]=Math.max(0,(rec.interest[u.id]||0)+base*mult);rec.visitNote=a.v>=2?'The family left smiling.':a.v>=1?'A good day, no fireworks.':a.v===0?'Polite. Hard to read.':a.v===-1?'That answer sat badly at dinner.':'The visit ended early.';}
-function actPitch(rec,key){if(!rec.offer||rec.committed!=null||rec.pitched[key]===G.week||!spend(6))return;const g=pitchGrade(userTeam(),key,rec);rec.pitched[key]=G.week;rec.interest[G.user]+=rec.wants.includes(key)?4+g*1.6:1+g*0.4;}
+function actVisitAnswer(rec,idx){const vq=rec.visitQ;if(!vq)return;const a=vq.a[idx];if(!a)return;rec.visited=true;rec.visitQ=null;const u=userTeam();const base=16+u.facilities*0.6+(G.lastResult&&G.lastResult.won?8:0)+(u.rank<=25?4:0);const mult=a.v>=2?1.4:a.v>=1?1.1:a.v===0?0.9:a.v===-1?0.6:0.3;rec.interest[u.id]=Math.max(0,(rec.interest[u.id]||0)+dgain(base*mult));rec.visitNote=a.v>=2?'The family left smiling.':a.v>=1?'A good day, no fireworks.':a.v===0?'Polite. Hard to read.':a.v===-1?'That answer sat badly at dinner.':'The visit ended early.';}
+function actPitch(rec,key){if(!rec.offer||rec.committed!=null||rec.pitched[key]===G.week||!spend(6))return;const g=pitchGrade(userTeam(),key,rec);rec.pitched[key]=G.week;rec.interest[G.user]+=dgain(rec.wants.includes(key)?4+g*1.6:1+g*0.4);}
 
 function actNIL(rec,amt){if(!rec.offer||rec.committed!=null||G.nil<amt)return;G.nil-=amt;rec.nilGiven+=amt;rec.interest[G.user]+=rec.wants.includes('nil')?amt/3:amt/6;}
 function actBooster(){if(G.boosterUsed||!spend(8))return;G.boosterUsed=true;const u=userTeam();const gain=Math.round((20+u.prestige*8+u.w*6-u.l*3)*rnd(0.6,1.4)*(0.6+G.app.fans/100));G.nil+=Math.max(5,gain);news(`Booster dinner raised ${fmtK(Math.max(5,gain))} for the NIL collective.`);}
@@ -878,6 +943,8 @@ function renderPicker(){
   <main class="picker">
     <div class="card sec"><h2>Take the job</h2><p class="muted small" style="margin:0">You run the program, not the plays. Recruit, lobby boosters and the AD, build the roster, and climb the polls toward the 12-team playoff. Lower-prestige jobs are a harder road but a better story.</p>
       <label class="small muted" for="coachName">Coach name</label><input type="text" id="coachName" placeholder="Your name" maxlength="28" value="${esc(UI.coachName||'')}">
+      <div class="chips">${[['normal','Normal','Recruiting and expectations as they come.'],['hard','Hard','Recruits are harder to win, the AD wants one more win a year, opponents play up against you.'],['brutal','Brutal','Everyone treats your game as their Super Bowl. Boosters expect titles.']].map(([k,l,d])=>`<button class="chip ${(UI.diff||'normal')===k?'on':''}" data-act="diff" data-id="${k}" title="${d}">${l}</button>`).join('')}</div>
+      <div class="tiny muted">${({normal:'Normal: recruiting and expectations as they come.',hard:'Hard: recruits are harder to win, the AD wants one more win a year, opponents play up against you.',brutal:'Brutal: everyone treats your game as their Super Bowl. Boosters expect titles.'})[UI.diff||'normal']} Three losing seasons in a row gets any coach fired.</div>
       ${sel?`<div class="hero"><div class="eyebrow">Selected</div><div class="vs">${esc(sel[0])} ${esc(sel[1])}</div><div class="small muted">${CONFS[sel[2]].name} · Prestige ${sel[3]}/10 · ${REGION_NAMES[sel[5]]}</div><div class="small">AD expects about ${Math.round(expectedWins({prestige:sel[3]}))} wins a year.</div><div class="btnrow" style="margin-top:8px"><button class="btn" data-act="start">Start dynasty</button></div></div>`:'<div class="muted small">Tap a school below.</div>'}
     </div>
     <div class="card sec"><div class="row between"><h3>League editor</h3><button class="btn sm ghost" data-act="leaguetoggle">${UI.leagueOpen?'Hide':'Customize schools'}</button></div><div class="tiny muted">Rename any school, change its nickname or colors, or paste in a league a friend shared. Your league is remembered for every new dynasty.</div>${UI.leagueOpen?renderLeagueEditor():''}</div>
@@ -935,8 +1002,11 @@ function feedback(item){if(item.k==='s'){const mine=item.team===G.user;if(mine){
 const FILLER=['{t} drive stalls at midfield, punt','{t} goes three-and-out','{t} converts a fourth-and-short','{d} drops the quarterback for a loss','{t} marches inside the 30 but turns it over on downs','{d} breaks up a pass in the end zone','{t} misses a {y}-yard field goal','{t} fumbles the handoff, {d} recovers','{t} picks up a big first down on a {y}-yard catch','{d} sniffs out the screen','Penalty backs {t} up ten yards','{t} chews four minutes off the clock','{d} intercepts a tipped pass'];
 function buildFeed(g){
   const h=T(g.home),a=T(g.away);const b=g.box;const defs=t=>(t===g.home?b.home:b.away).def.slice(0,5).map(x=>x.n);
-  const feed=[{k:'q',text:`Kickoff: ${a.name} at ${h.name}`,hs:0,as:0}];let hs=0,as=0,q=1;
-  const fill=()=>{const n=Math.random()<0.45?0:Math.random()<0.7?1:2;for(let i=0;i<n;i++){const tid=Math.random()<0.5?g.home:g.away;const opp=tid===g.home?g.away:g.home;const t=T(tid);const tpl=pick(FILLER);const dl=defs(opp);feed.push({k:'f',team:tid,text:tpl.replace('{t}',t.name).replace('{d}',dl.length?pick(dl)+' ('+T(opp).name+')':T(opp).name+' defense').replace('{y}',rint(22,52)),hs,as});}};
+  const R=gameRiv(g);const big=(g.hrank<=25&&g.arank<=25)||g.type!=='reg';const crowd=g.neutral?rint(60,78):Math.round(clamp(28+h.prestige*7+(R?R.heat/6:0)+(big?10:0)+rnd(-4,4),18,105));
+  const scene=R&&R.name?`${R.name}. ${crowd},000 and the student section has been in since noon. ${R.streak&&R.streak.n>=2?T(R.streak.team).name+' has won '+R.streak.n+' straight in this series.':'Series '+(R.w[h.id]||0)+'-'+(R.w[a.id]||0)+' with '+(R.w[h.id]>=(R.w[a.id]||0)?h.name:a.name)+' in front.'}`:big?`${crowd},000 in the building for a ranked matchup. It is loud.`:g.neutral?`Neutral site, ${crowd},000 split down the middle.`:`${crowd},000 at kickoff.`;
+  const feed=[{k:'q',text:`Kickoff: ${a.name} at ${h.name}`,hs:0,as:0},{k:'f',team:g.home,text:scene,hs:0,as:0}];let hs=0,as=0,q=1;
+  const CROWD=['The crowd noise forces a false start on {t}','{d} gets the whole stadium on its feet with a third-down stop','The student section is chanting at the {t} sideline','A scuffle after the whistle; flags on both teams','{t} goes for it on fourth down and the place is shaking','{d} jaws with the {t} bench after a sack'];
+  const fill=()=>{const n=Math.random()<0.45?0:Math.random()<0.7?1:2;for(let i=0;i<n;i++){const tid=Math.random()<0.5?g.home:g.away;const opp=tid===g.home?g.away:g.home;const t=T(tid);const tpl=(R&&Math.random()<0.4)||(big&&Math.random()<0.2)?pick(CROWD):pick(FILLER);const dl=defs(opp);feed.push({k:'f',team:tid,text:tpl.replace('{t}',t.name).replace('{d}',dl.length?pick(dl)+' ('+T(opp).name+')':T(opp).name+' defense').replace('{y}',rint(22,52)),hs,as});}};
   b.plays.forEach(p=>{while(q<p.q){fill();feed.push({k:'q',text:`End of ${['1st','2nd','3rd'][q-1]} quarter`,hs,as});q++;}fill();if(p.team===g.home)hs+=p.pts;else as+=p.pts;feed.push({k:'s',team:p.team,text:`${T(p.team).name}: ${p.desc}`,q:p.q,time:p.time,hs,as});});
   while(q<4){fill();feed.push({k:'q',text:`End of ${['1st','2nd','3rd'][q-1]} quarter`,hs,as});q++;}fill();
   feed.push({k:'end',text:'Final',hs:g.hs,as:g.as});return feed;
@@ -950,7 +1020,8 @@ function renderLive(){
   const L=UI.live;const s=liveState();const g=s.g;const h=T(g.home),a=T(g.away);const items=L.feed.slice(0,L.shown).reverse();
   const q=s.item.k==='end'?'Final':s.item.k==='s'?`Q${s.item.q} ${s.item.time}`:s.item.k==='q'?s.item.text:`Q${Math.min(4,1+Math.floor((L.shown/L.feed.length)*4))}`;
   const pct=Math.round(s.p*100);const won=g.hs>g.as?g.home:g.away;
-  return `<div class="card sec live"><div class="row between"><div class="eyebrow">${L.done?'Final':'Live'} · ${weekLabel(L.snap.week)}</div>${L.done?'':'<span class="tag team">On air</span>'}</div>
+  const R=gameRiv(g);const banner=R?`<div class="rivban ${R.heat>=85?'feud':''}"><div class="eyebrow" style="color:inherit;opacity:.85">${rivTier(R)}${R.name?' · '+esc(R.name):''}</div><div class="small">Series ${R.w[a.id]||0}-${R.w[h.id]||0}${R.streak?' · '+esc(T(R.streak.team).name)+' has won '+R.streak.n+' straight':''} · heat ${Math.round(R.heat)}</div></div>`:'';
+  return `<div class="card sec live">${banner}<div class="row between"><div class="eyebrow">${L.done?'Final':'Live'} · ${weekLabel(L.snap.week)}</div>${L.done?'':'<span class="tag team">On air</span>'}</div>
     <div class="scoreline"><div class="t"><div class="nm">${esc(a.name)}${g.arank<=25?' <span class="tiny muted">#'+g.arank+'</span>':''}</div><div class="sc">${s.item.as}</div></div><div class="mid">${q}</div><div class="t"><div class="nm">${esc(h.name)}${g.hrank<=25?' <span class="tiny muted">#'+g.hrank+'</span>':''}</div><div class="sc">${s.item.hs}</div></div></div>
     <div class="meter"><span class="small" style="width:90px">${L.done?(won===G.user?'<b class="ok">You win</b>':'<b class="no">You lose</b>'):'Win chance'}</span><div class="bar grow"><i class="${L.done?(won===G.user?'good':'bad'):'me'}" style="width:${L.done?100:pct}%"></i></div><span class="small num" style="width:40px;text-align:right">${L.done?'':pct+'%'}</span></div>
     ${L.done?`<div class="btnrow"><button class="btn" data-act="livedone">Continue${G.presser?' to the press conference':''}</button><button class="btn ghost" data-act="livebox" data-id="${g.id}">Box score</button></div>`:`<div class="btnrow"><button class="btn ghost sm" data-act="liveskip">Skip to final</button></div>`}
@@ -960,14 +1031,14 @@ function renderNextLine(u){
   if(G.phase==='postseason')return `<div class="nextline"><span class="nx">Season over. ${esc(T(G.playoff.champion).name)} won the title.</span><span class="od">Final No. ${u.rank}</span></div>`;
   if(G.phase==='offseason'){const todo=[];if(u.roster.length>ROSTER_CAP)todo.push('trim roster');if(G.fired)todo.push('pick a job');else if(G.offers.length)todo.push('answer offers');if(G.budget>=5)todo.push(`spend $${G.budget}M`);if(G.portalAdds<PORTAL_CAP&&G.portal.length)todo.push('portal');return `<div class="nextline"><span class="nx">Offseason: ${todo.length?todo.join(', '):'ready for kickoff'}</span><span class="od">${G.season+1}</span></div>`;}
   const g=G.games.find(x=>x.week===G.week&&!x.played&&(x.home===u.id||x.away===u.id));
-  if(g){const isHome=g.home===u.id;const opp=T(isHome?g.away:g.home);const p=isHome?winProb(u,opp,g.neutral):1-winProb(opp,u,g.neutral);const gl=gameLine(g,u.id);return `<div class="nextline"><span class="nx">Next: ${isHome||g.neutral?'vs':'at'} ${gl.label} <span style="opacity:.75;font-weight:400">· ${opp.w}-${opp.l}${g.type!=='reg'?' · '+gl.where:''}</span></span><span class="od">${Math.round(p*100)}% win</span></div>`;}
+  if(g){const isHome=g.home===u.id;const opp=T(isHome?g.away:g.home);const p=isHome?winProb(u,opp,g.neutral,g):1-winProb(opp,u,g.neutral,g);const gl=gameLine(g,u.id);const RR=gameRiv(g);return `<div class="nextline"><span class="nx">${RR&&RR.name?'RIVALRY WEEK · ':''}Next: ${isHome||g.neutral?'vs':'at'} ${gl.label} <span style="opacity:.75;font-weight:400">· ${opp.w}-${opp.l}${g.type!=='reg'?' · '+gl.where:''}</span></span><span class="od">${Math.round(p*100)}% win</span></div>`;}
   if(G.week<=14)return `<div class="nextline"><span class="nx">Bye week. Spend your hours on the recruiting trail.</span><span class="od">${userCommits()}/${CLASS_CAP} commits</span></div>`;
   if(G.week===15)return `<div class="nextline"><span class="nx">Championship week. Your class signs after it.</span><span class="od">${G.week>=6?(projectedField().includes(u)?'Proj. seed '+(projectedField().indexOf(u)+1):'Out of playoff'):''}</span></div>`;
   if(G.week===16&&u.po==='in'&&G.playoff.seeds.indexOf(u.id)<4)return `<div class="nextline"><span class="nx">First-round bye as the No. ${G.playoff.seeds.indexOf(u.id)+1} seed.</span><span class="od">Quarterfinal next</span></div>`;
   return `<div class="nextline"><span class="nx">${u.po&&u.po!=='champ'?'Eliminated from the playoff.':'Not in the bracket.'} Sim through to the offseason.</span><span class="od">${weekLabel(G.week)}</span></div>`;
 }
 function gameLine(g,me){const home=T(g.home),away=T(g.away);const opp=g.home===me?away:home;const isHome=g.home===me;const orank=g.played?(isHome?g.arank:g.hrank):opp.rank;const label=`${orank<=25?'No. '+orank+' ':''}${esc(opp.name)}`;
-  const where=g.type==='ccg'?CONFS[g.confName].name+' Championship':g.type==='po'?({r1:'Playoff First Round',qf:'Playoff Quarterfinal',sf:'Playoff Semifinal',f:'National Championship'})[g.round]:g.type==='bowl'?g.name+' Bowl':(isHome?'Home':'Away')+(g.conf?' · Conf':'');
+  const RV=gameRiv(g);const where=(g.type==='ccg'?CONFS[g.confName].name+' Championship':g.type==='po'?({r1:'Playoff First Round',qf:'Playoff Quarterfinal',sf:'Playoff Semifinal',f:'National Championship'})[g.round]:g.type==='bowl'?g.name+' Bowl':(isHome?'Home':'Away')+(g.conf?' · Conf':''))+(RV?' · <b>'+(RV.name?esc(RV.name):rivTier(RV))+'</b>':'');
   if(!g.played)return {label,where,res:'',cls:''};const ms=isHome?g.hs:g.as,os=isHome?g.as:g.hs;return {label,where,res:`${ms>os?'W':'L'} ${ms}-${os}`,cls:ms>os?'W':'L'};}
 function renderHome(){
   const u=userTeam();const parts=[];
@@ -981,8 +1052,8 @@ function renderHome(){
     <div class="btnrow"><button class="btn" data-act="sim" ${over>0||G.fired?'disabled':''}>Start ${G.season+1} season</button></div></div>`);}
   if(G.phase==='season'){
     const g=G.games.find(x=>x.week===G.week&&!x.played&&(x.home===u.id||x.away===u.id));
-    if(g){const gl=gameLine(g,u.id);const isHome=g.home===u.id;const p=isHome?winProb(u,T(g.away),g.neutral):1-winProb(T(g.home),u,g.neutral);const opp=T(isHome?g.away:g.home);
-      parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)} · ${gl.where}</div><div class="vs">${isHome||g.neutral?'vs':'at'} ${gl.label}</div><div class="row between" style="margin-top:6px"><span class="small muted">${esc(opp.nick)} · ${opp.w}-${opp.l} · ${CONFS[opp.conf].name} · HC ${esc(opp.coach.n)}</span><span class="num" style="font-size:18px">${Math.round(p*100)}% to win</span></div><div class="bar" style="margin-top:6px"><i class="me" style="width:${Math.round(p*100)}%"></i></div></div>`);}
+    if(g){const gl=gameLine(g,u.id);const isHome=g.home===u.id;const p=isHome?winProb(u,T(g.away),g.neutral,g):1-winProb(T(g.home),u,g.neutral,g);const opp=T(isHome?g.away:g.home);const RR=gameRiv(g);
+      parts.push(`<div class="hero ${RR?'rivhero':''}"><div class="eyebrow">${weekLabel(G.week)} · ${gl.where}${RR?' · <b>'+rivTier(RR)+(RR.name?': '+esc(RR.name):'')+'</b>':''}</div><div class="vs">${isHome||g.neutral?'vs':'at'} ${gl.label}</div><div class="row between" style="margin-top:6px"><span class="small muted">${esc(opp.nick)} · ${opp.w}-${opp.l} · ${CONFS[opp.conf].name} · HC ${esc(opp.coach.n)}</span><span class="num" style="font-size:18px">${Math.round(p*100)}% to win</span></div><div class="bar" style="margin-top:6px"><i class="me" style="width:${Math.round(p*100)}%"></i></div></div>`);}
     else if(G.week<=14)parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">Bye week</div><div class="small muted">Hit the road recruiting; nobody to beat this Saturday.</div></div>`);
     else if(G.week===16&&u.po==='in')parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">First-round bye</div><div class="small muted">Top-four seed. You wait for the winner of the ${G.playoff.seeds.indexOf(u.id)===0?'8/9':G.playoff.seeds.indexOf(u.id)===1?'7/10':G.playoff.seeds.indexOf(u.id)===2?'6/11':'5/12'} game.</div></div>`);
     else parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">${G.week===15?'Not in the title game':u.po&&u.po!=='champ'?'Eliminated':'Watching from home'}</div><div class="small muted">${G.week===15?'Conference title games this week. Your recruiting class signs after them.':'The bracket plays on without you. Sim ahead to the offseason.'}</div></div>`);
@@ -992,9 +1063,12 @@ function renderHome(){
     parts.push(`<div class="card sec"><div class="eyebrow">Program pulse</div><div class="grid2"><div class="stat"><div class="v">${teamOvr(u).toFixed(1)}</div><div class="k">Team overall</div></div><div class="stat"><div class="v">${Math.round(E)}</div><div class="k">Wins the AD expects</div></div><div class="stat"><div class="v">${userCommits()}/${CLASS_CAP}</div><div class="k">Commits</div></div><div class="stat"><div class="v">${seat}</div><div class="k">Hot seat (100 = fired)</div></div></div>
       ${G.week>=6&&G.week<=15?renderPlayoffPicture(u):''}${renderApproval(true)}</div>`);
   }
+  parts.push(renderRivalries(u));
   parts.push(`<div class="card sec"><div class="eyebrow">Newswire</div><div class="news">${G.news.slice(0,14).map(n=>`<div class="${n.hot?'hot':''}"><span class="muted tiny">${n.s} ${n.w<=14?'Wk '+n.w:'Post'} · </span>${esc(n.text)}</div>`).join('')||'<div class="muted">Nothing yet.</div>'}</div></div>`);
   return parts.join('');
 }
+function renderRivalries(u){const rs=myRivals();if(!rs.length)return `<div class="card sec"><div class="eyebrow">Rivalries</div><div class="small muted">None yet. Rivalries are earned: ranked matchups, close finishes, upsets and revenge games build heat between two programs. Enough heat and the series gets a name and a permanent spot on the schedule.</div></div>`;
+  return `<div class="card sec"><div class="eyebrow">Rivalries</div><div class="list">${rs.map(r=>{const o=T(r.a===u.id?r.b:r.a);const mine=r.w[u.id]||0,theirs=r.w[o.id]||0;const last=r.games[r.games.length-1];const next=G.games.find(g=>!g.played&&((g.home===u.id&&g.away===o.id)||(g.away===u.id&&g.home===o.id)));return `<div class="item" style="flex-direction:column;align-items:stretch;gap:6px"><div class="row between"><div><div class="nm">${esc(o.name)} <span class="tag ${r.heat>=85?'bad':r.heat>=60?'team':''}">${rivTier(r)}</span></div><div class="sub">${r.name?esc(r.name)+' · since '+r.born+' · ':''}Series ${mine}-${theirs}${r.streak?' · '+(r.streak.team===u.id?'you have':esc(o.name)+' has')+' won '+r.streak.n+' straight':''}${last?' · last: '+(last.w===u.id?'W':'L')+' '+last.ws+'-'+last.ls+' ('+last.s+')':''}</div></div><div class="tiny muted" style="text-align:right">${next?weekLabel(next.week):'No game scheduled'}</div></div><div class="meter"><span class="tiny muted" style="width:36px">Heat</span><div class="bar grow"><i class="${r.heat>=85?'bad':r.heat>=60?'warn':''}" style="width:${Math.round(r.heat)}%"></i></div><span class="tiny num" style="width:28px;text-align:right">${Math.round(r.heat)}</span></div></div>`;}).join('')}</div></div>`;}
 function renderPresser(){const pr=G.presser;return `<div class="card sec presser"><div class="row between"><div class="eyebrow">Post-game press conference</div><span class="tag">${pr.info.won?'After the win':'After the loss'}</span></div><div class="q">“${esc(pr.q)}”</div><div class="sec">${pr.opts.map((o,i)=>`<button class="answer" data-act="press" data-id="${i}">${esc(o.t)}</button>`).join('')}<button class="btn sm ghost" data-act="press" data-id="-1" style="align-self:flex-start">No comment</button></div><div class="tiny muted">Your answers shape how fans, the locker room, the AD and the media see you. Skipping the podium costs you with the press.</div></div>`;}
 function renderApproval(compact){const A=G.app;const m=(k,l)=>`<div class="meter"><span class="small" style="width:${compact?82:100}px">${l}</span><div class="bar grow"><i class="${A[k]>=65?'good':A[k]>=40?'':'bad'}" style="width:${Math.round(A[k])}%"></i></div><span class="small num" style="width:28px;text-align:right">${Math.round(A[k])}</span></div>`;return `<div class="sec" style="gap:6px"><div class="eyebrow">Approval</div>${m('fans','Fans')}${m('locker','Locker room')}${m('admin','Athletic dept')}${m('media','Media')}</div>`;}
 let watchTimer=null;
@@ -1124,7 +1198,7 @@ function renderProgram(){
   const rb=(()=>{if(!G.history.length)return '';const best=[...G.history].sort((a,b)=>a.rank-b.rank)[0];const wins=G.history.reduce((a,h)=>a+(+h.record.split('-')[0]),0),losses=G.history.reduce((a,h)=>a+(+h.record.split('-')[1]),0);const titles=G.history.filter(h=>h.po==='National champion').length,ccs=G.history.filter(h=>h.conf).length,pos=G.history.filter(h=>/champion|Lost in/.test(h.po)).length,heis=G.history.filter(h=>h.heis&&h.heis.includes('('+u.name+')')).length;return `<div class="card sec"><h3>Record book</h3><div class="grid2"><div class="stat"><div class="v">${wins}-${losses}</div><div class="k">Career record</div></div><div class="stat"><div class="v">${titles}</div><div class="k">National titles</div></div><div class="stat"><div class="v">${ccs}</div><div class="k">Conference titles</div></div><div class="stat"><div class="v">${pos}</div><div class="k">Playoff trips</div></div><div class="stat"><div class="v">#${best.rank}</div><div class="k">Best finish (${best.season})</div></div><div class="stat"><div class="v">${heis}</div><div class="k">Heisman winners coached</div></div></div></div>`;})();
   const hist=G.history.length?`${rb}<div class="card sec"><h3>Dynasty history</h3><div class="tablewrap"><table><tr><th>Year</th><th>Team</th><th>Record</th><th class="r">Final</th><th>Postseason</th><th>Champion</th><th>Heisman</th><th class="r">Class</th></tr>${G.history.map(h=>`<tr><td>${h.season}</td><td>${esc(h.team)}</td><td>${h.record}${h.conf?' <span class="tag good">CC</span>':''}</td><td class="r">#${h.rank}</td><td>${esc(h.po)}</td><td>${esc(h.champ)}</td><td>${esc(h.heis||'')}</td><td class="r">${h.cls?'#'+h.cls:''}</td></tr>`).join('')}</table></div></div>`:'';
   const coach=`<div class="card sec"><div class="eyebrow">Head coach</div><h2>${esc(c.name)}</h2><div class="grid2"><div class="stat"><div class="v">${c.w}-${c.l}</div><div class="k">Career record</div></div><div class="stat"><div class="v">${c.rep}</div><div class="k">Reputation</div></div><div class="stat"><div class="v">${c.titles}</div><div class="k">National titles</div></div><div class="stat"><div class="v">${c.playoffs}</div><div class="k">Playoff trips</div></div></div>
-    <div class="meter"><span class="small" style="width:70px">Hot seat</span><div class="bar grow"><i class="${seatCls}" style="width:${c.seat}%"></i></div><span class="small num">${c.seat}</span></div><div class="tiny muted">Year ${c.years} at ${esc(u.name)}. The AD expects about ${Math.round(expectedWins(u))} wins; fall short and the seat heats up, exceed it and better jobs call. Prestige ${u.prestige}/10.</div></div>`;
+    <div class="meter"><span class="small" style="width:70px">Hot seat</span><div class="bar grow"><i class="${seatCls}" style="width:${c.seat}%"></i></div><span class="small num">${c.seat}</span></div><div class="tiny muted">Year ${c.years} at ${esc(u.name)}. The AD expects about ${Math.round(expectedWins(u))} wins; fall short and the seat heats up, exceed it and better jobs call. Prestige ${u.prestige}/10. Difficulty: ${G.diff||'normal'}.${G.losingRun?` <b class="no">${G.losingRun} losing season${G.losingRun>1?'s':''} in a row; three means you are out.</b>`:''}</div></div>`;
   const press=`<div class="card sec"><h3>Public standing</h3>${renderApproval(false)}<div class="tiny muted">League perception (media + athletic dept) is <b>${perception()}</b>. Below 45 and other programs stop calling, however many games you win. Fans and the AD feed the hot seat; the locker room drives development and who leaves for the portal.</div>
     ${(G.pressLog||[]).length?`<div class="eyebrow">Recent pressers</div><div class="list">${G.pressLog.slice(0,6).map(x=>`<div class="item" style="flex-direction:column;align-items:flex-start;gap:3px"><div class="tiny muted">${x.s} ${x.w<=14?'Wk '+x.w:'Post'} · “${esc(x.q)}”</div><div class="small"><b>You:</b> ${esc(x.a)}</div><div class="tiny muted">${esc(x.r)} ${Object.entries(x.fx).filter(([k,v])=>v).map(([k,v])=>`<span class="${v>0?'ok':'no'}">${({fans:'Fans',locker:'Locker',admin:'AD',media:'Media'})[k]} ${v>0?'+':''}${v}</span>`).join(' ')}</div></div>`).join('')}</div>`:''}</div>`;
   const league=`<div class="card sec"><div class="row between"><h3>League editor</h3><button class="btn sm ghost" data-act="leaguetoggle">${UI.leagueOpen?'Hide':'Open'}</button></div><div class="tiny muted">Rename schools, nicknames and colors mid-dynasty. Changes carry into future dynasties too.</div>${UI.leagueOpen?renderLeagueEditor():''}</div>`;
@@ -1141,7 +1215,8 @@ function onAction(act,el){
   const id=el.dataset.id;const rec=id!=null?G&&G.recruits.find(r=>r.id===+id):null;
   switch(act){
     case 'pick':UI.pickTeam=+id;{const inp=document.getElementById('coachName');if(inp)UI.coachName=inp.value;}break;
-    case 'start':{const inp=document.getElementById('coachName');const nm=(inp&&inp.value.trim())||'Coach';if(UI.pickTeam==null)return;newDynasty(UI.pickTeam,nm);UI.tab='home';save();break;}
+    case 'diff':UI.diff=id;break;
+    case 'start':{const inp=document.getElementById('coachName');const nm=(inp&&inp.value.trim())||'Coach';if(UI.pickTeam==null)return;newDynasty(UI.pickTeam,nm,UI.diff||'normal');UI.tab='home';save();break;}
     case 'tab':if(UI.live)endLive();UI.tab=id;UI.confirm=null;window.scrollTo(0,0);break;
     case 'sim':if(UI.live)endLive();if(G.phase==='season'){const u0=userTeam();const snap={w:u0.w,l:u0.l,cw:u0.cw,cl:u0.cl,rank:u0.rank,rw:u0.rw||0,rl:u0.rl||0,confChamp:u0.confChamp,week:G.week};const hasGame=G.games.some(x=>x.week===G.week&&!x.played&&(x.home===G.user||x.away===G.user));simWeek();const lg=hasGame?G.games.find(x=>x.week===snap.week&&x.played&&x.box&&(x.home===G.user||x.away===G.user)):null;if(lg)startLive(lg,snap);}else if(G.phase==='postseason'){runOffseason();UI.tab='home';}else startNextSeason();break;
     case 'liveskip':if(UI.live){UI.live.shown=UI.live.feed.length;UI.live.done=true;clearTimeout(liveTimer);}break;
