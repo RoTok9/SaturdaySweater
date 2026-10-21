@@ -1,0 +1,46 @@
+name: Build Windows app
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', 'desktop/**', 'version.json', '.github/workflows/windows.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Read version
+        id: v
+        shell: bash
+        run: echo "version=$(node -p "require('./version.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Install Electron
+        working-directory: desktop
+        run: npm install --no-audit --no-fund
+      - name: Assemble app
+        shell: pwsh
+        run: |
+          $out = "out/Saturday Sweater"
+          New-Item -ItemType Directory -Force $out | Out-Null
+          Copy-Item -Recurse -Force desktop/node_modules/electron/dist/* $out
+          Rename-Item "$out/electron.exe" "Saturday Sweater.exe"
+          Remove-Item "$out/resources/default_app.asar" -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force "$out/resources/app/app" | Out-Null
+          Copy-Item desktop/main.js, desktop/preload.js, desktop/package.json "$out/resources/app/"
+          Copy-Item -Recurse -Force desktop/app/fonts "$out/resources/app/app/fonts"
+          Copy-Item app/index.html "$out/resources/app/app/index.html"
+          Copy-Item -Recurse -Force desktop/build "$out/resources/app/build"
+          npx --yes rcedit "$out/Saturday Sweater.exe" --set-icon desktop/build/icon.ico --set-version-string ProductName "Saturday Sweater" --set-version-string FileDescription "Saturday Sweater" --set-file-version "${{ steps.v.outputs.version }}" --set-product-version "${{ steps.v.outputs.version }}"
+          Compress-Archive -Path "$out" -DestinationPath SaturdaySweater-Windows.zip -Force
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.v.outputs.version }}
+          name: Saturday Sweater ${{ steps.v.outputs.version }}
+          body_path: RELEASE_NOTES.md
+          files: SaturdaySweater-Windows.zip
+          make_latest: true

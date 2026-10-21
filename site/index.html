@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saturday Sweater: CFB Dynasty</title>
+<meta name="description" content="A college football dynasty manager. You run the program, not the plays: recruit, build the roster, handle the press and chase the 12-team playoff. Free in your browser or on Windows.">
+<meta property="og:title" content="Saturday Sweater: CFB Dynasty">
+<meta property="og:description" content="Run a college football program. Recruit, manage, lobby, win the press conference, make the 12-team playoff.">
+<meta property="og:image" content="https://saturdaysweater.com/img/live.jpg">
+<link rel="canonical" href="https://saturdaysweater.com/">
+<meta name="theme-color" content="#0f3d2e">
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: broadcast-graphics inspired. Deep field green, chalk white type, one red accent for the call to action. */
+:root{--bg:#0b1511;--bg2:#10231b;--field:#0f3d2e;--line:#1f3a30;--fg:#f1f4f2;--muted:#9fb3a9;--accent:#e4262b;--accent-fg:#fff;--chalk:#f3ecd8;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;--body:"Barlow","Helvetica Neue",Arial,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.5;
+  background-image:repeating-linear-gradient(90deg,transparent 0 119px,rgba(255,255,255,.025) 119px 120px)}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+header{padding-block:18px;border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:24px;font-weight:800;letter-spacing:.02em;text-decoration:none}
+.brand img{width:34px;height:34px;border-radius:8px}
+nav{display:flex;gap:18px;font-size:15px;font-weight:500}
+nav a{text-decoration:none;color:var(--muted)}
+nav a:hover{color:var(--fg)}
+.hero{padding-block:64px 40px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-size:clamp(48px,7vw,84px);line-height:.95;margin:10px 0 16px;font-weight:800;letter-spacing:.01em;text-wrap:balance}
+h1 span{color:var(--accent)}
+.lede{font-size:20px;color:#d7e0db;max-width:34ch;margin:0 0 26px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-fg);text-decoration:none;font-family:var(--display);font-size:22px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;padding:14px 22px;border-radius:10px;border:2px solid var(--accent)}
+.btn.ghost{background:transparent;color:var(--fg);border-color:#3a5a4d}
+.btn.ghost:hover{border-color:var(--fg)}
+.btn:focus-visible{outline:3px solid var(--chalk);outline-offset:2px}
+.fine{font-size:13px;color:var(--muted);margin-top:12px}
+.shot{border-radius:12px;border:1px solid var(--line);box-shadow:0 30px 60px rgba(0,0,0,.5);overflow:hidden;background:var(--bg2)}
+.shot img{display:block;width:100%;height:auto}
+section{padding-block:48px;border-top:1px solid var(--line)}
+h2{font-family:var(--display);font-size:40px;font-weight:800;margin:0 0 8px;letter-spacing:.01em}
+.sub{color:var(--muted);margin:0 0 28px;max-width:60ch}
+.feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.feat{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:18px}
+.feat h3{font-family:var(--display);font-size:24px;margin:0 0 6px;font-weight:700}
+.feat p{margin:0;color:#cfd9d4;font-size:15px}
+.feat .n{font-family:var(--display);font-size:13px;letter-spacing:.14em;color:var(--accent);font-weight:700}
+.gallery{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:auto auto;gap:14px}
+.gallery .shot:first-child{grid-row:span 2}
+.gallery .shot img{aspect-ratio:1650/1140;object-fit:cover;object-position:top}
+.gallery .shot.tall img{aspect-ratio:780/1688;object-fit:cover;object-position:top}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px}
+.step{padding:18px;border-left:3px solid var(--accent);background:var(--bg2);border-radius:0 12px 12px 0}
+.step b{font-family:var(--display);font-size:22px;display:block;margin-bottom:4px}
+.step p{margin:0;font-size:15px;color:#cfd9d4}
+.dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.card h3{font-family:var(--display);font-size:28px;margin:0;font-weight:800}
+.card p{margin:0;color:#cfd9d4;font-size:15px}
+.card .btn{align-self:flex-start;font-size:19px;padding:11px 18px}
+details{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:10px}
+summary{font-weight:600;cursor:pointer;font-size:16px}
+details p{margin:10px 0 0;color:#cfd9d4;font-size:15px}
+footer{padding-block:28px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+@media (max-width:820px){.hero .wrap{grid-template-columns:1fr}.hero{padding-block:36px 24px}.gallery{grid-template-columns:1fr}.gallery .shot:first-child{grid-row:auto}.gallery .shot.tall{display:none}}
+@media (prefers-reduced-motion:no-preference){.shot{transition:transform .25s}.gallery .shot:hover{transform:translateY(-3px)}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a class="brand" href="#"><img src="icon.png" alt="">Saturday Sweater <span style="color:var(--muted);font-weight:600;font-size:16px;letter-spacing:.08em">CFB DYNASTY</span></a>
+  <nav><a href="#features">Features</a><a href="#how">How it plays</a><a href="#download">Download</a><a href="#faq">FAQ</a><a href="https://github.com/RoTok9/SaturdaySweater">GitHub</a></nav>
+</div></header>
+
+<main>
+<div class="hero"><div class="wrap">
+  <div>
+    <div class="eyebrow">Saturday Sweater: CFB Dynasty</div>
+    <h1>Sweat every<br><span>Saturday.</span></h1>
+    <p class="lede">A college football dynasty manager. You run the program, not the plays: recruit, lobby boosters and the AD, build the roster, survive the press conference, and chase the 12-team playoff. Then do it again next year.</p>
+    <div class="cta">
+      <a class="btn" href="play/">Play in browser</a>
+      <a class="btn ghost" href="#download">Download for Windows</a>
+    </div>
+    <p class="fine">Free. No account. Saves on your device.</p>
+  </div>
+  <div class="shot"><img src="img/live.jpg" alt="A live game in progress: a scoring feed builds drive by drive under a win-chance meter" width="1650" height="1140"></div>
+</div></div>
+
+<section id="features"><div class="wrap">
+  <h2>Everything but the playbook</h2>
+  <p class="sub">A full 136-school landscape with ten conferences, conference title games, a 12-team playoff with byes and home first-round games, and a Heisman race driven by real production.</p>
+  <div class="feats">
+    <div class="feat"><div class="n">RECRUITING</div><h3>Win the living room</h3><p>Every recruit wants three things: playing time, NIL, a contender, proximity, academics. Scout, call, pitch, host visits and write checks from a fund you have to raise yourself.</p></div>
+    <div class="feat"><div class="n">GAME DAY</div><h3>Watch it play out</h3><p>Games resolve live on screen: field goals, long touchdowns, fumble returns, a swinging win-probability meter and a full box score with player stats at the final.</p></div>
+    <div class="feat"><div class="n">THE PODIUM</div><h3>Face the press</h3><p>After every game you pick an answer. Fans, the locker room, the athletic department and the media all keep score, and it decides your hot seat and which jobs call.</p></div>
+    <div class="feat"><div class="n">THE POLLS</div><h3>Resume matters</h3><p>Rankings weigh who you beat. Ranked wins carry extra credit, losses to good teams cost less. Watch the projected bracket shift every week from October on.</p></div>
+    <div class="feat"><div class="n">THE ROSTER</div><h3>Breakouts and busts</h3><p>Players get hot, go cold, pop in camp, declare early, or hit the transfer portal when the locker room sours. Seniors leave, your class arrives, the cycle turns.</p></div>
+    <div class="feat"><div class="n">YOUR LEAGUE</div><h3>Name your schools</h3><p>A built-in editor renames any program, nickname or color, moves schools between conferences, and imports a whole league from a friend in one paste.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="gallery">
+    <div class="shot"><img src="img/home.jpg" alt="Home screen: next opponent, last result, program pulse and approval meters" loading="lazy"></div>
+    <div class="shot"><img src="img/polls.jpg" alt="Top 25 with ranked wins and a projected playoff bracket" loading="lazy"></div>
+    <div class="shot"><img src="img/recruit.jpg" alt="Recruiting board with interest bars for each school" loading="lazy"></div>
+  </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <h2>How a season goes</h2>
+  <div class="steps">
+    <div class="step"><b>Preseason</b><p>Pick your program and your coach name. Breakouts emerge in camp. The AD tells you how many wins keep you employed.</p></div>
+    <div class="step"><b>Fourteen weeks</b><p>Each week: spend recruiting hours, lobby, then sim. Your game plays out live and ends at the podium.</p></div>
+    <div class="step"><b>Championship week</b><p>Conference title games. Your class signs. The Heisman is handed out. The 12-team field is set.</p></div>
+    <div class="step"><b>Playoff</b><p>Four rounds. Top seeds rest, everyone else hosts or travels. One team finishes No. 1.</p></div>
+    <div class="step"><b>Offseason</b><p>Departures, development, the portal, budget upgrades, and the phone: job offers if you overachieved, a pink slip if you didn't.</p></div>
+  </div>
+</div></section>
+
+<section id="download"><div class="wrap">
+  <h2>Get the game</h2>
+  <p class="sub">Same game everywhere. The Windows app adds sound, screen effects, controller rumble, keyboard shortcuts, save export and one-click updates.</p>
+  <div class="dl">
+    <div class="card"><h3>Browser</h3><p>Runs on desktop and phone. Progress saves in your browser, so use the same device and browser to continue.</p><a class="btn" href="play/">Play now</a></div>
+    <div class="card"><h3>Windows</h3><p>Unzip, open <b>Saturday Sweater.exe</b>. Windows may show a SmartScreen notice the first time since the app isn't code-signed: choose More info, then Run anyway.</p><a class="btn" href="https://github.com/RoTok9/SaturdaySweater/releases/latest/download/SaturdaySweater-Windows.zip">Download .zip</a><p class="fine" style="margin:0">Windows 10 or 11, 64-bit. About 110 MB.</p></div>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2>Questions</h2>
+  <details><summary>Are these real schools?</summary><p>No. The league ships with 136 fictional programs that mirror a modern conference landscape. The League Editor lets you rename anything, and a league file can be shared with friends and imported in one paste.</p></details>
+  <details><summary>Where is my save?</summary><p>In the browser version, in that browser's local storage. In the Windows app, in your Windows user profile; File &gt; Export save writes a backup file you can move to another PC.</p></details>
+  <details><summary>How do updates work?</summary><p>The browser version is always current. The Windows app has Check for updates under Program &gt; Save &amp; settings; it downloads the new game file and reloads without touching your save.</p></details>
+  <details><summary>Is it hard?</summary><p>Taking over a 10-prestige program is a title-or-bust job. A 2-star program is a five-year project with a lot of losing in year one. Both are the point.</p></details>
+</div></section>
+</main>
+
+<footer><div class="wrap"><span>Saturday Sweater: CFB Dynasty. Fictional schools and players; any resemblance is coincidental.</span><span><a href="https://github.com/RoTok9/SaturdaySweater">Source and releases on GitHub</a></span></div></footer>
+</body>
+</html>
