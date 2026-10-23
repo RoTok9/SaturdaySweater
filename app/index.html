@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.5.0">
+<meta name="app-version" content="1.6.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -494,11 +494,39 @@ function openSlot(id){const s=lsGet(slotKey(id));if(!s)return false;try{G=JSON.p
 function deleteSlot(id){lsDel(slotKey(id));saveSlots(loadSlots().filter(x=>x.id!==id));if(SLOT===id){SLOT=null;G=null;lsDel(CUR_KEY);}}
 function closeDynasty(){if(G)save();G=null;SLOT=null;lsDel(CUR_KEY);}
 function load(){migrateLegacy();const cur=lsGet(CUR_KEY);if(cur&&openSlot(cur))return true;return false;}
-function migrate(){if(!G)return;if(!G.app)G.app={fans:60,locker:60,admin:60,media:55};if(!G.pressLog)G.pressLog=[];if(G.presser===undefined)G.presser=null;if(G.heisman===undefined)G.heisman=null;G.teams.forEach(t=>{if(!t.coach)t.coach=makeCoach(t.prestige);});Object.values(G.players).forEach(p=>{if(!p.tr)p.tr=rollTraits();});G.portal.forEach(p=>{if(!p.tr)p.tr=rollTraits();});if(!G.lh)G.lh=[];if(!G.carousel)G.carousel=[];G.recruits.forEach(r=>{if(!r.persona){r.persona=pick(Object.keys(PERSONAS));r.tr=rollTraits();r.texted=0;r.convo=null;}});if(!G.riv){G.riv={};seedRivalries();}if(!G.diff)G.diff='normal';if(G.losingRun==null)G.losingRun=0;if(!G.plan)G.plan={off:'balanced',agg:'standard'};}
+function migrate(){if(!G)return;if(!G.app)G.app={fans:60,locker:60,admin:60,media:55};if(!G.pressLog)G.pressLog=[];if(G.presser===undefined)G.presser=null;if(G.heisman===undefined)G.heisman=null;G.teams.forEach(t=>{if(!t.coach)t.coach=makeCoach(t.prestige);});Object.values(G.players).forEach(p=>{if(!p.tr)p.tr=rollTraits();});G.portal.forEach(p=>{if(!p.tr)p.tr=rollTraits();});if(!G.lh)G.lh=[];if(!G.carousel)G.carousel=[];G.recruits.forEach(r=>{if(!r.persona){r.persona=pick(Object.keys(PERSONAS));r.tr=rollTraits();r.texted=0;r.convo=null;}});if(!G.riv){G.riv={};seedRivalries();}if(!G.diff)G.diff='normal';if(G.losingRun==null)G.losingRun=0;if(!G.plan)G.plan={off:'balanced',agg:'standard'};if(!G.staff||G.staff.oc===undefined){const old=G.staff||{coach:1,recruit:1};const u=G.teams[G.user];G.staff={oc:makeCoord('oc',50+(old.coach||1)*6),dc:makeCoord('dc',50+(old.coach||1)*6),rc:makeCoord('rc',50+(old.recruit||1)*6)};G.market=G.market||[];if(!G.contract)G.contract={yrs:3,sal:Math.round((1.5+u.prestige*0.6)*10)/10};}if(!G.coach.xp)G.coach.xp={rec:0,dev:0,big:0,media:0};}
 function news(text,hot){G.news.unshift({w:G.week,s:G.season,text,hot:!!hot});if(G.news.length>60)G.news.length=60;}
 
 /* ===================== TEAMS & PLAYERS ===================== */
 function coachName(){return pick(COACH_FIRST)+' '+pick(COACH_LAST);}
+/* ===================== COACHING STAFF ===================== */
+const ROLES={oc:'Offensive coordinator',dc:'Defensive coordinator',rc:'Recruiting coordinator'};
+const salaryFor=rt=>Math.round((0.3+Math.max(0,rt-40)*0.1)*10)/10;
+function makeCoord(role,rt,extra){rt=clamp(Math.round(rt),40,95);return Object.assign({n:coachName(),role,rt,yrs:rint(1,3),sal:salaryFor(rt),amb:rint(1,5),age:rint(31,58)},extra||{});}
+function staffBonus(){const st=G.staff||{};return {oc:st.oc?st.oc.rt:55,dc:st.dc?st.dc.rt:55,rc:st.rc?st.rc.rt:55};}
+function hoursFor(){return Math.round(28+staffBonus().rc/4);}
+function genMarket(){const u=userTeam();const out=[];for(let i=0;i<9;i++){const role=['oc','dc','rc'][i%3];const r=Math.random();const rt=r<0.15?rint(78,90):r<0.6?rint(62,77):rint(48,61);const tag=rt>=78?'Hot name':rt<=55?'Young and cheap':Math.random()<0.4?'Veteran':'';const c=makeCoord(role,rt,{tag,yrs:rint(2,4)});c.ask=salaryFor(rt)*(rt>=78?1.25:1);c.ask=Math.round(c.ask*10)/10;out.push(c);}
+  // fired head coaches also show up as coordinators
+  (G.carousel||[]).slice(0,2).forEach((m,i)=>{const mm=m.match(/fires (.+?) after/);if(mm&&Math.random()<0.7){const c=makeCoord(pick(['oc','dc']),rint(66,82),{n:mm[1],tag:'Former head coach',yrs:2});c.ask=salaryFor(c.rt);out.push(c);}});
+  return out;}
+function payroll(){const st=G.staff||{};return Math.round((['oc','dc','rc'].reduce((a,r)=>a+(st[r]?st[r].sal:0),0))*10)/10;}
+function buyout(c){return Math.round(c.sal*c.yrs*0.5*10)/10;}
+function actHire(idx){const c=(G.market||[])[idx];if(!c||G.phase!=='offseason')return;const cur=G.staff[c.role];const cost=cur?buyout(cur):0;if(G.budget<cost+c.ask)return;G.budget=Math.round((G.budget-cost)*10)/10;if(cur)news(`${ROLES[cur.role]} ${cur.n} let go; buyout $${cost}M.`);c.sal=c.ask;G.staff[c.role]=c;G.market.splice(idx,1);news(`${c.n} hired as ${ROLES[c.role].toLowerCase()} (${c.rt} rating, $${c.sal}M a year, ${c.yrs} years).`,true);}
+function actExtend(role){const c=G.staff[role];if(!c||G.phase!=='offseason')return;const cost=1;if(G.budget<cost)return;G.budget-=cost;c.yrs+=1;c.sal=Math.round(c.sal*1.12*10)/10;c.amb=Math.max(1,c.amb-1);news(`${c.n} extended a year at $${c.sal}M.`);}
+function staffOffseason(){const u=userTeam();const st=G.staff;
+  ['oc','dc','rc'].forEach(role=>{const c=st[role];if(!c)return;c.yrs--;c.age++;
+    // drift: good seasons grow coordinators, bad ones expose them
+    const perf=u.w-expectedWins(u);c.rt=clamp(c.rt+Math.round(perf*0.6+rnd(-2,2)),40,95);
+    if(c.rt>=78&&c.amb>=3&&Math.random()<0.22+(u.rank<=15?0.15:0)){news(`${c.n} leaves to become a head coach. You need a new ${ROLES[role].toLowerCase()}.`,true);st[role]=null;return;}
+    if(c.yrs<=0){if(Math.random()<0.5+c.amb*0.1){news(`${c.n}'s contract is up and he is listening to offers. Extend him or let him walk.`,true);c.yrs=0;}else{c.yrs=1;}}
+  });
+  const pay=payroll();G.budget=Math.round((G.budget-pay)*10)/10;news(`Staff payroll paid: $${pay}M.`);
+  G.market=genMarket();}
+const XP_LEVELS=[0,15,40,90,170,300];
+function coachLevel(k){const xp=(G.coach.xp||{})[k]||0;let l=0;while(l<5&&xp>=XP_LEVELS[l+1])l++;return l;}
+function addXP(k,n){G.coach.xp=G.coach.xp||{rec:0,dev:0,big:0,media:0};const before=coachLevel(k);G.coach.xp[k]=(G.coach.xp[k]||0)+n;const after=coachLevel(k);if(after>before)news(`${G.coach.name} is now a level ${after} ${({rec:'Recruiter',dev:'Developer',big:'Big-game coach',media:'Media operator'})[k]}.`,true);}
+function contractTick(){const c=G.contract;if(!c)return;c.yrs--;const u=userTeam();if(c.yrs<=0){if(G.coach.seat<45){c.yrs=3;c.sal=Math.round(c.sal*1.2*10)/10;news(`The AD extends you three years at $${c.sal}M. Keep winning.`,true);}else{c.yrs=1;G.coach.seat=clamp(G.coach.seat+10,0,100);news(`No extension. You are coaching on the last year of your deal, and everyone knows it.`,true);}}}
+function staffPreseason(){['oc','dc','rc'].forEach(role=>{const c=G.staff[role];if(!c||c.yrs<=0){if(c)news(`${c.n} walked. An interim ${ROLES[role].toLowerCase()} fills in.`);G.staff[role]=makeCoord(role,rint(46,54),{n:coachName(),yrs:1,tag:'Interim'});}});G.hoursMax=hoursFor();}
 function makeCoach(prestige){return {n:coachName(),rep:clamp(Math.round(prestige*8+rnd(-10,15)),5,95),yrs:rint(0,8),seat:rint(5,45)};}
 function rollTraits(){const pool=Object.keys(TRAITS);const n=Math.random()<0.45?0:Math.random()<0.75?1:2;const out=[];while(out.length<n){const t=pick(pool);if(!out.includes(t)&&!(t==='fragile'&&out.includes('workhorse'))&&!(t==='workhorse'&&out.includes('fragile'))&&!(t==='flight'&&out.includes('homebody'))&&!(t==='homebody'&&out.includes('flight')))out.push(t);}return out;}
 const hasT=(p,t)=>!!(p.tr&&p.tr.includes(t));
@@ -549,12 +577,13 @@ function gameRiv(g){const r=G.riv[rkey(g.home,g.away)];if(g.played&&g.rivPre){co
 function newDynasty(teamId,coachName,diff){newSlot();
   G={season:2026,week:1,phase:'season',pid:1,gid:1,rid:1,user:teamId,teams:[],players:{},games:[],recruits:[],portal:[],news:[],history:[],poll:[],playoff:null,bowls:[],offers:[],fired:false,
     coach:{name:coachName||'Coach',rep:0,seat:20,years:1,w:0,l:0,titles:0,playoffs:0,confTitles:0},
-    hours:0,hoursMax:0,nil:0,budget:0,staff:{coach:1,recruit:1},mediaLeft:3,adLobbied:false,boosterUsed:false,lastResult:null,summary:null,portalAdds:0,classRank:null,pendingTeam:null,app:{fans:60,locker:60,admin:60,media:55},presser:null,pressLog:[],heisman:null,lh:[],carousel:[],riv:{},diff:diff||'normal',losingRun:0,plan:{off:'balanced',agg:'standard'}};
+    hours:0,hoursMax:0,nil:0,budget:0,staff:{oc:null,dc:null,rc:null},market:[],mediaLeft:3,adLobbied:false,boosterUsed:false,lastResult:null,summary:null,portalAdds:0,classRank:null,pendingTeam:null,app:{fans:60,locker:60,admin:60,media:55},presser:null,pressLog:[],heisman:null,lh:[],carousel:[],riv:{},diff:diff||'normal',losingRun:0,plan:{off:'balanced',agg:'standard'}};
   G.teams=makeTeams();
   G.teams.forEach(t=>fillRoster(t,false));
   seedRivalries();
   const u=userTeam();
   G.coach.rep=u.prestige*6;
+  G.staff={oc:makeCoord('oc',50+u.prestige*3+rnd(-4,4)),dc:makeCoord('dc',50+u.prestige*3+rnd(-4,4)),rc:makeCoord('rc',50+u.prestige*3+rnd(-4,4))};G.contract={yrs:4,sal:Math.round((1.5+u.prestige*0.6)*10)/10};G.coach.xp={rec:0,dev:0,big:0,media:0};
   G.nil=80+u.prestige*30;
   G.budget=Math.round(u.prestige*2);
   startSeason();
@@ -570,7 +599,7 @@ function startSeason(){
   rollBreakouts();
   G.teams.forEach(t=>{t.elo=teamElo(t);});
   G.games=[];genSchedule();G.recruits=genRecruits();G.portal=[];G.playoff=null;G.bowls=[];G.week=1;G.phase='season';
-  G.hoursMax=36+(G.staff.recruit-1)*4;G.hours=G.hoursMax;G.mediaLeft=3;G.adLobbied=false;G.boosterUsed=false;G.lastResult=null;G.summary=null;G.offers=[];G.fired=false;G.portalAdds=0;G.classRank=null;
+  staffPreseason();G.hours=G.hoursMax;G.mediaLeft=3;G.adLobbied=false;G.boosterUsed=false;G.lastResult=null;G.summary=null;G.offers=[];G.fired=false;G.portalAdds=0;G.classRank=null;
   const u=userTeam();G.nil+=60+u.prestige*25;
   updatePoll();
   news(`${G.season} preseason poll is out. ${T(G.poll[0]).name} opens at No. 1; ${u.name} starts the year ranked No. ${u.rank}.`,true);
@@ -658,6 +687,7 @@ function signingDay(){
   const pts={};G.teams.forEach(t=>pts[t.id]=isUser(t)?0:t.prestige*t.prestige*4+rnd(-20,20));G.recruits.forEach(r=>{if(r.committed!=null)pts[r.committed]+=r.stars*r.stars+r.ovr/20;});
   const order=G.teams.map(t=>t.id).sort((a,b)=>pts[b]-pts[a]);G.classRank={};order.forEach((id,i)=>G.classRank[id]=i+1);
   const u=userTeam();news(`Signing Day: ${u.name}'s class finishes ranked No. ${G.classRank[u.id]} nationally with ${userCommits()} signees. ${T(order[0]).name} lands the top class.`,true);
+  addXP('rec',G.recruits.filter(r=>r.committed===u.id).reduce((a,r)=>a+(r.stars===5?6:r.stars===4?3:r.stars===3?1:0),0)+(G.classRank[u.id]<=10?5:0));
 }
 
 /* ===================== GAMES ===================== */
@@ -756,7 +786,7 @@ function statLine(p){const s=p.st;if(!s||!s.gp)return '';
   if(p.pos==='K')return `${s.fgm}/${s.fga} FG`;
   if(['DL','LB','CB','S'].includes(p.pos))return `${s.tk} tkl, ${s.sk} sacks, ${s.dint} INT`;return '';}
 function awardHeisman(){const w=heismanWatch(1)[0];if(!w)return;const p=w.p;p.heisman=G.season;G.heisman={pid:p.id,n:p.n,pos:p.pos,team:T(p.team).name,line:statLine(p),season:G.season};news(`${p.n}, ${p.pos}, ${T(p.team).name}, wins the ${G.season} Heisman Trophy (${statLine(p)}).`,true);}
-function rollBreakouts(){G.teams.forEach(t=>{t.roster.forEach(id=>{const p=P(id);p.form=0;delete p.st;p.inj=0;delete p.injN;if(p.yr>=1&&p.pot-p.ovr>=7&&Math.random()<((isUser(t)?0.075+G.staff.coach*0.012:0.07)*(hasT(p,'bloomer')?2.2:1))){const g=rint(5,10);p.ovr=clamp(Math.min(p.pot+2,p.ovr+g),40,99);p.breakout=G.season;if(isUser(t))news(`Camp buzz: ${p.pos} ${p.n} looks like a different player (${p.ovr-g} to ${p.ovr}). Breakout season incoming.`,true);}else if(p.breakout&&p.breakout!==G.season)delete p.breakout;});});}
+function rollBreakouts(){G.teams.forEach(t=>{t.roster.forEach(id=>{const p=P(id);p.form=0;delete p.st;p.inj=0;delete p.injN;if(p.yr>=1&&p.pot-p.ovr>=7&&Math.random()<((isUser(t)?0.06+((OFFPOS.includes(p.pos)?staffBonus().oc:staffBonus().dc)-50)*0.0015:0.07)*(hasT(p,'bloomer')?2.2:1))){const g=rint(5,10);p.ovr=clamp(Math.min(p.pot+2,p.ovr+g),40,99);p.breakout=G.season;if(isUser(t))addXP('dev',3);if(isUser(t))news(`Camp buzz: ${p.pos} ${p.n} looks like a different player (${p.ovr-g} to ${p.ovr}). Breakout season incoming.`,true);}else if(p.breakout&&p.breakout!==G.season)delete p.breakout;});});}
 function promiseCheck(){const u=userTeam();u.roster.forEach(id=>{const p=P(id);if(!p.promise||p.promise.due!==G.season||p.promise.resolved)return;const d=depth(u,p.pos,true).filter(x=>!(x.inj>0));const starting=d.indexOf(p)>-1&&d.indexOf(p)<STARTERS[p.pos];p.promise.resolved=true;
   if(starting||p.inj>0){p.promise.kept=true;G.app.locker=clamp(G.app.locker+2,0,100);G.coach.rep=clamp(G.coach.rep+1,0,100);news(`${p.pos} ${p.n} is starting, as promised. Word gets around to recruits.`);}
   else{p.promise.kept=false;p.unhappy=true;G.app.locker=clamp(G.app.locker-5,0,100);G.coach.rep=clamp(G.coach.rep-2,0,100);news(`${p.pos} ${p.n} was promised playing time and is buried on the depth chart. His high school coach stopped taking your calls, and he is looking at the portal.`,true);}});}
@@ -776,6 +806,7 @@ function planEdge(g){ // elo-equivalent edge for the user's plan; positive favor
   if(plan.off==='air'){edge+=(mu.air-ou.passD)*1.2-(mu.air-mu.ground<0?4:0);notes.push(`Air attack ${mu.air.toFixed(0)} vs their pass defense ${ou.passD.toFixed(0)}`);}
   else if(plan.off==='ground'){edge+=(mu.ground-ou.runD)*1.2-(mu.ground-mu.air<0?4:0);notes.push(`Ground game ${mu.ground.toFixed(0)} vs their run defense ${ou.runD.toFixed(0)}`);}
   else{edge+=((mu.air-ou.passD)+(mu.ground-ou.runD))*0.35;notes.push('Balanced: takes what the defense gives');}
+  const sb=staffBonus();const se=(sb.oc-65)*0.45+(sb.dc-65)*0.45;edge+=se;notes.push(`Staff ${se>=0?'+':''}${se.toFixed(0)}`);const bigGame=(g.type!=='reg'||gameRiv(g)||(opp.rank<=25))?coachLevel('big')*4:0;if(bigGame){edge+=bigGame;notes.push(`Big-game coach +${bigGame}`);}
   const p0=winProbRaw(me,opp,g);let varAdj=0;
   if(plan.agg==='aggressive'){varAdj=6;edge+=p0<0.45?8:p0>0.7?-6:2;notes.push(p0<0.45?'Aggressive as the underdog: swing for it':p0>0.7?'Aggressive as a heavy favorite: unnecessary risk':'Aggressive: more variance');}
   else if(plan.agg==='conservative'){varAdj=-5;edge+=p0>0.6?6:p0<0.4?-8:0;notes.push(p0>0.6?'Conservative as the favorite: shorten the game':p0<0.4?'Conservative as the underdog: you need more than this':'Conservative: fewer swings');}
@@ -797,14 +828,14 @@ function postGame(g,r){
     if(theirs>=3){G.coach.seat=clamp(G.coach.seat+6,0,100);A.admin=clamp(A.admin-4,0,100);news(`Boosters are restless: that is ${theirs} straight losses to ${T(r.w.id).name}. The AD took calls all night.`,true);}
     if(mine>=3&&R.name)news(`${userTeam().name} owns ${R.name}: ${mine} in a row. Recruits in the ${REGION_NAMES[userTeam().region]} noticed.`);
     const reg=userTeam().region;G.recruits.forEach(rc=>{if(rc.committed==null&&rc.region===reg&&(u in rc.interest))rc.interest[u]+=won?3*f+1:-(2*f);});}
-  if(uIn){const won=r.w.id===u;G.lastResult={won,opp:r.w.id===u?r.l.id:r.w.id,ws:r.ws,ls:r.ls,week:g.week};G.coach[won?'w':'l']++;
+  if(uIn){const won=r.w.id===u;G.lastResult={won,opp:r.w.id===u?r.l.id:r.w.id,ws:r.ws,ls:r.ls,week:g.week};G.coach[won?'w':'l']++;if(won){const orank=T(r.l.id).rank;let xp=0;if(orank<=25)xp+=2;if(orank<=10)xp+=2;if(rivHot)xp+=3;if(g.type==='po')xp+=5;if(g.type==='ccg')xp+=3;if(xp)addXP('big',xp);}
     const opp=T(won?r.l.id:r.w.id);const orank=opp.rank;news(`${won?'W':'L'} ${r.ws}-${r.ls} ${won?'over':'to'} ${orank<=25?'No. '+orank+' ':''}${opp.name}${g.type==='ccg'?' in the '+CONFS[g.confName].name+' title game':g.type==='po'?' in the playoff':g.type==='bowl'?' in the '+g.name+' Bowl':''}.`,true);
     const margin=r.ws-r.ls;const me=T(u);const A=G.app;A.fans=clamp(A.fans+(won?2+(orank<=25?2:0):-(margin>=21?5:3)),0,100);A.locker=clamp(A.locker+(won?1:-1),0,100);
     makePresser(g,{won,margin,opp:opp.name,oppRank:orank,myRank:me.rank,type:g.type,riv:rivHot?R:null,close:margin<=4,blowout:margin>=21,upset:won&&orank<=25&&(me.rank>orank+8||orank<=10&&me.rank>10),upsetLoss:!won&&(orank>me.rank+15||(me.rank<=10&&orank>25))});}
   else if(g.type==='reg'&&r.l.rank<=10&&(r.w.rank>r.l.rank+10)){news(`Upset: ${r.w.name} knocks off No. ${r.l.rank} ${r.l.name} ${r.ws}-${r.ls}.`);}
   if(g.type==='ccg'){r.w.confChamp=true;if(r.w.id===u)G.coach.confTitles++;}
   if(g.type==='bowl'){r.w.bowl='W';r.l.bowl='L';}
-  if(g.type==='po'){r.l.po='out-'+g.round;if(g.round==='f'){r.w.po='champ';G.playoff.champion=r.w.id;r.w.titles++;if(r.w.id===u)G.coach.titles++;news(`${r.w.name} wins the ${G.season} national championship, ${r.ws}-${r.ls} over ${r.l.name}.`,true);}}
+  if(g.type==='po'){r.l.po='out-'+g.round;if(g.round==='f'){r.w.po='champ';G.playoff.champion=r.w.id;r.w.titles++;if(r.w.id===u){G.coach.titles++;addXP('big',10);}news(`${r.w.name} wins the ${G.season} national championship, ${r.ws}-${r.ls} over ${r.l.name}.`,true);}}
 }
 /* ===================== PRESS CONFERENCES ===================== */
 const fillQ=(s,i)=>s.replace(/\{opp\}/g,i.opp).replace(/\{oppRank\}/g,i.oppRank);
@@ -815,7 +846,7 @@ function makePresser(g,info){
 function answerPresser(idx){
   const pr=G.presser;if(!pr)return;const A=G.app;let line;
   if(idx<0){line='No comment.';A.media=clamp(A.media-3,0,100);A.fans=clamp(A.fans-1,0,100);}
-  else{const o=pr.opts[idx];if(!o)return;const hot=userTeam().roster.filter(id=>hasT(P(id),'hothead')).length;Object.keys(o.fx).forEach(k=>{let v=o.fx[k];if(k==='locker'&&v<0)v=Math.round(v*(1+hot*0.25));A[k]=clamp(A[k]+v,0,100);});line=o.t;G.pressLog=G.pressLog||[];G.pressLog.unshift({s:pr.season,w:pr.week,q:pr.q,a:o.t,r:o.r,fx:o.fx});if(G.pressLog.length>12)G.pressLog.length=12;}
+  else{const o=pr.opts[idx];if(!o)return;const hot=userTeam().roster.filter(id=>hasT(P(id),'hothead')).length;Object.keys(o.fx).forEach(k=>{let v=o.fx[k];if(k==='locker'&&v<0)v=Math.round(v*(1+hot*0.25));A[k]=clamp(A[k]+v,0,100);});if((o.fx.media||0)>0)addXP('media',o.fx.media);line=o.t;G.pressLog=G.pressLog||[];G.pressLog.unshift({s:pr.season,w:pr.week,q:pr.q,a:o.t,r:o.r,fx:o.fx});if(G.pressLog.length>12)G.pressLog.length=12;}
   G.presser=null;
 }
 function approvalTick(){const A=G.app;['fans','locker','admin','media'].forEach(k=>{A[k]=clamp(A[k]+(55-A[k])*0.04,0,100);});}
@@ -910,15 +941,15 @@ function runOffseason(){
   else if((delta>=2||u.po==='champ')&&perception()>=45){const pc=clamp((perception()-40)/40,0.15,1);const higher=G.teams.filter(t=>!isUser(t)&&t.prestige>u.prestige&&Math.random()<0.4*pc);G.offers=shuffle(higher).slice(0,rint(1,3)).map(t=>t.id);if(G.offers.length)news(`Your phone is ringing: ${G.offers.map(id=>T(id).name).join(', ')} want to talk about their head coaching job.`,true);}
   else if(delta>=2&&perception()<45)news('Athletic directors around the country admire the wins but not the press conferences. No calls this winter.');
   // prestige drift
-  coachingCarousel();rivDecay();
+  coachingCarousel();rivDecay();staffOffseason();contractTick();
   G.teams.forEach(t=>{const p4=!!CONFS[t.conf].p4||t.conf==='IND';let perf=clamp(11-t.rank/8+(t.po==='champ'?1:0)+(!isUser(t)&&t.coach?(t.coach.rep-50)/100:0),1,10);if(!p4)perf=Math.min(7,perf*0.75);t.prestige=clamp(Math.round((t.prestige+(perf-t.prestige)*0.3)*10)/10,1,10);t.lastElo=t.elo;});
   // departures, progression, signees
   const signees={};G.recruits.forEach(r=>{if(r.committed!=null){(signees[r.committed]=signees[r.committed]||[]).push(r);}});
   const gone=[];
-  G.teams.forEach(t=>{const bonus=isUser(t)?(G.staff.coach-1)*0.6+(G.app.locker-50)/40:t.prestige*0.05;
+  G.teams.forEach(t=>{const sb=staffBonus();const bonusFor=p=>isUser(t)?((OFFPOS.includes(p.pos)?sb.oc:sb.dc)-60)/22+(G.app.locker-50)/40+(coachLevel('dev')*0.2):t.prestige*0.05;
     [...t.roster].forEach(id=>{const p=P(id);let leave=false,why='';if(p.yr>=3){leave=true;why='graduated';}else if(p.yr>=1&&p.ovr>=86&&Math.random()<0.75){leave=true;why='declared for the NFL Draft';}else if(p.yr>=2&&p.ovr>=82&&Math.random()<0.4){leave=true;why='declared for the NFL Draft';}
-      if(leave){if(isUser(t))gone.push(`${p.pos} ${p.n} (${p.ovr}) ${why}`);cutPlayer(t,id);return;}
-      const room=p.pot-p.ovr;const g=Math.max(-1,room*rnd(0.25,0.5)+gauss()*1.5+bonus+(hasT(p,'bloomer')?1.2:0)+(hasT(p,'workhorse')?0.6:0));p.ovr=clamp(Math.round(p.ovr+g),40,99);if(p.yr>=2&&Math.random()<0.3)p.pot=Math.max(p.ovr,p.pot-1);p.yr++;});
+      if(leave){if(isUser(t)){gone.push(`${p.pos} ${p.n} (${p.ovr}) ${why}`);if(/NFL/.test(why))addXP('dev',2);}cutPlayer(t,id);return;}
+      const room=p.pot-p.ovr;const g=Math.max(-1,room*rnd(0.25,0.5)+gauss()*1.5+bonusFor(p)+(hasT(p,'bloomer')?1.2:0)+(hasT(p,'workhorse')?0.6:0));p.ovr=clamp(Math.round(p.ovr+g),40,99);if(p.yr>=2&&Math.random()<0.3)p.pot=Math.max(p.ovr,p.pot-1);p.yr++;});
     (signees[t.id]||[]).forEach(r=>{const p={id:G.pid++,n:r.n,pos:r.pos,yr:0,ovr:r.ovr,pot:r.pot,team:t.id,stars:r.stars,tr:r.tr||rollTraits(),persona:r.persona};if(isUser(t)&&r.promise)p.promise={kind:'start',due:G.season+1};G.players[p.id]=p;t.roster.push(p.id);});
   });
   if(gone.length)news(`Departures: ${gone.slice(0,6).join('; ')}${gone.length>6?' and '+(gone.length-6)+' more':''}.`);
@@ -928,7 +959,7 @@ function runOffseason(){
   userTeam().roster.forEach(id=>{const p=P(id);if(p.unhappy){delete p.unhappy;}});
   G.portal.sort((a,b)=>b.ovr-a.ovr);if(G.portal.length>90){G.portal.slice(90).forEach(p=>delete G.players[p.id]);G.portal.length=90;}
   // budget
-  const income=Math.round(5+u.prestige*1.5+u.w*0.8+(u.po?5:0)+(u.po==='champ'?8:0));G.budget+=income;G.portalAdds=0;
+  const income=Math.round(3+u.prestige*1.1+u.w*0.5+(u.po?3:0)+(u.po==='champ'?5:0)+(u.confChamp?2:0));G.budget+=income;G.portalAdds=0;
   news(`Athletic department budget for the offseason: +$${income}M (now $${G.budget}M). Facilities, staff and NIL investments are open.`);
   G.phase='offseason';save();
 }
@@ -939,14 +970,14 @@ function startNextSeason(){
 }
 function acceptOffer(tid){
   const old=userTeam();const t=T(tid);old.coach={n:coachName(),rep:clamp(Math.round(old.prestige*6+rnd(0,15)),10,80),yrs:0,seat:20};G.user=tid;G.coach.seat=25;G.offers=[];G.fired=false;G.pendingTeam=null;
-  G.nil=80+t.prestige*30;G.budget=Math.round(t.prestige*2);G.portalAdds=0;G.app={fans:62,locker:55,admin:65,media:G.app?Math.round((G.app.media+55)/2):55};
+  G.nil=80+t.prestige*30;G.budget=Math.round(t.prestige*2);G.portalAdds=0;G.contract={yrs:5,sal:Math.round((1.5+t.prestige*0.7)*10)/10};G.staff={oc:makeCoord('oc',50+t.prestige*3),dc:makeCoord('dc',50+t.prestige*3),rc:makeCoord('rc',50+t.prestige*3)};G.market=genMarket();G.app={fans:62,locker:55,admin:65,media:G.app?Math.round((G.app.media+55)/2):55};
   news(`${G.coach.name} leaves ${old.name} to take over at ${t.name}.`,true);save();
 }
 
 /* ===================== USER ACTIONS ===================== */
 function spend(h){if(G.hours<h)return false;G.hours-=h;return true;}
 function actOffer(rec){if(rec.committed!=null||rec.offer)return;if(userCommits()+G.recruits.filter(r=>r.offer&&r.committed==null).length>=CLASS_CAP+10)return;const u=userTeam();rec.offer=true;rec.interest[u.id]=(rec.interest[u.id]||0)+8+u.prestige*2+regionGrade(rec.region,u.region)+G.coach.rep*0.08;}
-const dgain=v=>v*(G.diff==='brutal'?0.65:G.diff==='hard'?0.82:1);
+const dgain=v=>v*(G.diff==='brutal'?0.65:G.diff==='hard'?0.82:1)*(1+(staffBonus().rc-60)/150+coachLevel('rec')*0.03);
 function actCall(rec){if(!rec.offer||rec.committed!=null||!spend(3))return;rec.interest[G.user]+=dgain(4+userTeam().prestige*0.5+rnd(0,2));}
 function actScout(rec){if(rec.scouted||!spend(2))return;rec.scouted=true;}
 function actCallAll(){let n=0;G.recruits.filter(r=>r.offer&&r.committed==null).sort((a,b)=>myOdds(b)-myOdds(a)).forEach(r=>{if(G.hours>=3){actCall(r);n++;}});if(n)news(`Staff worked the phones: ${n} recruits called.`);}
@@ -962,8 +993,8 @@ function actNIL(rec,amt){if(!rec.offer||rec.committed!=null||G.nil<amt)return;G.
 function actBooster(){if(G.boosterUsed||!spend(8))return;G.boosterUsed=true;const u=userTeam();const gain=Math.round((20+u.prestige*8+u.w*6-u.l*3)*rnd(0.6,1.4)*(0.6+G.app.fans/100));G.nil+=Math.max(5,gain);news(`Booster dinner raised ${fmtK(Math.max(5,gain))} for the NIL collective.`);}
 function actMedia(){if(G.mediaLeft<=0||!spend(6))return;G.mediaLeft--;const u=userTeam();const b=rint(-12,38);u.mediaBump=(u.mediaBump||0)+b;updatePoll();news(b>10?`Your media campaign lands: pundits are talking up ${u.name}'s resume.`:b<0?`The media blitz backfires. Columnists call it lobbying and dock you for it.`:`Media campaign gets a shrug from the voters.`);}
 function actADLobby(){if(G.adLobbied)return;G.adLobbied=true;const u=userTeam();const p=clamp(0.25+u.w/14+(u.rank<=25?0.15:0)+(G.app.admin-50)/150,0.1,0.9);if(Math.random()<p){const g=rint(4,12);G.budget+=g;news(`The AD approved an extra $${g}M in program funding after your pitch.`);}else{G.coach.seat=clamp(G.coach.seat+4,0,100);news(`The AD turned down your funding request and reminded you what the boosters expect this year.`);}}
-function upgradeCost(kind){return kind==='facilities'?userTeam().facilities*3:kind==='coach'?G.staff.coach*6:kind==='recruit'?G.staff.recruit*5:0;}
-function actUpgrade(kind){const c=upgradeCost(kind);if(G.budget<c)return;const u=userTeam();if(kind==='facilities'){if(u.facilities>=10)return;u.facilities++;}if(kind==='coach'){if(G.staff.coach>=5)return;G.staff.coach++;}if(kind==='recruit'){if(G.staff.recruit>=5)return;G.staff.recruit++;G.hoursMax=36+(G.staff.recruit-1)*4;}G.budget-=c;}
+function upgradeCost(kind){return kind==='facilities'?userTeam().facilities*4:0;}
+function actUpgrade(kind){const c=upgradeCost(kind);if(G.budget<c)return;const u=userTeam();if(kind==='facilities'){if(u.facilities>=10)return;u.facilities++;}G.budget-=c;}
 function actNILInvest(){if(G.budget<5)return;G.budget-=5;G.nil+=750;}
 function actPin(pid){const p=P(pid);if(!p||p.team!==G.user)return;if(p.pin){delete p.pin;return;}depth(userTeam(),p.pos,true).forEach(x=>delete x.pin);p.pin=true;}
 function actCut(pid){const u=userTeam();if(!u.roster.includes(pid))return;const p=P(pid);news(`${p.pos} ${p.n} was released from the roster.`);cutPlayer(u,pid);}
@@ -1103,7 +1134,7 @@ function renderHome(){
     ${G.offers.length&&!G.fired?`<div class="small">Job offers are waiting in the Program tab. Ignore them to stay put.</div>`:''}
     <div class="small">Roster: <b class="${over>0?'no':'ok'}">${u.roster.length}/${ROSTER_CAP}</b>${over>0?` (cut ${over} in the Roster tab)`:''}</div>
     <div class="small">Transfer portal: ${G.portalAdds}/${PORTAL_CAP} adds used, ${G.portal.length} players available (Roster tab)</div>
-    <div class="small">Budget: $${G.budget}M to spend on facilities, staff or NIL (Program tab)</div>
+    <div class="small">Budget: $${G.budget}M for facilities, coordinators or NIL (Program tab)${['oc','dc','rc'].some(r=>!G.staff[r]||G.staff[r].yrs<=0)?' · <b class="no">a coordinator job is open or expiring</b>':''}</div>
     <div class="btnrow"><button class="btn" data-act="sim" ${over>0||G.fired?'disabled':''}>Start ${G.season+1} season</button></div></div>`);}
   if(G.phase==='season'){
     const g=G.games.find(x=>x.week===G.week&&!x.played&&(x.home===u.id||x.away===u.id));
@@ -1255,6 +1286,12 @@ function renderProgram(){
   const u=userTeam();const c=G.coach;const seatCls=c.seat>=70?'bad':c.seat>=45?'warn':'good';
   const offers=G.offers.length?`<div class="card sec"><h3>${G.fired?'Open jobs':'Job offers'}</h3><div class="tiny muted">${G.fired?'Take one to keep coaching.':'Accept to move. Your hot seat resets; the roster and signed class stay behind.'}</div><div class="list">${G.offers.map(id=>{const t=T(id);return `<div class="item"><div class="grow"><div class="nm">${esc(t.name)} ${esc(t.nick)}</div><div class="sub">${CONFS[t.conf].name} · prestige ${t.prestige} · AD expects ~${Math.round(expectedWins(t))} wins</div></div>${UI.confirm==='job'+id?`<button class="btn sm danger" data-act="jobyes" data-id="${id}">Confirm move</button>`:`<button class="btn sm" data-act="job" data-id="${id}">Accept</button>`}</div>`;}).join('')}</div></div>`:'';
   const season=G.phase==='season';
+  const st=G.staff;const off=G.phase==='offseason';
+  const srow=role=>{const c=st[role];if(!c)return `<div class="row between"><div class="grow"><div class="nm">${ROLES[role]}</div><div class="sub no">Vacant. Hire from the market below before the season or an interim fills in.</div></div></div>`;return `<div class="row between"><div class="grow"><div class="nm">${esc(c.n)} <span class="tag">${c.rt}</span>${c.tag?` <span class="tag">${esc(c.tag)}</span>`:''}</div><div class="sub">${ROLES[role]} · $${c.sal}M · ${c.yrs<=0?'<b class="no">contract up</b>':c.yrs+' yr'+(c.yrs>1?'s':'')+' left'} · ambition ${'●'.repeat(c.amb)}${'○'.repeat(5-c.amb)}</div></div>${off?`<button class="btn sm ghost" data-act="extend" data-id="${role}" ${G.budget<1?'disabled':''}>Extend · $1M</button>`:''}</div>`;};
+  const market=off&&(G.market||[]).length?`<div class="eyebrow" style="margin-top:6px">Coordinator market</div><div class="tiny muted">Hiring into a filled role pays the current coordinator's buyout.</div><div class="list">${G.market.map((c,i)=>{const cur=st[c.role];const cost=(cur?buyout(cur):0)+c.ask;return `<div class="item"><div class="grow"><div class="nm">${esc(c.n)} <span class="tag ${c.rt>=78?'good':''}">${c.rt}</span>${c.tag?` <span class="tag">${esc(c.tag)}</span>`:''}</div><div class="sub">${ROLES[c.role]} · asks $${c.ask}M · ${c.yrs} yrs · ambition ${'●'.repeat(c.amb)}${'○'.repeat(5-c.amb)}${cur?' · replaces '+esc(cur.n)+' (buyout $'+buyout(cur)+'M)':''}</div></div><button class="btn sm" data-act="hire" data-id="${i}" ${G.budget<cost?'disabled':''}>Hire</button></div>`;}).join('')}</div>`:'';
+  const staff=`<div class="card sec"><div class="row between"><h3>Coaching staff</h3><span class="tiny muted">Payroll $${payroll()}M/yr</span></div><div class="tiny muted">Your OC and DC add to the game edge and speed up development on their side of the ball. The recruiting coordinator sets your weekly hours (${hoursFor()}) and sharpens every pitch.</div>${srow('oc')}${srow('dc')}${srow('rc')}${market}</div>`;
+  const lv=k=>coachLevel(k);const xpBar=(k,l)=>{const xp=(G.coach.xp||{})[k]||0;const L=lv(k);const nxt=XP_LEVELS[L+1]||XP_LEVELS[5];const pct=L>=5?100:Math.round((xp-XP_LEVELS[L])/(nxt-XP_LEVELS[L])*100);return `<div class="meter"><span class="small" style="width:120px">${l} <b>${L}</b></span><div class="bar grow"><i class="me" style="width:${pct}%"></i></div><span class="tiny muted" style="width:52px;text-align:right">${xp}/${L>=5?'max':nxt}</span></div>`;};
+  const profile=`<div class="card sec"><h3>Coach profile</h3><div class="tiny muted">Earned, not bought. Recruiter: +3% on every pitch per level. Developer: faster growth per level. Big-game: a bigger edge in ranked, rivalry and playoff games. Media: pressers that land better.</div>${xpBar('rec','Recruiter')}${xpBar('dev','Developer')}${xpBar('big','Big-game')}${xpBar('media','Media')}<div class="small">Contract: <b>${G.contract?G.contract.yrs:'?'} year${G.contract&&G.contract.yrs===1?'':'s'}</b> left at $${G.contract?G.contract.sal:'?'}M. ${G.contract&&G.contract.yrs<=1?'<span class="no">Lame-duck year: the seat runs hot.</span>':'Win and the AD extends you; stall and you coach out the deal.'}</div></div>`;
   const lobby=`<div class="card sec"><h3>Lobbying</h3>
     <div class="row between"><div class="grow"><div class="nm">Booster dinner</div><div class="sub">8h · once a week · raises NIL money. Winning loosens wallets.</div></div><button class="btn sm" data-act="booster" ${!season||G.boosterUsed||G.hours<8?'disabled':''}>${G.boosterUsed?'Done':'Host'}</button></div>
     <div class="row between"><div class="grow"><div class="nm">Media campaign</div><div class="sub">6h · ${G.mediaLeft} left this season · nudge the poll voters. Can backfire.</div></div><button class="btn sm" data-act="media" ${!season||G.mediaLeft<=0||G.hours<6?'disabled':''}>Campaign</button></div>
@@ -1262,8 +1299,6 @@ function renderProgram(){
   const up=(kind,label,lvl,max,sub)=>{const cost=upgradeCost(kind);return `<div class="row between"><div class="grow"><div class="nm">${label} <span class="tag">${lvl}/${max}</span></div><div class="sub">${sub}</div></div><button class="btn sm" data-act="upgrade" data-id="${kind}" ${G.budget<cost||lvl>=max?'disabled':''}>${lvl>=max?'Max':'$'+cost+'M'}</button></div>`;};
   const budget=`<div class="card sec"><div class="row between"><h3>Program budget</h3><span class="num" style="font-size:22px">$${G.budget}M</span></div><div class="tiny muted">Funded each offseason by prestige, wins and playoff appearances.</div>
     ${up('facilities','Facilities',u.facilities,10,'Recruits who care about facilities grade you on this.')}
-    ${up('coach','Coaching staff',G.staff.coach,5,'Faster player development every offseason.')}
-    ${up('recruit','Recruiting department',G.staff.recruit,5,'+4 recruiting hours per week.')}
     <div class="row between"><div class="grow"><div class="nm">Fund the NIL collective</div><div class="sub">$5M of budget becomes $750K of NIL money.</div></div><button class="btn sm" data-act="nilinvest" ${G.budget<5?'disabled':''}>$5M</button></div></div>`;
   const rb=(()=>{if(!G.history.length)return '';const best=[...G.history].sort((a,b)=>a.rank-b.rank)[0];const wins=G.history.reduce((a,h)=>a+(+h.record.split('-')[0]),0),losses=G.history.reduce((a,h)=>a+(+h.record.split('-')[1]),0);const titles=G.history.filter(h=>h.po==='National champion').length,ccs=G.history.filter(h=>h.conf).length,pos=G.history.filter(h=>/champion|Lost in/.test(h.po)).length,heis=G.history.filter(h=>h.heis&&h.heis.includes('('+u.name+')')).length;return `<div class="card sec"><h3>Record book</h3><div class="grid2"><div class="stat"><div class="v">${wins}-${losses}</div><div class="k">Career record</div></div><div class="stat"><div class="v">${titles}</div><div class="k">National titles</div></div><div class="stat"><div class="v">${ccs}</div><div class="k">Conference titles</div></div><div class="stat"><div class="v">${pos}</div><div class="k">Playoff trips</div></div><div class="stat"><div class="v">#${best.rank}</div><div class="k">Best finish (${best.season})</div></div><div class="stat"><div class="v">${heis}</div><div class="k">Heisman winners coached</div></div></div></div>`;})();
   const hist=G.history.length?`${rb}<div class="card sec"><h3>Dynasty history</h3><div class="tablewrap"><table><tr><th>Year</th><th>Team</th><th>Record</th><th class="r">Final</th><th>Postseason</th><th>Champion</th><th>Heisman</th><th class="r">Class</th></tr>${G.history.map(h=>`<tr><td>${h.season}</td><td>${esc(h.team)}</td><td>${h.record}${h.conf?' <span class="tag good">CC</span>':''}</td><td class="r">#${h.rank}</td><td>${esc(h.po)}</td><td>${esc(h.champ)}</td><td>${esc(h.heis||'')}</td><td class="r">${h.cls?'#'+h.cls:''}</td></tr>`).join('')}</table></div></div>`:'';
@@ -1277,7 +1312,7 @@ function renderProgram(){
     ${UI.updateMsg?`<div class="small ${UI.updateOk?'ok':'muted'}">${esc(UI.updateMsg)}</div>`:''}
     <div class="tiny muted">Version ${(document.querySelector('meta[name=app-version]')||{}).content||'?'}</div>
     <div class="tiny muted">Keys: Space or Enter sims the week, S skips a live game, 1-6 switch tabs, F11 fullscreen.</div>${UI.confirm==='reset'?`<div class="confirmbox"><b>Delete this dynasty?</b> Other saved dynasties are not affected.<div class="btnrow"><button class="btn sm danger" data-act="resetyes">Yes, delete it</button><button class="btn sm ghost" data-act="cancel">Keep playing</button></div></div>`:`<div class="btnrow"><button class="btn sm ghost" data-act="switch">Switch or start another dynasty</button><button class="btn sm ghost" data-act="reset">Delete this dynasty</button></div>`}</div>`;
-  return coach+offers+press+lobby+budget+hist+league+danger;
+  return coach+offers+profile+staff+press+lobby+budget+hist+league+danger;
 }
 
 /* ===================== EVENTS ===================== */
@@ -1295,6 +1330,8 @@ function onAction(act,el){
     case 'rmine':UI.rMine=!UI.rMine;break;
     case 'rsort':UI.rSort=UI.rSort==='odds'?null:'odds';break;
     case 'planoff':G.plan.off=id;break;
+    case 'hire':actHire(+id);break;
+    case 'extend':actExtend(id);break;
     case 'planagg':G.plan.agg=id;break;
     case 'scoutopp':{const g=G.games.find(x=>x.id===+id);if(g)actScoutOpp(g);break;}
     case 'callall':actCallAll();break;
