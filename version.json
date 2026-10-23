@@ -1,4 +1,4 @@
 {
-  "version": "1.107.0",
-  "notes": "Clinching scenarios: in the last three weeks the Conference race card and the newswire spell out exactly what you need (You are in if you win Saturday and BYU loses to Utah), computed from every possible outcome of the remaining conference games. Career milestones: 50, 100, 150 and 200 wins, multiple titles and long tenures get their moment in the news."
+  "version": "1.108.0",
+  "notes": "Package deals: some recruits from the same region want to play together. The board tags them (package with WR X), and when one commits, the school he picked jumps to the top of his friend's list, so landing one can land two, and losing one can cost you both."
 }
