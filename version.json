@@ -1,4 +1,4 @@
 {
-  "version": "1.39.0",
-  "notes": "Storylines on Home: the week's live narratives (undefeated watch, Heisman campaign, playoff bubble or first four out, hot seat, contract year, rivalry week, ranked showdown, trap game, QB questions, bowl chase, class rank, injury bug) with why each one matters. Stat grids go single-column on phones so names stop truncating."
+  "version": "1.40.0",
+  "notes": "Coaching tree. When a coordinator leaves for a head job he actually takes one: a real program hires him in the carousel, your newswire follows it, and the Program tab tracks every former assistant with his current team and record. Play one of them and he knows your tendencies: a gameday tag and a small edge against you."
 }
