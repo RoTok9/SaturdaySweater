@@ -1,4 +1,4 @@
 {
-  "version": "1.100.0",
-  "notes": "Season story: the season recap opens with a written account of your year (the signature win, the loss that stung, the streak, one-possession luck, rivalry trophies, crunch-time record, how the playoff ended)."
+  "version": "1.101.0",
+  "notes": "Crunch time tracks timeouts: the offense's remaining timeouts show in the panel and the broadcast, and each one makes the drive a little more likely to score (bleeding the clock in the fourth burns the other side's). What's new card shows the full count of updates since you last played and links to all release notes."
 }
