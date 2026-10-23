@@ -1,4 +1,4 @@
 {
-  "version": "1.105.0",
-  "notes": "Bug reporting: Program > Save and settings has a Copy diagnostics button that puts the version, where you are in the season, the last 30 actions and any recent errors on the clipboard so you can paste them into a bug report."
+  "version": "1.106.0",
+  "notes": "Career stops: when you change jobs the game records the tenure (seasons, record, best finish, conference titles, playoffs, national titles), the departure news carries it, and a Career stops card in Program keeps the list."
 }
