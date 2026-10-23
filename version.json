@@ -1,4 +1,4 @@
 {
-  "version": "1.109.0",
-  "notes": "Website redesigned in the game's own language: stadium-night glass cards, condensed display type, a working miniature of the live broadcast in the hero (two-minute drill, ball tracking, win chance, the coach's call), a Game day section built around the three calls, the season track, co-op, fresh screenshots (crunch time, conference race) and a What's new section fed by the changelog. In the game, the two-minute marker now shows the ball with the right team."
+  "version": "1.109.1",
+  "notes": "Website: scorebug fits on phones; fresh Home screenshot."
 }
