@@ -1,4 +1,4 @@
 {
-  "version": "1.27.0",
-  "notes": "Start screen rebuilt in the new look (glowing wordmark, glass school tiles that light up in their colors when picked). Ratings glow by tier on the Roster (gold for 90+, team color for 80+), stars and win/loss marks glow, your rows in lists are lit. Home order tightened: the week's matchup, then anything waiting on you (midweek decision, press conference), last result and its fallout, then the game plan."
+  "version": "1.28.0",
+  "notes": "Boosters and the board. Three named boosters with money and a cause (facilities, the rival, local kids, defense, offense, loyalty) sit on the Program tab with a mood that moves with every result and every season; take one to dinner, ask for NIL money, and keep them off the AD's phone. Unhappy boosters heat your seat; happy ones write checks in the offseason. A fan message board on Home reacts to every game, with rival fans showing up in rivalry weeks. Home-field edge now depends on your fan approval."
 }
