@@ -1,4 +1,4 @@
 {
-  "version": "1.71.0",
-  "notes": "The web version is now an installable app: open saturdaysweater.com/play on a phone and Add to Home Screen for a full-screen, offline-capable version with its own icon."
+  "version": "1.72.0",
+  "notes": "Matchup card now shows the opponent's best player, the series record and streak, and the weather outlook. Bowl trips pay into the offseason budget (a win pays double) and the budget newswire line itemizes bowl and playoff money."
 }

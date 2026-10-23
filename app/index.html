@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.71.0">
+<meta name="app-version" content="1.72.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -2048,9 +2048,9 @@ function runOffseason(){
   G.portal.sort((a,b)=>b.ovr-a.ovr);if(G.portal.length>90){G.portal.slice(90).forEach(p=>delete G.players[p.id]);G.portal.length=90;}
   // budget
   realignment();
-  forEachCoach(()=>{const u=userTeam();const gate=gateIncome(u);const income=Math.round(3+u.prestige*0.6+gate+(u.po?3:0)+(u.po==='champ'?5:0)+(u.confChamp?2:0));G.budget+=income;G.portalAdds=0;G.ready=false;
+  forEachCoach(()=>{const u=userTeam();const gate=gateIncome(u);const bowlW=u.bowl==='W';const bowlAny=!!u.bowl;const income=Math.round(3+u.prestige*0.6+gate+(u.po?3:0)+(u.po==='champ'?5:0)+(u.confChamp?2:0)+(bowlAny?1:0)+(bowlW?1:0));G.budget+=income;G.portalAdds=0;G.ready=false;
   G.schedOffers=genSchedOffers();G.schedPicks=null;
-  news(`Athletic department budget for the offseason: +$${income}M, $${gate}M of it from the gate (now $${G.budget}M). Facilities, stadium, staff and NIL are open.`);});
+  news(`Athletic department budget for the offseason: +$${income}M, $${gate}M of it from the gate${bowlAny?', $'+(bowlW?2:1)+'M bowl payout':''}${u.po?', $'+(u.po==='champ'?8:3)+'M playoff money':''} (now $${G.budget}M). Facilities, stadium, staff and NIL are open.`);});
   G.phase='offseason';save();
 }
 function startNextSeason(){
@@ -2383,7 +2383,7 @@ function renderHome(){
         <div class="vsp"><div class="vt me" style="--c:${u.color};--cf:${ucf}"><div class="crest ${abbr(u).length>=4?'l4':''}">${abbr(u)}</div><div class="vn">${esc(u.name)}</div><div class="vr">${u.rank<=25?'No. '+u.rank+' · ':''}${u.w}-${u.l}</div></div><div class="vmid"><div class="vs">${isHome||g.neutral?'VS':'AT'}</div><div class="kick">${g.neutral?'Neutral':isHome?'Home':'Road'}</div></div><div class="vt" style="--c:${oc};--cf:${ocf}"><div class="crest ${abbr(opp).length>=4?'l4':''}">${abbr(opp)}</div><div class="vn">${esc(opp.name)}</div><div class="vr">${opp.rank<=25?'No. '+opp.rank+' · ':''}${opp.w}-${opp.l}</div></div></div>
         <div class="splitbar"><i style="width:${pct}%;background:${u.color}"></i><i style="width:${100-pct}%;background:${oc}"></i></div><div class="row between tiny muted" style="margin-top:4px"><span><b style="color:var(--fg)">${pct}%</b> win chance</span><span><b style="color:var(--fg)">${100-pct}%</b></span></div>
         ${gd.length?`<div class="gd">${gd.map(t=>`<span class="${t.hot?'hot':''} ${t.wx?'wx':''}" ${t.wx?`title="${WX[Object.keys(WX).find(k=>WX[k].t===t.t)].d}"`:''}>${t.t}</span>`).join('')}</div>`:''}${RR?`<div class="small" style="margin-top:6px"><b class="${RR.heat>=85?'no':''}">${rivTier(RR)}${RR.name?': '+esc(RR.name):''}</b>${RR.trophy?' · '+esc(RR.trophy)+' on the line':''} · heat ${Math.round(RR.heat)}${RR.streak?' · '+esc(T(RR.streak.team).name)+' has won '+RR.streak.n+' straight':''}</div>`:''}
-        <div class="small muted" style="margin-top:8px">${esc(opp.nick)} · ${CONFS[opp.conf].name} · HC ${esc(opp.coach.n)}${cp?' ('+cp.n.toLowerCase()+')':''}${opp.ident&&opp.ident.length?' · '+opp.ident.map(k=>IDENT[k].n).join(', '):''}</div></div>`);}
+        <div class="small muted" style="margin-top:8px">${esc(opp.nick)} · ${CONFS[opp.conf].name} · HC ${esc(opp.coach.n)}${cp?' ('+cp.n.toLowerCase()+')':''}${opp.ident&&opp.ident.length?' · '+opp.ident.map(k=>IDENT[k].n).join(', '):''}</div>${(()=>{const star=opp.roster.map(P).filter(p=>p&&['QB','RB','WR','DL','LB','CB'].includes(p.pos)).sort((a,b)=>b.ovr-a.ovr)[0];const last=G.games.filter(x=>x.played&&((x.home===u.id&&x.away===opp.id)||(x.away===u.id&&x.home===opp.id))&&x.week<G.week).sort((a,b)=>b.week-a.week)[0];const RR2=gameRiv(g);const series=RR2&&(RR2.w[u.id]||RR2.w[opp.id])?`Series ${RR2.w[u.id]||0}-${RR2.w[opp.id]||0}`:'';const hist=(u.hist||[]).length;const lastMeet=(()=>{const h=opp.hist&&opp.hist.length?null:null;return null;})();const bits=[];if(star)bits.push(`Their guy: ${star.pos} ${esc(star.n)} (${star.ovr})`);if(series)bits.push(series+(RR2.streak&&RR2.streak.n>=2?` · ${RR2.streak.team===u.id?'you have':esc(opp.name)+' has'} won ${RR2.streak.n} straight`:''));const wx=wxFor(g);if(wx)bits.push(WX[wx].d);return bits.length?`<div class="small muted" style="margin-top:4px">${bits.join(' · ')}</div>`:'';})()}</div>`);}
     else if(G.week<=14)parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">Bye week</div><div class="small muted">Hit the road recruiting; nobody to beat this Saturday.</div></div>`);
     else if(G.week===16&&u.po==='in')parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">First-round bye</div><div class="small muted">Top-four seed. You wait for the winner of the ${G.playoff.seeds.indexOf(u.id)===0?'8/9':G.playoff.seeds.indexOf(u.id)===1?'7/10':G.playoff.seeds.indexOf(u.id)===2?'6/11':'5/12'} game.</div></div>`);
     else parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">${G.week===15?'Not in the title game':u.po&&u.po!=='champ'?'Eliminated':'Watching from home'}</div><div class="small muted">${G.week===15?'Conference title games this week. Your recruiting class signs after them.':'The bracket plays on without you. Sim ahead to the offseason.'}</div></div>`);
