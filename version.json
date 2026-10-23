@@ -1,4 +1,5 @@
 {
-  "version": "1.159.0",
-  "notes": "Rock-solid saves and online leagues. Your dynasty now keeps a weekly backup and restores it automatically if the latest save is ever damaged, warns you if browser storage is full, and can be exported to a file and imported on any device. The league server was rebuilt: one request at a time per league, crash-safe save uploads, per-coach storage, input validation, coaches who join, leave, get removed or take a new job no longer wipe anyone's week, and idle leagues clean themselves up. Weekly gauntlet shares now include your W/L string, with tougher tiers."
+  "version": "1.159.1",
+  "notes": "Desktop updater hardened: updates now install to your app-data folder (works in installed builds), are checked for the right version, completeness and a checksum before they replace anything, retry on flaky connections, and fall back to the bundled game if a download ever fails to load.",
+  "sha256": "fc9b10d19bfcb936776564555cf2ab81193a9fedd317e9a36671980d65f0df06"
 }
