@@ -1298,7 +1298,7 @@ function simGame(g){
   const margin=diff/17+gauss()*(15+rivF*6+PE.varAdj+wild);let total=clamp(Math.round(50+gauss()*12),17,95);
   let hs=Math.round((total+margin)/2),as=total-hs;if(hs<0){as-=hs;hs=0;}if(as<0){hs-=as;as=0;}
   const snap=s=>s===1||s===2?3:s===4?6:s;hs=snap(hs);as=snap(as);delete g.ot;if(hs===as){const ot=overtime();if(ot.homeWins){hs+=ot.w;as+=ot.l;}else{as+=ot.w;hs+=ot.l;}g.ot={w:ot.homeWins?g.home:g.away,wp:ot.w,lp:ot.l};}
-  if(g._forced){hs=g._forced.hs;as=g._forced.as;if(g._forced.ot)g.ot=g._forced.ot;delete g._forced;}
+  if(g._forced){hs=g._forced.hs;as=g._forced.as;if(g._forced.ot)g.ot=g._forced.ot;else delete g.ot;delete g._forced;}
   g.hs=hs;g.as=as;g.played=true;
   const ph=1/(1+Math.pow(10,-diff/400));const sh=hs>as?1:0;const k=20*(0.5+Math.log(Math.abs(hs-as)+1)*0.35);h.elo+=k*(sh-ph);a.elo-=k*(sh-ph);
   const w=hs>as?h:a,l=hs>as?a:h;w.w++;l.l++;if(g.conf){w.cw++;l.cl++;}
