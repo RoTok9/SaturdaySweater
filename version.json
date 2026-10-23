@@ -1,4 +1,4 @@
 {
-  "version": "1.149.2",
-  "notes": "Coordinators argue for their own scheme at halftime when the matchup allows; rivalry games in the last week of the regular season are Thanksgiving weekend on the broadcast."
+  "version": "1.150.0",
+  "notes": "Recruiting pipelines: every recruit you sign from a region builds your pipeline there (your home region starts warm). Strong pipelines make that region's recruits warm to you faster every week, they fade if you stop signing there, and the Recruit tab shows your top three. Hit three dots and the newswire says you own it."
 }
