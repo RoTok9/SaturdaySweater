@@ -1,4 +1,4 @@
 {
-  "version": "1.72.0",
-  "notes": "Matchup card now shows the opponent's best player, the series record and streak, and the weather outlook. Bowl trips pay into the offseason budget (a win pays double) and the budget newswire line itemizes bowl and playoff money."
+  "version": "1.73.0",
+  "notes": "Tap any upcoming game on the Season tab for a preview: win chance, unit-by-unit matchups (your air vs their pass defense and so on), their best player, the head coach and his style, rivalry heat, and the forecast once the game is within two weeks."
 }
