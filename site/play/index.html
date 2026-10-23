@@ -491,6 +491,27 @@ body{background:var(--bg);background-image:radial-gradient(900px 420px at 8% -6%
   @keyframes pulse{0%,100%{box-shadow:0 0 22px color-mix(in srgb,var(--team) 50%,transparent),inset 0 1px 0 rgba(255,255,255,.3)}50%{box-shadow:0 0 38px color-mix(in srgb,var(--team) 85%,transparent),inset 0 1px 0 rgba(255,255,255,.3)}}
   .card.live{animation:none}
 }
+
+/* start screen */
+.pickhead{padding-block:22px 18px}
+.pickhead .wm{font-family:var(--display);font-weight:800;font-size:40px;letter-spacing:.02em;text-transform:uppercase;line-height:.95;color:#fff;text-shadow:0 0 30px color-mix(in srgb,var(--team) 70%,transparent)}
+.pickhead .wm span{color:var(--team-accent,var(--team));text-shadow:0 0 30px var(--team)}
+.pickhead .tag2{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-top:6px}
+.teamgrid{gap:10px}
+.tbtn{border-radius:14px;background:var(--surface);backdrop-filter:blur(14px);border:1px solid var(--line);padding:10px 12px;transition:transform .15s var(--ease),box-shadow .2s,border-color .2s;position:relative;overflow:hidden}
+.tbtn .sw{position:absolute;left:0;top:0;bottom:0;width:5px;height:auto;border-radius:0}
+.tbtn{padding-left:16px}
+.tbtn:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.35)}
+.tbtn.on{outline:0;border-color:var(--team);box-shadow:0 0 0 1px var(--team),0 0 26px color-mix(in srgb,var(--team) 50%,transparent)}
+.picker .eyebrow{margin-top:6px}
+.stars{text-shadow:0 0 10px color-mix(in srgb,var(--gold) 60%,transparent)}
+.num.elite{color:var(--gold);text-shadow:0 0 14px color-mix(in srgb,var(--gold) 60%,transparent)}
+.num.good{color:var(--team-accent,var(--team));text-shadow:0 0 12px color-mix(in srgb,var(--team) 50%,transparent)}
+.tag.team{box-shadow:0 0 10px color-mix(in srgb,var(--team) 45%,transparent)}
+.res.W{color:var(--good);text-shadow:0 0 12px rgba(74,222,128,.45)} .res.L{color:var(--bad);text-shadow:0 0 12px rgba(255,107,107,.4)}
+.rk{font-family:var(--display);font-weight:800;color:var(--muted);min-width:22px;text-align:center}
+.item.me{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--team) 35%,transparent),0 0 18px color-mix(in srgb,var(--team) 15%,transparent)}
+@media (min-width:900px){ .pickhead .wm{font-size:56px} }
 </style>
 
 </head>
@@ -1845,8 +1866,9 @@ function renderOnlinePanel(){const url=serverUrl();const L=UI.olLeague;const sel
 function T0(i){return LEAGUE[i]?LEAGUE[i].name:'?';}
 function renderPicker(){
   const confs=Object.keys(CONFS);const sel=UI.pickTeam!=null?Object.assign({},TEAMS[UI.pickTeam],{0:LEAGUE[UI.pickTeam].name,1:LEAGUE[UI.pickTeam].nick,2:LEAGUE[UI.pickTeam].conf}):null;
-  return `<header class="top"><div class="top-in"><div><div class="tname">Saturday Sweater</div><div class="tsub">CFB Dynasty · Choose your program</div></div></div></header>
-  <main class="picker">
+  const pc=sel?LEAGUE[UI.pickTeam].color:'#5b7cfa';
+  return `<header class="top pickhead" style="--team:${pc}"><div class="top-wrap"><div class="wordmark"><div class="wm">Saturday <span>Sweater</span></div><div class="tag2">College football dynasty · you run the program, not the plays</div></div></div></header>
+  <main class="picker" style="--team:${pc}">
     ${renderSlots()}
     <div class="card sec"><h2>${loadSlots().length?'Start another dynasty':'Take the job'}</h2><p class="muted small" style="margin:0">You run the program, not the plays. Recruit, lobby boosters and the AD, build the roster, and climb the polls toward the 12-team playoff. Lower-prestige jobs are a harder road but a better story.</p>
       <label class="small muted" for="coachName">Coach name</label><input type="text" id="coachName" placeholder="Your name" maxlength="28" value="${esc(UI.coachName||'')}">
@@ -2003,12 +2025,12 @@ function renderHome(){
     else if(G.week===16&&u.po==='in')parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">First-round bye</div><div class="small muted">Top-four seed. You wait for the winner of the ${G.playoff.seeds.indexOf(u.id)===0?'8/9':G.playoff.seeds.indexOf(u.id)===1?'7/10':G.playoff.seeds.indexOf(u.id)===2?'6/11':'5/12'} game.</div></div>`);
     else parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">${G.week===15?'Not in the title game':u.po&&u.po!=='champ'?'Eliminated':'Watching from home'}</div><div class="small muted">${G.week===15?'Conference title games this week. Your recruiting class signs after them.':'The bracket plays on without you. Sim ahead to the offseason.'}</div></div>`);
     {const tw=textsWaiting();const wav=G.recruits.filter(r=>r.waver&&r.committed===G.user).length;parts.push(`<div class="quick"><button data-act="tab" data-id="recruit" class="${G.hours>=G.hoursMax-2&&G.week<=15?'hot':''}"><b>${G.hours}h</b> Recruit</button>${tw?`<button data-act="tab" data-id="recruit" class="hot"><b>${tw}</b> text${tw>1?'s':''}</button>`:''}${wav?`<button data-act="tab" data-id="recruit" class="hot"><b>${wav}</b> wavering</button>`:''}<button data-act="tab" data-id="program"><b>${fmtK(G.nil)}</b> NIL</button><button data-act="pollsview" data-id="playoff">Playoff picture</button><button data-act="tab" data-id="roster">Depth chart</button></div>`);}
-    {const gd=renderGuide();if(gd)parts.push(gd);}
-    if(g&&G.week<=19)parts.push(renderGamePlan(g));
     if(G.event)parts.push(renderEvent());
     if(G.presser)parts.push(renderPresser());
     if(G.lastResult){const r=G.lastResult;const lg=G.games.find(x=>x.played&&(x.home===u.id||x.away===u.id)&&x.week===r.week);parts.push(`<div class="card sec"><div class="row between"><div><div class="eyebrow">Last result</div><div class="nm">${r.won?'Beat':'Lost to'} ${esc(T(r.opp).name)}</div></div><div class="res ${r.won?'W':'L'}">${r.won?'W':'L'} ${r.ws}-${r.ls}</div></div>${lg&&lg.box?`<div class="btnrow"><button class="btn sm ${UI.watch&&UI.watch.gid===lg.id?'ghost':''}" data-act="watch" data-id="${lg.id}">${UI.watch&&UI.watch.gid===lg.id?'Close replay':'Watch the replay'}</button></div>${UI.watch&&UI.watch.gid===lg.id?renderWatch(lg):''}`:''}</div>`);}
     {const fo=renderFallout();if(fo)parts.push(fo);}
+    if(g&&G.week<=19)parts.push(renderGamePlan(g));
+    {const gd=renderGuide();if(gd)parts.push(gd);}
     if(G.wrap&&G.wrap.s===G.season&&G.phase==='season'&&G.wrap.w===G.week-1){const W=G.wrap;parts.push(`<div class="card sec"><div class="row between"><div class="eyebrow">Saturday wrap \u00b7 ${weekLabel(W.w)}</div><button class="btn sm ghost" data-act="tab" data-id="polls">Poll</button></div><div class="list">
       ${W.gotw?`<div class="item"><div class="grow"><div class="tiny muted">Game of the week${W.gotw.mine?' \u00b7 you were in it':''}</div><div class="nm" style="font-size:15px">${esc(W.gotw.t)}</div></div></div>`:''}
       ${W.upset?`<div class="item"><div class="grow"><div class="tiny muted">Upset of the week${W.upset.mine?' \u00b7 you were in it':''}</div><div class="nm" style="font-size:15px">${esc(W.upset.t)}</div></div></div>`:''}
@@ -2131,7 +2153,7 @@ function renderRecruitDetail(r,open){
 function renderRoster(){
   const u=userTeam();const off=unitOvr(u,OFFPOS).toFixed(1),def=unitOvr(u,POS.filter(p=>!OFFPOS.includes(p)&&p!=='K')).toFixed(1);
   const d=depth(u,UI.rosterPos,true);const over=u.roster.length-ROSTER_CAP;const active=depth(u,UI.rosterPos);
-  const rows=d.map((p,i)=>`<div class="item clickable" data-act="popen" data-id="${p.id}"><div class="rk">${i+1}</div><div class="grow"><div class="nm">${esc(p.n)} ${active.indexOf(p)>-1&&active.indexOf(p)<STARTERS[p.pos]?'<span class="tag team">Starter</span>':''}${p.pin?' <span class="tag">Pinned</span>':''}${p.inj>0?` <span class="tag bad">Out ${p.inj} wk${p.inj>1?'s':''}</span>`:''}${p.stars?` <span class="stars">${starStr(p.stars)}</span>`:''}${p.transfer?' <span class="tag">Transfer</span>':''}${p.walkon?' <span class="tag">Walk-on</span>':''}${(p.form||0)>=2?' <span class="tag warn">Hot</span>':(p.form||0)<=-1.2?' <span class="tag bad">Cold</span>':''}${p.breakout===G.season?' <span class="tag good">Breakout</span>':''}${p.promise&&!p.promise.resolved?' <span class="tag warn" title="Promised a starting job for '+p.promise.due+'">Promised PT</span>':''}${p.unhappy?' <span class="tag bad">Unhappy</span>':''}${p.heisman?' <span class="tag good">Heisman '+p.heisman+'</span>':''}${(p.aw||[]).some(x=>x.k==='AA')?' <span class="tag good">All-American</span>':(p.aw||[]).some(x=>x.k==='AC')?' <span class="tag">All-conf</span>':''}</div><div class="sub">${YR[Math.min(p.yr,3)]} · potential ${potGrade(p)}${p.tr&&p.tr.length?' · '+p.tr.map(t=>`<span title="${TRAITS[t].d}">${TRAITS[t].n}</span>`).join(', '):''}${p.inj>0?' · '+p.injN:''}${statLine(p)?' · '+statLine(p):''}</div></div><div class="num" style="font-size:22px">${p.ovr}</div><button class="btn sm ghost" data-act="pin" data-id="${p.id}" title="${p.pin?'Unpin':'Make this player the starter'}">${p.pin?'Unpin':'Start'}</button>${UI.confirm==='cut'+p.id?`<button class="btn sm danger" data-act="cutyes" data-id="${p.id}">Confirm</button>`:`<button class="btn sm ghost" data-act="cut" data-id="${p.id}">Cut</button>`}</div>${UI.pOpen===p.id?renderPlayerCard(p):''}`).join('');
+  const rows=d.map((p,i)=>`<div class="item clickable" data-act="popen" data-id="${p.id}"><div class="rk">${i+1}</div><div class="grow"><div class="nm">${esc(p.n)} ${active.indexOf(p)>-1&&active.indexOf(p)<STARTERS[p.pos]?'<span class="tag team">Starter</span>':''}${p.pin?' <span class="tag">Pinned</span>':''}${p.inj>0?` <span class="tag bad">Out ${p.inj} wk${p.inj>1?'s':''}</span>`:''}${p.stars?` <span class="stars">${starStr(p.stars)}</span>`:''}${p.transfer?' <span class="tag">Transfer</span>':''}${p.walkon?' <span class="tag">Walk-on</span>':''}${(p.form||0)>=2?' <span class="tag warn">Hot</span>':(p.form||0)<=-1.2?' <span class="tag bad">Cold</span>':''}${p.breakout===G.season?' <span class="tag good">Breakout</span>':''}${p.promise&&!p.promise.resolved?' <span class="tag warn" title="Promised a starting job for '+p.promise.due+'">Promised PT</span>':''}${p.unhappy?' <span class="tag bad">Unhappy</span>':''}${p.heisman?' <span class="tag good">Heisman '+p.heisman+'</span>':''}${(p.aw||[]).some(x=>x.k==='AA')?' <span class="tag good">All-American</span>':(p.aw||[]).some(x=>x.k==='AC')?' <span class="tag">All-conf</span>':''}</div><div class="sub">${YR[Math.min(p.yr,3)]} · potential ${potGrade(p)}${p.tr&&p.tr.length?' · '+p.tr.map(t=>`<span title="${TRAITS[t].d}">${TRAITS[t].n}</span>`).join(', '):''}${p.inj>0?' · '+p.injN:''}${statLine(p)?' · '+statLine(p):''}</div></div><div class="num ${p.ovr>=90?'elite':p.ovr>=80?'good':''}" style="font-size:22px">${p.ovr}</div><button class="btn sm ghost" data-act="pin" data-id="${p.id}" title="${p.pin?'Unpin':'Make this player the starter'}">${p.pin?'Unpin':'Start'}</button>${UI.confirm==='cut'+p.id?`<button class="btn sm danger" data-act="cutyes" data-id="${p.id}">Confirm</button>`:`<button class="btn sm ghost" data-act="cut" data-id="${p.id}">Cut</button>`}</div>${UI.pOpen===p.id?renderPlayerCard(p):''}`).join('');
   const portal=G.phase==='offseason'?`<div class="card sec"><div class="row between"><h3>Transfer portal</h3><span class="tag">${G.portalAdds}/${PORTAL_CAP} adds</span></div><div class="tiny muted">Transfers cost NIL money and arrive ready to play. Roster must stay at or under ${ROSTER_CAP}.</div><button class="btn sm ghost" data-act="toggleportal">${UI.showPortal?'Hide':'Show'} ${G.portal.length} players</button>
     ${UI.showPortal?`<div class="list">${G.portal.slice(0,60).map(p=>`<div class="item"><div class="tiny muted" style="width:28px">${p.pos}</div><div class="grow"><div class="nm">${esc(p.n)}</div><div class="sub">${YR[Math.min(p.yr,3)]} · from ${esc(p.from)} · pot ${potGrade(p)}</div></div><div class="num" style="font-size:20px">${p.ovr}</div><button class="btn sm" data-act="portal" data-id="${p.id}" ${G.portalAdds>=PORTAL_CAP||G.nil<p.ask||u.roster.length>=ROSTER_CAP?'disabled':''}>${fmtK(p.ask)}</button></div>`).join('')}</div>`:''}</div>`:'';
   return `<div class="card sec"><div class="row between"><h2>Roster</h2><span class="tag ${over>0?'bad':''}">${u.roster.length}/${ROSTER_CAP}</span></div><div class="grid2"><div class="stat"><div class="v">${off}</div><div class="k">Offense</div></div><div class="stat"><div class="v">${def}</div><div class="k">Defense</div></div></div>

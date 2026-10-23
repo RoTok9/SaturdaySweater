@@ -1,4 +1,4 @@
 {
-  "version": "1.26.0",
-  "notes": "Stadium Night: a complete visual pass built for glow and depth. Dark glass panels with blur and soft shadows over a deep background lit by your team color, glowing score bug, Sim button and progress bars, a lit-up versus panel with both teams' colors, a glowing active tab, smooth entrance motion when you change tabs, hover and press feedback on every control, and a Theme setting (Stadium night, Daylight, Match device). The PC app now checks for updates by itself on launch. Also in this build: online leagues (create or join with a six-letter code, everyone readies up, the week advances when all are in) and pass-and-play on one device, both from the start screen and the Program tab."
+  "version": "1.27.0",
+  "notes": "Start screen rebuilt in the new look (glowing wordmark, glass school tiles that light up in their colors when picked). Ratings glow by tier on the Roster (gold for 90+, team color for 80+), stars and win/loss marks glow, your rows in lists are lit. Home order tightened: the week's matchup, then anything waiting on you (midweek decision, press conference), last result and its fallout, then the game plan."
 }
