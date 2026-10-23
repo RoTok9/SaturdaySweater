@@ -1,4 +1,4 @@
 {
-  "version": "1.42.0",
-  "notes": "Way-too-early Top 25 for next season in the recap and on the Polls tab all offseason, built from returning starters (seniors and likely early entrants discounted), prestige and the class so far. Transfers remember where they came from: when your transfer faces his old team you get a gameday tag and a small edge. Big games (ranked matchups, rivalries, conference title games, playoffs) get a gold broadcast score bug in the live view."
+  "version": "1.43.0",
+  "notes": "Recruit rankings move during the season: in weeks 5, 9 and 12 a handful of uncommitted recruits rise or fall a star on their tape. Risers draw new suitors and cost more NIL; fallers get cheaper as the big schools back off. Riser and Faller tags on the board, newswire alerts for players you have offered. Offseason calendar moved up under the draft card. Recruit tags no longer use emoji."
 }
