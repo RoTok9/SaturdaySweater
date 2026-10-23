@@ -1,4 +1,4 @@
 {
-  "version": "1.31.0",
-  "notes": "Defensive game plans: Base, Stack the box, Two-high coverage or Blitz heavy, graded against the opponent's scheme and quarterback (stack a run team and it pays; stack a passing team and they go over the top; blitz a shaky QB for chaos, blitz a great one at your peril). The last-result card now shows your full plan and whether it worked or hurt you. Named rivalries can come with a trophy (the Iron Skillet, the Old Oaken Bucket and friends) that changes hands with the series. Heisman ceremony: five finalists with vote shares on the Polls tab. School records: when one of your players passes a single-season school mark midseason, it hits the newswire the week it happens."
+  "version": "1.32.0",
+  "notes": "Coach traits: at levels 2 and 4 of each track (Recruiter, Developer, Big-game, Media) you choose one of two permanent traits. Closer or Road warrior; Living room legend or Pipeline; Position coach (pick a group to develop faster) or Camp culture; Iron man program or Next level; Rivalry fuel or Road dog; Fourth-quarter closer or Primetime; Spin doctor or Fan favorite; Insider or Booster whisperer. The choice shows up on Home when you earn it and your traits live on the Program tab."
 }
