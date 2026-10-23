@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.154.0",
+  "notes": "Watch my games: a new setting under Program > Save and settings lets you watch every game live, only the big ones (rivalries, ranked opponents, the postseason), or none (straight to the result) when you want to move fast."
+ },
+ {
   "version": "1.153.1",
   "notes": "Phone apps get haptics: touchdowns, big plays and wins buzz in your hand when sound and effects are on."
  },
