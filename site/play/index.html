@@ -191,6 +191,7 @@ textarea{font:inherit;font-size:12px;color:var(--fg);background:var(--surface);b
 .live .scoreline .sc{font-size:42px}
 @media (prefers-reduced-motion:no-preference){ .item.clickable:active{opacity:.7} .play.new{animation:pop .35s ease-out} @keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}} }
 @media (min-width:720px){ .tabs{max-width:760px;margin:0 auto;border-left:1px solid var(--line);border-right:1px solid var(--line)} }
+@media (max-width:430px){ .tabs button{font-size:11px;letter-spacing:.02em;padding:12px 0 10px} .tabs .dot{right:calc(50% - 18px)} .tname{font-size:22px} .rec .big{font-size:24px} }
 </style>
 
 </head>
@@ -483,18 +484,31 @@ function ach(id){const a=achGet();if(a[id])return;const def=ACH.find(x=>x[0]===i
 /* ===================== SAVE SLOTS ===================== */
 const KEY_BASE='gridiron-dynasty-save-v1',SLOTS_KEY='gridiron-slots-v1',CUR_KEY='gridiron-current-slot';
 let SLOT=null;
-const lsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}},lsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}},lsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
+const lsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}},lsSet=(k,v)=>{try{localStorage.setItem(k,v);return true;}catch(e){return false;}},lsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
+const b64=u8=>{let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s);};
+const unb64=str=>{const bin=atob(str);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u;};
+async function gzipStr(str){if(typeof CompressionStream==='undefined')return null;try{const cs=new CompressionStream('gzip');const w=cs.writable.getWriter();w.write(new TextEncoder().encode(str));w.close();const buf=await new Response(cs.readable).arrayBuffer();return 'gz:'+b64(new Uint8Array(buf));}catch(e){return null;}}
+async function gunzipStr(str){if(!str||!str.startsWith('gz:'))return str;const ds=new DecompressionStream('gzip');const w=ds.writable.getWriter();w.write(unb64(str.slice(3)));w.close();return await new Response(ds.readable).text();}
+let saveSeq=0;
 const slotKey=id=>KEY_BASE+':'+id;
+const PF=['id','n','pos','yr','ovr','pot','team','tr'];
+const TRK=Object.keys(TRAITS);
+function serialize(g){const arr=Object.values(g.players).map(p=>{const rest={};Object.keys(p).forEach(k=>{if(!PF.includes(k)&&p[k]!==undefined)rest[k]=p[k];});return [p.id,p.n,POS.indexOf(p.pos),p.yr,p.ovr,p.pot,p.team,(p.tr||[]).map(t=>TRK.indexOf(t)),Object.keys(rest).length?rest:0];});
+  const portal=(g.portal||[]).map(p=>p.id);const out=Object.assign({},g,{players:undefined,portal:undefined,_pp:arr,_portal:portal,_v:2});
+  return JSON.stringify(out,(k,v)=>typeof v==='number'&&!Number.isInteger(v)?Math.round(v*100)/100:v);}
+function deserialize(str){const g=JSON.parse(str);if(g._pp){g.players={};g._pp.forEach(a=>{const p={id:a[0],n:a[1],pos:typeof a[2]==='number'?POS[a[2]]:a[2],yr:a[3],ovr:a[4],pot:a[5],team:a[6],tr:(a[7]||[]).map(t=>typeof t==='number'?TRK[t]:t)};if(a[8])Object.assign(p,a[8]);g.players[p.id]=p;});delete g._pp;g.portal=(g._portal||[]).map(id=>g.players[id]).filter(Boolean);delete g._portal;}
+  else if(g.portal){g.portal=g.portal.map(p=>{const c=g.players[p.id];if(c){Object.assign(c,{from:p.from,ask:p.ask,team:-1});return c;}return p;});}
+  return g;}
 function loadSlots(){try{const s=lsGet(SLOTS_KEY);return s?JSON.parse(s):[];}catch(e){return [];}}
 function saveSlots(list){lsSet(SLOTS_KEY,JSON.stringify(list));}
 function slotMeta(g,id){const u=g.teams[g.user];return {id,team:u.name,nick:u.nick,color:u.color,coach:g.coach.name,season:g.season,record:`${u.w}-${u.l}`,rank:u.rank,phase:g.phase,years:g.coach.years,titles:g.coach.titles,diff:g.diff||'normal',updated:Date.now()};}
 function newSlot(){SLOT='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
-function save(){if(!G)return;if(!SLOT)newSlot();lsSet(slotKey(SLOT),JSON.stringify(G));const list=loadSlots();const i=list.findIndex(x=>x.id===SLOT);const m=slotMeta(G,SLOT);if(i>=0)list[i]=m;else list.push(m);saveSlots(list);lsSet(CUR_KEY,SLOT);}
-function migrateLegacy(){const s=lsGet(KEY_BASE);if(!s)return;try{const g=JSON.parse(s);const id='d'+Date.now().toString(36);lsSet(slotKey(id),s);const list=loadSlots();list.push(slotMeta(g,id));saveSlots(list);lsSet(CUR_KEY,id);lsDel(KEY_BASE);}catch(e){}}
-function openSlot(id){const s=lsGet(slotKey(id));if(!s)return false;try{G=JSON.parse(s);}catch(e){return false;}SLOT=id;migrate();lsSet(CUR_KEY,id);return true;}
+function save(){if(!G)return;if(!SLOT)newSlot();const str=serialize(G);const key=slotKey(SLOT);const seq=++saveSeq;const okPlain=lsSet(key,str);gzipStr(str).then(gz=>{if(gz&&seq===saveSeq&&(gz.length<str.length||!okPlain))lsSet(key,gz);});const list=loadSlots();const i=list.findIndex(x=>x.id===SLOT);const m=slotMeta(G,SLOT);if(i>=0)list[i]=m;else list.push(m);saveSlots(list);lsSet(CUR_KEY,SLOT);}
+async function migrateLegacy(){const s0=lsGet(KEY_BASE);if(!s0)return;try{const s=await gunzipStr(s0);const g=deserialize(s);const id='d'+Date.now().toString(36);lsSet(slotKey(id),s);const list=loadSlots();list.push(slotMeta(g,id));saveSlots(list);lsSet(CUR_KEY,id);lsDel(KEY_BASE);}catch(e){}}
+async function openSlot(id){const s0=lsGet(slotKey(id));if(!s0)return false;try{const s=await gunzipStr(s0);G=deserialize(s);}catch(e){return false;}SLOT=id;migrate();lsSet(CUR_KEY,id);return true;}
 function deleteSlot(id){lsDel(slotKey(id));saveSlots(loadSlots().filter(x=>x.id!==id));if(SLOT===id){SLOT=null;G=null;lsDel(CUR_KEY);}}
 function closeDynasty(){if(G)save();G=null;SLOT=null;lsDel(CUR_KEY);}
-function load(){migrateLegacy();const cur=lsGet(CUR_KEY);if(cur&&openSlot(cur))return true;return false;}
+async function load(){await migrateLegacy();const cur=lsGet(CUR_KEY);if(cur&&await openSlot(cur))return true;return false;}
 function migrate(){if(!G)return;if(!G.app)G.app={fans:60,locker:60,admin:60,media:55};if(!G.pressLog)G.pressLog=[];if(G.presser===undefined)G.presser=null;if(G.heisman===undefined)G.heisman=null;G.teams.forEach(t=>{if(!t.coach)t.coach=makeCoach(t.prestige);});Object.values(G.players).forEach(p=>{if(!p.tr)p.tr=rollTraits();});G.portal.forEach(p=>{if(!p.tr)p.tr=rollTraits();});if(!G.lh)G.lh=[];if(!G.carousel)G.carousel=[];G.recruits.forEach(r=>{if(!r.persona){r.persona=pick(Object.keys(PERSONAS));r.tr=rollTraits();r.texted=0;r.convo=null;}});if(!G.riv){G.riv={};seedRivalries();}if(!G.diff)G.diff='normal';if(G.losingRun==null)G.losingRun=0;if(!G.plan)G.plan={off:'balanced',agg:'standard'};if(!G.staff||G.staff.oc===undefined){const old=G.staff||{coach:1,recruit:1};const u=G.teams[G.user];G.staff={oc:makeCoord('oc',50+(old.coach||1)*6),dc:makeCoord('dc',50+(old.coach||1)*6),rc:makeCoord('rc',50+(old.recruit||1)*6)};G.market=G.market||[];if(!G.contract)G.contract={yrs:3,sal:Math.round((1.5+u.prestige*0.6)*10)/10};}if(!G.coach.xp)G.coach.xp={rec:0,dev:0,big:0,media:0};if(G.phase==='offseason'&&!G.schedOffers)G.schedOffers=genSchedOffers();}
 function news(text,hot){G.news.unshift({w:G.week,s:G.season,text,hot:!!hot});if(G.news.length>60)G.news.length=60;}
 
@@ -554,7 +568,9 @@ function rivName(a,b){const used=new Set(Object.values(G.riv).map(r=>r.name));co
     if(!used.has(n)){cands.push(n);break;}}
   return cands[0]||`The ${ta.name}-${tb.name} Game`;}
 function rivUpdate(g,r){ // called after a game between the two teams
-  const R=rivalry(g.home,g.away,true);const h=T(g.home),a=T(g.away);const hr=g.hrank||99,ar=g.arank||99;const margin=Math.abs(g.hs-g.as);
+  const h=T(g.home),a=T(g.away);const hr=g.hrank||99,ar=g.arank||99;const margin=Math.abs(g.hs-g.as);
+  const matters=G.riv[rkey(g.home,g.away)]||(hr<=25&&ar<=25)||margin<=7||g.type!=='reg'||(g.conf&&h.region===a.region)||g.home===G.user||g.away===G.user;if(!matters)return {heat:0,games:[],w:{}};
+  const R=rivalry(g.home,g.away,true);
   g.rivPre={heat:R.heat,name:R.name,w:Object.assign({},R.w),streak:R.streak?Object.assign({},R.streak):null,n:R.games.length};
   let add=1.5;if(hr<=25&&ar<=25)add+=5;if(hr<=10&&ar<=10)add+=7;if(hr<=5&&ar<=5)add+=5;if(margin<=3)add+=7;else if(margin<=7)add+=4;else if(margin<=14)add+=1;
   if(g.conf)add+=1;if(h.region===a.region)add+=1;if(g.type==='ccg')add+=6;if(g.type==='po')add+=9;
@@ -563,7 +579,7 @@ function rivUpdate(g,r){ // called after a game between the two teams
   if(R.games.length<2)add*=0.6; // first meetings mean less
   const wasTier=rivTier(R);R.heat=clamp(R.heat+add,0,100);R.lastSeason=G.season;
   R.w[r.w.id]=(R.w[r.w.id]||0)+1;R.streak=R.streak&&R.streak.team===r.w.id?{team:r.w.id,n:R.streak.n+1}:{team:r.w.id,n:1};
-  R.games.push({s:G.season,w:r.w.id,ws:r.ws,ls:r.ls,hr,ar,wk:g.week});if(R.games.length>12)R.games.shift();
+  R.games.push({s:G.season,w:r.w.id,ws:r.ws,ls:r.ls,hr,ar,wk:g.week});if(R.games.length>8)R.games.shift();
   const tier=rivTier(R);
   const namedA=Object.values(G.riv).filter(x=>x.name&&(x.a===R.a||x.b===R.a)).length,namedB=Object.values(G.riv).filter(x=>x.name&&(x.a===R.b||x.b===R.b)).length;
   if(!R.name&&R.heat>=60&&R.games.length>=3&&((namedA<2&&namedB<2)||R.heat>=90)){R.name=rivName(R.a,R.b);R.born=G.season;const mine=g.home===G.user||g.away===G.user;if(mine)ach('rivalry');news(`${h.name} and ${a.name} have a rivalry now. After ${R.games.length} meetings that keep mattering, the series gets a name: ${R.name}.${mine?' Circle it every year.':''}`,mine);}
@@ -816,7 +832,7 @@ function hofCheck(p,why){ // called when a user player leaves
   const aw=p.aw||[];const score=aw.reduce((a,x)=>a+(x.k==='AA'?3:x.k==='AC'?1:x.k==='OPOY'||x.k==='DPOY'?3:x.k==='FROY'?1:0),0)+(p.heisman?6:0)+(p.car?Math.min(3,p.car.gp/20):0);
   if(score>=7){ach('hof');G.hof=G.hof||[];G.hof.push({n:p.n,pos:p.pos,team:userTeam().name,from:p.car?p.car.from:G.season,to:G.season,honors:aw.map(x=>x.k+' '+x.s).concat(p.heisman?['Heisman '+p.heisman]:[]),line:p.car?careerLine(p):statLine(p),why});news(`${p.pos} ${p.n} enters the ${userTeam().name} Hall of Fame.`,true);}}
 function careerLine(p){const c=p.car;if(!c)return '';if(p.pos==='QB')return `${c.py.toLocaleString()} pass yds, ${c.ptd} TD`;if(p.pos==='RB')return `${c.ry.toLocaleString()} rush yds, ${c.rtd} TD`;if(p.pos==='WR'||p.pos==='TE')return `${c.recy.toLocaleString()} rec yds, ${c.rectd} TD`;if(['DL','LB','CB','S'].includes(p.pos))return `${c.tk} tkl, ${c.sk} sacks, ${c.dint} INT`;return `${c.gp} games`;}
-function accrueCareers(){Object.values(G.players).forEach(p=>{if(!p.st)return;const c=p.car||(p.car={from:G.season,gp:0,py:0,ptd:0,ry:0,rtd:0,recy:0,rectd:0,tk:0,sk:0,dint:0});['gp','py','ptd','ry','rtd','recy','rectd','tk','sk','dint'].forEach(k=>c[k]+=p.st[k]||0);});}
+function accrueCareers(){Object.values(G.players).forEach(p=>{if(!p.st)return;if(p.team!==G.user&&!(p.aw&&p.aw.length)&&!p.heisman){return;}const c=p.car||(p.car={from:G.season,gp:0,py:0,ptd:0,ry:0,rtd:0,recy:0,rectd:0,tk:0,sk:0,dint:0});['gp','py','ptd','ry','rtd','recy','rectd','tk','sk','dint'].forEach(k=>c[k]+=p.st[k]||0);});}
 function awardHeisman(){const w=heismanWatch(1)[0];if(!w)return;const p=w.p;if(p.team===G.user)ach('heisman');p.heisman=G.season;G.heisman={pid:p.id,n:p.n,pos:p.pos,team:T(p.team).name,line:statLine(p),season:G.season};news(`${p.n}, ${p.pos}, ${T(p.team).name}, wins the ${G.season} Heisman Trophy (${statLine(p)}).`,true);}
 function rollBreakouts(){G.teams.forEach(t=>{t.roster.forEach(id=>{const p=P(id);p.form=0;delete p.st;p.inj=0;delete p.injN;if(p.yr>=1&&p.pot-p.ovr>=7&&Math.random()<((isUser(t)?0.06+((OFFPOS.includes(p.pos)?staffBonus().oc:staffBonus().dc)-50)*0.0015:0.07)*(hasT(p,'bloomer')?2.2:1))){const g=rint(5,10);p.ovr=clamp(Math.min(p.pot+2,p.ovr+g),40,99);p.breakout=G.season;if(isUser(t))addXP('dev',3);if(isUser(t))news(`Camp buzz: ${p.pos} ${p.n} looks like a different player (${p.ovr-g} to ${p.ovr}). Breakout season incoming.`,true);}else if(p.breakout&&p.breakout!==G.season)delete p.breakout;});});}
 function promiseCheck(){const u=userTeam();u.roster.forEach(id=>{const p=P(id);if(!p.promise||p.promise.due!==G.season||p.promise.resolved)return;const d=depth(u,p.pos,true).filter(x=>!(x.inj>0));const starting=d.indexOf(p)>-1&&d.indexOf(p)<STARTERS[p.pos];p.promise.resolved=true;
@@ -1053,7 +1069,7 @@ function runOffseason(){
 }
 function startNextSeason(){
   if(G.phase!=='offseason')return;const u=userTeam();if(u.roster.length>ROSTER_CAP||G.fired)return;
-  G.portal.forEach(p=>{const t=pick(G.teams.filter(t=>!isUser(t)));p.team=t.id;delete p.from;delete p.ask;t.roster.push(p.id);});G.portal=[];
+  G.portal.forEach(p=>{const t=pick(G.teams.filter(t=>!isUser(t)));const c=G.players[p.id]||p;G.players[p.id]=c;c.team=t.id;delete c.from;delete c.ask;t.roster.push(c.id);});G.portal=[];
   G.season++;G.coach.years++;startSeason();save();
 }
 function acceptOffer(tid){
@@ -1087,7 +1103,7 @@ function actNILInvest(){if(G.budget<5)return;G.budget-=5;G.nil+=750;}
 function actPin(pid){const p=P(pid);if(!p||p.team!==G.user)return;if(p.pin){delete p.pin;return;}depth(userTeam(),p.pos,true).forEach(x=>delete x.pin);p.pin=true;}
 function actCut(pid){const u=userTeam();if(!u.roster.includes(pid))return;const p=P(pid);news(`${p.pos} ${p.n} was released from the roster.`);cutPlayer(u,pid);}
 function actAutoTrim(){const u=userTeam();while(u.roster.length>ROSTER_CAP){const extra=[];POS.forEach(pos=>{const d=depth(u,pos);d.slice(STARTERS[pos]).forEach(p=>extra.push(p));});if(!extra.length)break;extra.sort((a,b)=>a.ovr-b.ovr);cutPlayer(u,extra[0].id);}}
-function actPortalAdd(pid){const u=userTeam();const p=G.portal.find(x=>x.id===pid);if(!p||G.portalAdds>=PORTAL_CAP||G.nil<p.ask||u.roster.length>=ROSTER_CAP)return;G.nil-=p.ask;G.portalAdds++;G.portal=G.portal.filter(x=>x.id!==pid);p.team=u.id;p.transfer=true;delete p.ask;u.roster.push(p.id);news(`${p.pos} ${p.n} (${p.ovr}) transfers in from ${p.from}.`);delete p.from;}
+function actPortalAdd(pid){const u=userTeam();const p=G.portal.find(x=>x.id===pid);if(!p||G.portalAdds>=PORTAL_CAP||G.nil<p.ask||u.roster.length>=ROSTER_CAP)return;G.nil-=p.ask;G.portalAdds++;G.portal=G.portal.filter(x=>x.id!==pid);const c=G.players[p.id]||p;G.players[p.id]=c;Object.assign(c,{team:u.id,transfer:true});delete c.ask;u.roster.push(c.id);news(`${c.pos} ${c.n} (${c.ovr}) transfers in from ${p.from}.`);delete c.from;}
 
 /* ===================== RENDER ===================== */
 const app=typeof document!=='undefined'?document.getElementById('app'):null;
@@ -1229,7 +1245,7 @@ function renderHome(){
   if(G.phase==='season'){
     const g=G.games.find(x=>x.week===G.week&&!x.played&&(x.home===u.id||x.away===u.id));
     if(g){const gl=gameLine(g,u.id);const isHome=g.home===u.id;const p=isHome?winProb(u,T(g.away),g.neutral,g):1-winProb(T(g.home),u,g.neutral,g);const opp=T(isHome?g.away:g.home);const RR=gameRiv(g);
-      parts.push(`<div class="hero ${RR?'rivhero':''}"><div class="eyebrow">${weekLabel(G.week)} · ${gl.where}${RR?' · <b>'+rivTier(RR)+(RR.name?': '+esc(RR.name):'')+'</b>':''}</div><div class="vs">${isHome||g.neutral?'vs':'at'} ${gl.label}</div><div class="row between" style="margin-top:6px"><span class="small muted">${esc(opp.nick)} · ${opp.w}-${opp.l} · ${CONFS[opp.conf].name} · HC ${esc(opp.coach.n)}</span><span class="num" style="font-size:18px">${Math.round(p*100)}% to win</span></div><div class="bar" style="margin-top:6px"><i class="me" style="width:${Math.round(p*100)}%"></i></div></div>`);}
+      parts.push(`<div class="hero ${RR?'rivhero':''}"><div class="eyebrow">${weekLabel(G.week)} · ${gl.where}${RR?' · <b>'+rivTier(RR)+(RR.name?': '+esc(RR.name):'')+'</b>':''}</div><div class="vs">${isHome||g.neutral?'vs':'at'} ${gl.label}</div><div class="row between" style="margin-top:6px"><span class="small muted">${esc(opp.nick)} · ${opp.w}-${opp.l} · ${CONFS[opp.conf].name} · HC ${esc(opp.coach.n)}</span><span class="num" style="font-size:18px;white-space:nowrap">${Math.round(p*100)}% to win</span></div><div class="bar" style="margin-top:6px"><i class="me" style="width:${Math.round(p*100)}%"></i></div></div>`);}
     else if(G.week<=14)parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">Bye week</div><div class="small muted">Hit the road recruiting; nobody to beat this Saturday.</div></div>`);
     else if(G.week===16&&u.po==='in')parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">First-round bye</div><div class="small muted">Top-four seed. You wait for the winner of the ${G.playoff.seeds.indexOf(u.id)===0?'8/9':G.playoff.seeds.indexOf(u.id)===1?'7/10':G.playoff.seeds.indexOf(u.id)===2?'6/11':'5/12'} game.</div></div>`);
     else parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">${G.week===15?'Not in the title game':u.po&&u.po!=='champ'?'Eliminated':'Watching from home'}</div><div class="small muted">${G.week===15?'Conference title games this week. Your recruiting class signs after them.':'The bracket plays on without you. Sim ahead to the offseason.'}</div></div>`);
@@ -1473,7 +1489,7 @@ function onAction(act,el){
     case 'reset':UI.confirm='reset';break;
     case 'resetyes':deleteSlot(SLOT);UI.confirm=null;UI.pickTeam=null;break;
     case 'switch':closeDynasty();UI.confirm=null;UI.pickTeam=null;UI.tab='home';break;
-    case 'open':if(openSlot(id)){UI.tab='home';UI.confirm=null;}break;
+    case 'open':openSlot(id).then(ok=>{if(ok){UI.tab='home';UI.confirm=null;}render();});return;
     case 'delslot':UI.confirm='del'+id;break;
     case 'delslotyes':deleteSlot(id);UI.confirm=null;break;
     case 'cancel':UI.confirm=null;break;
@@ -1496,8 +1512,8 @@ function onAction(act,el){
   if(G)save();
   render();
 }
-function boot(data){loadLeague();
-  if(data&&data.G){G=data.G;SLOT=data.SLOT||null;migrate();if(data.UI)Object.assign(UI,data.UI);if(!SLOT)save();}else load();
+async function boot(data){loadLeague();
+  if(data&&data.G){G=data.G;SLOT=data.SLOT||null;migrate();if(data.UI)Object.assign(UI,data.UI);if(!SLOT)save();}else await load();
   app.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el||['SELECT','INPUT','TEXTAREA'].includes(el.tagName))return;onAction(el.dataset.act,el);});
   app.addEventListener('input',e=>{const el=e.target.closest('[data-act="leagueq"]');if(el){UI.leagueQ=el.value;const box=document.getElementById('leagueList');if(box)box.innerHTML=renderLeagueRows();}});
   app.addEventListener('change',e=>{const el=e.target.closest('[data-act]');if(el)onAction(el.dataset.act,el);});
