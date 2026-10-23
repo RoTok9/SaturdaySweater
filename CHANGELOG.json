@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.159.4",
+  "notes": "Phone apps keep a second copy of every save in the app's private files, so a dynasty survives even if the phone clears web storage; it restores automatically. Exporting a dynasty on a phone saves it to the Files app."
+ },
+ {
   "version": "1.159.3",
   "notes": "Version safety for online leagues: a coach on an older version is asked to update before they can ready up or advance, so mixed versions can never scramble a league save. The web app's offline cache now only keeps good copies, cleans up old caches, and falls back to the cached game after 8 seconds on a slow connection."
  },
