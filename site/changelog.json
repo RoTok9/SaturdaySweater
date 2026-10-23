@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.115.0",
+  "notes": "Team captains: in Week 1 you name two captains from your veteran starters. Leaders make the best ones; pass over a leader and he may take it personally. Captains walk out for the coin toss on the broadcast. Skip it and the team votes. Decision day now only shows ceremonies where your hat is on the table."
+ },
+ {
   "version": "1.114.0",
   "notes": "The podium asks about your calls: after a one-score game decided in the last two minutes the press wants to know about the call you made (own it, take credit, or blame the players), and hosting the pregame show brings its own question."
  },
