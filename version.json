@@ -1,4 +1,4 @@
 {
-  "version": "1.102.0",
-  "notes": "Betting lines: the game hero shows the spread and the over/under (built from ratings, form, home field, rivalry heat and your game plan), and the Last result card says whether you covered and whether it went over. Playbook help updated for crunch time, mandates, challenges, bye and bowl weeks and head-to-head co-op."
+  "version": "1.103.0",
+  "notes": "Career splits on the coach profile: vs ranked, vs Top 10, one-score games, rivalry games, on the road, postseason, against the spread. Nemesis coaches: the game tracks your record against every opposing coach; a coach who owns you shows up in the game hero and a Nemesis storyline, and finally beating him is a moment."
 }
