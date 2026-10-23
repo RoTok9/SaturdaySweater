@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.119.0",
+  "notes": "Keyboard: during a live game, press 1 to 5 to make the halftime, fourth-quarter or two-minute call (numbers show on the buttons on desktop). Coach profile tracks how often you follow your coordinators' advice and how it worked out."
+ },
+ {
   "version": "1.118.0",
   "notes": "Single-game records: the Records card on Program now keeps the best single games of your tenure (passing yards, passing TDs, rushing yards, receiving yards, points), and breaking one makes the newswire."
  },
