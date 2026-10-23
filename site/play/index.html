@@ -477,7 +477,7 @@ function openSlot(id){const s=lsGet(slotKey(id));if(!s)return false;try{G=JSON.p
 function deleteSlot(id){lsDel(slotKey(id));saveSlots(loadSlots().filter(x=>x.id!==id));if(SLOT===id){SLOT=null;G=null;lsDel(CUR_KEY);}}
 function closeDynasty(){if(G)save();G=null;SLOT=null;lsDel(CUR_KEY);}
 function load(){migrateLegacy();const cur=lsGet(CUR_KEY);if(cur&&openSlot(cur))return true;return false;}
-function migrate(){if(!G)return;if(!G.app)G.app={fans:60,locker:60,admin:60,media:55};if(!G.pressLog)G.pressLog=[];if(G.presser===undefined)G.presser=null;if(G.heisman===undefined)G.heisman=null;G.teams.forEach(t=>{if(!t.coach)t.coach=makeCoach(t.prestige);});Object.values(G.players).forEach(p=>{if(!p.tr)p.tr=rollTraits();});G.portal.forEach(p=>{if(!p.tr)p.tr=rollTraits();});if(!G.lh)G.lh=[];if(!G.carousel)G.carousel=[];G.recruits.forEach(r=>{if(!r.persona){r.persona=pick(Object.keys(PERSONAS));r.tr=rollTraits();r.texted=0;r.convo=null;}});if(!G.riv){G.riv={};seedRivalries();}if(!G.diff)G.diff='normal';if(G.losingRun==null)G.losingRun=0;if(!G.plan)G.plan={off:'balanced',agg:'standard'};if(!G.staff||G.staff.oc===undefined){const old=G.staff||{coach:1,recruit:1};const u=G.teams[G.user];G.staff={oc:makeCoord('oc',50+(old.coach||1)*6),dc:makeCoord('dc',50+(old.coach||1)*6),rc:makeCoord('rc',50+(old.recruit||1)*6)};G.market=G.market||[];if(!G.contract)G.contract={yrs:3,sal:Math.round((1.5+u.prestige*0.6)*10)/10};}if(!G.coach.xp)G.coach.xp={rec:0,dev:0,big:0,media:0};}
+function migrate(){if(!G)return;if(!G.app)G.app={fans:60,locker:60,admin:60,media:55};if(!G.pressLog)G.pressLog=[];if(G.presser===undefined)G.presser=null;if(G.heisman===undefined)G.heisman=null;G.teams.forEach(t=>{if(!t.coach)t.coach=makeCoach(t.prestige);});Object.values(G.players).forEach(p=>{if(!p.tr)p.tr=rollTraits();});G.portal.forEach(p=>{if(!p.tr)p.tr=rollTraits();});if(!G.lh)G.lh=[];if(!G.carousel)G.carousel=[];G.recruits.forEach(r=>{if(!r.persona){r.persona=pick(Object.keys(PERSONAS));r.tr=rollTraits();r.texted=0;r.convo=null;}});if(!G.riv){G.riv={};seedRivalries();}if(!G.diff)G.diff='normal';if(G.losingRun==null)G.losingRun=0;if(!G.plan)G.plan={off:'balanced',agg:'standard'};if(!G.staff||G.staff.oc===undefined){const old=G.staff||{coach:1,recruit:1};const u=G.teams[G.user];G.staff={oc:makeCoord('oc',50+(old.coach||1)*6),dc:makeCoord('dc',50+(old.coach||1)*6),rc:makeCoord('rc',50+(old.recruit||1)*6)};G.market=G.market||[];if(!G.contract)G.contract={yrs:3,sal:Math.round((1.5+u.prestige*0.6)*10)/10};}if(!G.coach.xp)G.coach.xp={rec:0,dev:0,big:0,media:0};if(G.phase==='offseason'&&!G.schedOffers)G.schedOffers=genSchedOffers();}
 function news(text,hot){G.news.unshift({w:G.week,s:G.season,text,hot:!!hot});if(G.news.length>60)G.news.length=60;}
 
 /* ===================== TEAMS & PLAYERS ===================== */
@@ -581,7 +581,7 @@ function startSeason(){
   });
   rollBreakouts();
   G.teams.forEach(t=>{t.elo=teamElo(t);});
-  G.games=[];genSchedule();G.recruits=genRecruits();G.portal=[];G.playoff=null;G.bowls=[];G.week=1;G.phase='season';
+  G.games=[];genSchedule();schedCommit();G.schedPicks=null;G.recruits=genRecruits();G.portal=[];G.playoff=null;G.bowls=[];G.week=1;G.phase='season';
   staffPreseason();G.hours=G.hoursMax;G.mediaLeft=3;G.adLobbied=false;G.boosterUsed=false;G.lastResult=null;G.summary=null;G.offers=[];G.fired=false;G.portalAdds=0;G.classRank=null;
   const u=userTeam();G.nil+=60+u.prestige*25;
   updatePoll();
@@ -605,6 +605,10 @@ function genScheduleOnce(){
   Object.values(G.riv||{}).filter(r=>r.name||r.heat>=35).sort((x,y)=>(y.name?1:0)-(x.name?1:0)||y.heat-x.heat).forEach(r=>{const cap=r.name?2:1;if(played.has(key(r.a,r.b))||need[r.a]<=0||need[r.b]<=0||(rivCount[r.a]||0)>=cap||(rivCount[r.b]||0)>=cap)return;if(!r.name&&(r.heat<45||Math.random()<0.5))return;rivCount[r.a]=(rivCount[r.a]||0)+1;rivCount[r.b]=(rivCount[r.b]||0)+1;const conf=T(r.a).conf===T(r.b).conf&&T(r.a).conf!=='IND';add(r.a,r.b,conf);rivGames.add(key(r.a,r.b));if(conf){cnAll[r.a]=(cnAll[r.a]||0)+1;cnAll[r.b]=(cnAll[r.b]||0)+1;}});
   Object.keys(CONFS).forEach(c=>{if(c==='IND')return;const mem=teams.filter(t=>t.conf===c).map(t=>t.id);const k=Math.min(CONFS[c].games,mem.length-1);const cn={};mem.forEach(id=>cn[id]=k-(cnAll[id]||0));
     let guard=0;while(guard++<3000){const open=mem.filter(id=>cn[id]>0);if(!open.length)break;shuffle(open);open.sort((a,b)=>cn[b]-cn[a]);const a=open[0];const cands=open.filter(b=>b!==a&&!played.has(key(a,b)));if(!cands.length){cn[a]=0;continue;}const b=pick(cands);cn[a]--;cn[b]--;add(a,b,true);}});
+  // user's non-conference choices and home-and-home return trips
+  const addUser=(opp,homeFlag,neutral)=>{const u=G.user;if(played.has(key(u,opp))||need[u]<=0||need[opp]<=0)return false;played.add(key(u,opp));need[u]--;need[opp]--;const h=neutral?(Math.random()<0.5?u:opp):(homeFlag?u:opp);const aw=h===u?opp:u;home[h]++;games.push({id:G.gid++,week:0,home:h,away:aw,conf:false,type:'reg',played:false,hs:0,as:0,neutral:!!neutral,userPick:true});return true;};
+  (G.hhDue||[]).forEach(d=>addUser(d.opp,d.home,false));
+  (G.schedPicks||[]).forEach(pk=>{if(pk.type==='auto')return;addUser(pk.opp,pk.type!=='hh'?true:pk.home!==false,pk.type==='neutral');});
   let guard=0;while(guard++<6000){const open=teams.filter(t=>need[t.id]>0).map(t=>t.id);if(!open.length)break;shuffle(open);open.sort((a,b)=>need[b]-need[a]);const a=open[0],ta=T(a);const cands=open.filter(b=>b!==a&&!played.has(key(a,b))&&(T(b).conf!==ta.conf||ta.conf==='IND'));if(!cands.length){need[a]=0;continue;}
     const b=weightedPick(cands,bid=>{const tb=T(bid);const p4a=!!CONFS[ta.conf].p4||ta.conf==='IND',p4b=!!CONFS[tb.conf].p4||tb.conf==='IND';return (p4a===p4b?1:1.6)*(regionGrade(ta.region,tb.region)>1?2:1);});add(a,b,false);}
   const busy={},load=new Array(15).fill(0);teams.forEach(t=>busy[t.id]=new Set());
@@ -964,6 +968,16 @@ function finishSeason(){
   const champ=T(G.playoff.champion);
   G.lh=G.lh||[];G.lh.push({s:G.season,champ:champ.name,champCoach:isUser(champ)?G.coach.name:champ.coach.n,champRec:`${champ.w}-${champ.l}`,runner:runner?runner.name:'',heis:G.heisman?`${G.heisman.n} (${G.heisman.pos}, ${G.heisman.team})`:'',coy:`${coy.name} (${isUser(coy)?G.coach.name:coy.coach.n})`,cls:topClass?T(+topClass[0]).name:'',user:`${u.name} ${u.w}-${u.l}, No. ${u.rank}`});
 }
+/* ===================== SCHEDULE BUILDER ===================== */
+function nonConfSlots(){const u=userTeam();const cg=u.conf==='IND'?0:Math.min(CONFS[u.conf].games,G.teams.filter(t=>t.conf===u.conf).length-1);const named=Object.values(G.riv).filter(r=>r.name&&(r.a===u.id||r.b===u.id)&&T(r.a).conf!==T(r.b).conf).length;return Math.max(0,Math.min(4,12-cg-named-(G.hhDue||[]).length));}
+function genSchedOffers(){const u=userTeam();const others=G.teams.filter(t=>!isUser(t)&&t.conf!==u.conf);const low=shuffle(others.filter(t=>t.prestige<=3)).slice(0,3).map(t=>({type:'buy',opp:t.id,cost:Math.round((0.8+t.prestige*0.3)*10)/10}));
+  const hh=shuffle(others.filter(t=>t.prestige>=4&&Math.abs(t.prestige-u.prestige)<=3)).slice(0,4).map(t=>({type:'hh',opp:t.id,home:Math.random()<0.5}));
+  const neu=shuffle(others.filter(t=>t.prestige>=7)).slice(0,2).map(t=>({type:'neutral',opp:t.id,pay:Math.round((2+t.prestige*0.4)*10)/10}));
+  return {buy:low,hh,neutral:neu};}
+function actSchedPick(kind,idx){if(G.phase!=='offseason')return;G.schedPicks=G.schedPicks||[];if(G.schedPicks.length>=nonConfSlots())return;const o=(G.schedOffers||{})[kind][idx];if(!o)return;if(G.schedPicks.some(p=>p.opp===o.opp))return;if(o.type==='buy'){if(G.budget<o.cost)return;G.budget=Math.round((G.budget-o.cost)*10)/10;}if(o.type==='neutral'){G.budget=Math.round((G.budget+o.pay)*10)/10;}G.schedPicks.push(Object.assign({},o));if(o.type==='hh'){(G.hhDue=G.hhDue||[]);}}
+function actSchedUndo(idx){if(G.phase!=='offseason')return;const pk=(G.schedPicks||[])[idx];if(!pk)return;if(pk.type==='buy')G.budget=Math.round((G.budget+pk.cost)*10)/10;if(pk.type==='neutral')G.budget=Math.round((G.budget-pk.pay)*10)/10;G.schedPicks.splice(idx,1);}
+function schedCommit(){ // at season start: home-and-home return trips queue for next year
+  const due=(G.hhDue||[]).filter(d=>false);(G.schedPicks||[]).forEach(pk=>{if(pk.type==='hh')due.push({opp:pk.opp,home:!pk.home});});G.hhDue=due;}
 function coachingCarousel(){
   const moves=[];const fired=[];
   G.teams.forEach(t=>{if(isUser(t))return;const c=t.coach;c.yrs++;const delta=t.w-expectedWins(t)+(t.po?1.5:0)+(t.po==='champ'?3:0);
@@ -1011,6 +1025,7 @@ function runOffseason(){
   G.portal.sort((a,b)=>b.ovr-a.ovr);if(G.portal.length>90){G.portal.slice(90).forEach(p=>delete G.players[p.id]);G.portal.length=90;}
   // budget
   const income=Math.round(3+u.prestige*1.1+u.w*0.5+(u.po?3:0)+(u.po==='champ'?5:0)+(u.confChamp?2:0));G.budget+=income;G.portalAdds=0;
+  G.schedOffers=genSchedOffers();G.schedPicks=null;
   news(`Athletic department budget for the offseason: +$${income}M (now $${G.budget}M). Facilities, staff and NIL investments are open.`);
   G.phase='offseason';save();
 }
@@ -1157,7 +1172,7 @@ function renderNextLine(u){
   return `<div class="nextline"><span class="nx">${u.po&&u.po!=='champ'?'Eliminated from the playoff.':'Not in the bracket.'} Sim through to the offseason.</span><span class="od">${weekLabel(G.week)}</span></div>`;
 }
 function gameLine(g,me){const home=T(g.home),away=T(g.away);const opp=g.home===me?away:home;const isHome=g.home===me;const orank=g.played?(isHome?g.arank:g.hrank):opp.rank;const label=`${orank<=25?'No. '+orank+' ':''}${esc(opp.name)}`;
-  const RV=gameRiv(g);const where=(g.type==='ccg'?CONFS[g.confName].name+' Championship':g.type==='po'?({r1:'Playoff First Round',qf:'Playoff Quarterfinal',sf:'Playoff Semifinal',f:'National Championship'})[g.round]:g.type==='bowl'?g.name+' Bowl':(isHome?'Home':'Away')+(g.conf?' · Conf':''))+(RV?' · <b>'+(RV.name?esc(RV.name):rivTier(RV))+'</b>':'');
+  const RV=gameRiv(g);const where=(g.neutral&&g.type==='reg'?'Neutral site':'')+(g.type==='ccg'?CONFS[g.confName].name+' Championship':g.type==='po'?({r1:'Playoff First Round',qf:'Playoff Quarterfinal',sf:'Playoff Semifinal',f:'National Championship'})[g.round]:g.type==='bowl'?g.name+' Bowl':(g.neutral&&g.type==='reg'?'':(isHome?'Home':'Away'))+(g.conf?' · Conf':''))+(RV?' · <b>'+(RV.name?esc(RV.name):rivTier(RV))+'</b>':'');
   if(!g.played)return {label,where,res:'',cls:''};const ms=isHome?g.hs:g.as,os=isHome?g.as:g.hs;return {label,where,res:`${ms>os?'W':'L'} ${ms}-${os}`,cls:ms>os?'W':'L'};}
 function renderHome(){
   const u=userTeam();const parts=[];
@@ -1167,6 +1182,7 @@ function renderHome(){
     ${G.offers.length&&!G.fired?`<div class="small">Job offers are waiting in the Program tab. Ignore them to stay put.</div>`:''}
     <div class="small">Roster: <b class="${over>0?'no':'ok'}">${u.roster.length}/${ROSTER_CAP}</b>${over>0?` (cut ${over} in the Roster tab)`:''}</div>
     <div class="small">Transfer portal: ${G.portalAdds}/${PORTAL_CAP} adds used, ${G.portal.length} players available (Roster tab)</div>
+    <div class="small">Schedule: ${(G.schedPicks||[]).length}/${nonConfSlots()} non-conference slots chosen (Season tab)</div>
     <div class="small">Budget: $${G.budget}M for facilities, coordinators or NIL (Program tab)${['oc','dc','rc'].some(r=>!G.staff[r]||G.staff[r].yrs<=0)?' · <b class="no">a coordinator job is open or expiring</b>':''}</div>
     <div class="btnrow"><button class="btn" data-act="sim" ${over>0||G.fired?'disabled':''}>Start ${G.season+1} season</button></div></div>`);}
   if(G.phase==='season'){
@@ -1229,8 +1245,17 @@ function renderWatchInner(g){
 function confLeaders(){const confLead={};Object.keys(CONFS).forEach(c=>{if(c==='IND')return;const mem=G.teams.filter(t=>t.conf===c).sort((a,b)=>(b.cw/((b.cw+b.cl)||1))-(a.cw/((a.cw+a.cl)||1))||b.pollScore-a.pollScore);confLead[c]=mem[0].id;});return confLead;}
 function projectedField(){const ranked=G.poll.map(T);const confLead=confLeaders();const champs=ranked.filter(t=>confLead[t.conf]===t.id).slice(0,5);const field=[...champs];for(const t of ranked){if(field.length>=12)break;if(!field.includes(t))field.push(t);}return field.sort((a,b)=>a.rank-b.rank);}
 function renderPlayoffPicture(u){const f=projectedField();const i=f.indexOf(u);return `<div class="small">Projected playoff: ${i>=0?`<b class="ok">In as the No. ${i+1} seed</b>`:`<b class="no">Out</b> · bubble: ${f.slice(9).map(t=>esc(t.name)).join(', ')}`}</div>`;}
+function renderSchedBuilder(){const u=userTeam();const slots=nonConfSlots();const picks=G.schedPicks||[];const of=G.schedOffers||genSchedOffers();const left=slots-picks.length;
+  const row=(kind,o,i)=>{const t=T(o.opp);const taken=picks.some(p=>p.opp===o.opp);const desc=o.type==='buy'?`Home. Costs $${o.cost}M. A win nobody will respect.`:o.type==='hh'?`${o.home?'Home this year, away next':'Away this year, home next'}. Prestige ${t.prestige}.`:`Neutral site. Pays $${o.pay}M. Prestige ${t.prestige}, ranked No. ${t.rank}.`;return `<div class="item"><div class="grow"><div class="nm">${esc(t.name)} <span class="tiny muted">${esc(t.nick)} · ${CONFS[t.conf].name}</span></div><div class="sub">${desc}</div></div><button class="btn sm" data-act="schedpick" data-id="${kind}:${i}" ${taken||left<=0||(o.type==='buy'&&G.budget<o.cost)?'disabled':''}>${taken?'Added':'Add'}</button></div>`;};
+  return `<div class="card sec"><div class="row between"><h3>Schedule builder</h3><span class="tag ${left>0?'warn':'good'}">${left} of ${slots} open slot${slots===1?'':'s'}</span></div>
+    <div class="tiny muted">Conference games and named rivalries are set. Fill your non-conference slots: buy an easy home game, agree to a home-and-home with a peer, or take a neutral-site payday against a power. Slots you leave open, the AD fills at random. Rankings reward who you beat, so an easy slate can cost you a playoff spot.</div>
+    ${picks.length?`<div class="list">${picks.map((pk,i)=>`<div class="item"><div class="grow"><div class="nm">${esc(T(pk.opp).name)}</div><div class="sub">${pk.type==='buy'?'Bought home game':pk.type==='hh'?(pk.home?'Home-and-home, home first':'Home-and-home, away first'):'Neutral-site showcase'}</div></div><button class="btn sm ghost" data-act="schedundo" data-id="${i}">Remove</button></div>`).join('')}</div>`:''}
+    ${(G.hhDue||[]).length?`<div class="small muted">Return trips already booked: ${G.hhDue.map(d=>esc(T(d.opp).name)+(d.home?' (home)':' (away)')).join(', ')}</div>`:''}
+    <div class="eyebrow">Buy a game</div><div class="list">${of.buy.map((o,i)=>row('buy',o,i)).join('')}</div>
+    <div class="eyebrow">Home-and-home</div><div class="list">${of.hh.map((o,i)=>row('hh',o,i)).join('')}</div>
+    <div class="eyebrow">Neutral-site showcase</div><div class="list">${of.neutral.map((o,i)=>row('neutral',o,i)).join('')}</div></div>`;}
 function renderSchedule(){
-  const u=userTeam();const mine=G.games.filter(g=>g.home===u.id||g.away===u.id).sort((a,b)=>a.week-b.week);
+  const u=userTeam();if(G.phase==='offseason')return renderSchedBuilder()+renderStandings(u.conf,true);const mine=G.games.filter(g=>g.home===u.id||g.away===u.id).sort((a,b)=>a.week-b.week);
   const row=(g,lbl)=>{const gl=gameLine(g,u.id);const open=UI.watch&&UI.watch.gid===g.id;return `<div class="item ${g.played&&g.box?'clickable':''}" ${g.played&&g.box?`data-act="watch" data-id="${g.id}"`:''}><div class="rk">${lbl}</div><div class="grow"><div class="nm">${gl.label}</div><div class="sub">${gl.where}${g.played&&g.box?' · tap for box score':''}</div></div><div class="res ${gl.cls}">${gl.res||'<span class="muted tiny">upcoming</span>'}</div></div>${open?`<div class="detail">${renderWatch(g)}</div>`:''}`;};
   const rows=[];for(let w=1;w<=14;w++){const g=mine.find(x=>x.week===w);if(!g){rows.push(`<div class="item"><div class="rk">${w}</div><div class="grow muted">Bye</div></div>`);continue;}rows.push(row(g,w));}
   const post=mine.filter(g=>g.week>14).map(g=>row(g,g.week===15?'CCG':g.week===16?'R1':g.week===17?'QF':g.week===18?'SF':'NC')).join('');
@@ -1367,6 +1392,8 @@ function onAction(act,el){
     case 'leadmine':UI.leadMine=!UI.leadMine;break;
     case 'planoff':G.plan.off=id;break;
     case 'hire':actHire(+id);break;
+    case 'schedpick':{const [k,i]=id.split(':');actSchedPick(k,+i);break;}
+    case 'schedundo':actSchedUndo(+id);break;
     case 'extend':actExtend(id);break;
     case 'planagg':G.plan.agg=id;break;
     case 'scoutopp':{const g=G.games.find(x=>x.id===+id);if(g)actScoutOpp(g);break;}
