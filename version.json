@@ -1,4 +1,4 @@
 {
-  "version": "1.36.0",
-  "notes": "Live game: end zones now sit on the correct sides of the field strip and the duplicate skip button is gone. Website screenshots updated to the Stadium Night look."
+  "version": "1.37.0",
+  "notes": "Roster now opens on a Two-deep view: every position group as a card with starters, the next man up, and how the unit ranks nationally. Team rankings (scoring, total, passing, rushing offense, scoring defense, point margin) on the Polls Leaders view. Around the Country is a real scoreboard: score tiles with crests, ranks, and Upset and Ranked matchup tags. Real school abbreviations on every crest. Defensive stats are now tracked for every team, so the national sack, interception and tackle leaders are no longer just your guys. Recruiting board runs two columns on desktop."
 }
