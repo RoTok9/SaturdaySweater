@@ -1,4 +1,4 @@
 {
-  "version": "1.67.0",
-  "notes": "Injuries happen on the broadcast now: when one of your players goes down that week, the feed shows it in the second half with the trainers, the tent or the cart, and the diagnosis."
+  "version": "1.68.0",
+  "notes": "Start screen: the school picker now lays out as a proper grid on desktop (it was collapsing to one column), every school gets a crest in its colors and a prestige star rating. Playoff, conference championship and bowl games open with the right broadcast framing."
 }

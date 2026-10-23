@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.67.0">
+<meta name="app-version" content="1.68.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -295,7 +295,9 @@ main{width:100%}
 .col-main,.col-side{display:contents}
 @media (min-width:900px){
   main{max-width:1100px;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start;padding-block:18px 40px}
-  main.single>*{grid-column:1/-1}
+  main.single>*,main.picker>*{grid-column:1/-1}
+  main.picker{align-items:stretch}
+  main.picker .teamgrid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
   .col-main,.col-side{display:flex;flex-direction:column;gap:14px;min-width:0}
   .tabs{position:static;order:1;margin:0;width:100%;max-width:none;border-top:0;border-bottom:1px solid var(--line);max-width:none;border-left:0;border-right:0;padding-left:0;padding-right:0}
   .tabs .in{max-width:1100px;margin:0 auto;display:flex;width:100%;padding:0 16px}
@@ -626,6 +628,10 @@ body{background:var(--bg);background-image:radial-gradient(900px 420px at 8% -6%
 .qt.ot .qth,.qt.ot .qtr{grid-template-columns:52px repeat(5,1fr) 40px}
 .chips.sm{gap:4px}.chips.sm .chip{padding:3px 8px;font-size:11px}
 .play.injury{border-left-color:#ff5c5c;background:rgba(255,92,92,.08)}
+.tbtn{flex-direction:row;align-items:center;gap:10px}
+.tbtn .ptxt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tbtn .ptxt b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tbtn .ptxt span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tbtn .pstars{color:var(--gold);letter-spacing:1px;font-size:11px}
+.pcrest{flex:0 0 auto;width:40px;height:40px;border-radius:10px;background:var(--c);color:var(--cf);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.02em;box-shadow:0 0 14px color-mix(in srgb,var(--c) 55%,transparent);border:1px solid rgba(255,255,255,.25)}
 </style>
 
 </head>
@@ -2131,7 +2137,7 @@ function renderPicker(){
     </div>
     ${renderOnlinePanel()}
     <div class="card sec"><div class="row between"><h3>League editor</h3><button class="btn sm ghost" data-act="leaguetoggle">${UI.leagueOpen?'Hide':'Customize schools'}</button></div><div class="tiny muted">Rename any school, change its nickname or colors, or paste in a league a friend shared. Your league is remembered for every new dynasty.</div>${UI.leagueOpen?renderLeagueEditor():''}</div>
-    ${confs.map(c=>`<div class="sec"><div class="eyebrow">${CONFS[c].name}</div><div class="teamgrid">${TEAMS.map((t,i)=>LEAGUE[i].conf===c?`<button class="tbtn ${UI.pickTeam===i?'on':''}" data-act="pick" data-id="${i}"><span class="sw" style="background:${LEAGUE[i].color}"></span><b>${esc(LEAGUE[i].name)}</b><span>${esc(LEAGUE[i].nick)} · ${t[3]}/10</span></button>`:'').join('')}</div></div>`).join('')}
+    ${confs.map(c=>`<div class="sec"><div class="eyebrow">${CONFS[c].name}</div><div class="teamgrid">${TEAMS.map((t,i)=>LEAGUE[i].conf===c?`<button class="tbtn ${UI.pickTeam===i?'on':''}" data-act="pick" data-id="${i}"><span class="sw" style="background:${LEAGUE[i].color}"></span><span class="pcrest" style="--c:${LEAGUE[i].color};--cf:${luminance(LEAGUE[i].color)>0.4?'#111':'#fff'}">${(()=>{const nm=LEAGUE[i].name;if(ABBRS.length&&nm===TEAMS[i][0])return ABBRS[i];const w=nm.replace(/[^A-Za-z ]/g,'').trim().split(/\s+/);return w.length===1?(w[0].length<=4?w[0].toUpperCase():w[0].slice(0,3).toUpperCase()):w.map(x=>x[0]).join('').slice(0,3).toUpperCase();})()}</span><span class="ptxt"><b>${esc(LEAGUE[i].name)}</b><span>${esc(LEAGUE[i].nick)}</span><span class="pstars">${'\u2605'.repeat(Math.round(t[3]/2))}${'\u2606'.repeat(5-Math.round(t[3]/2))}</span></span></button>`:'').join('')}</div></div>`).join('')}
   </main>`;
 }
 function simLabel(){if(G.online&&NET)return onlineSimLabel();if(coopOn()&&!allReady()){const n=humanIds().filter(h=>!bagOf(h).ready&&h!==G.user).length;return n?`Ready · pass to next (${n} left)`:'Ready · advance';}if(G.phase==='season')return (G.week<=14?'Sim Week '+G.week:G.week===15?'Sim Champ. Week':G.week===16?'Sim First Round':G.week===17?'Sim Quarters':G.week===18?'Sim Semis':'Sim Title Game');if(G.phase==='postseason')return 'Go to offseason';return 'Start '+(G.season+1);}
@@ -2187,7 +2193,8 @@ function buildFeed(g,playsIn,half){
   const h=T(g.home),a=T(g.away);const b=playsIn?{plays:playsIn,home:{def:[]},away:{def:[]}}:g.box;const defs=t=>((t===g.home?b.home:b.away).def||[]).slice(0,5).map(x=>x.n);
   const R=gameRiv(g);const big=(g.hrank<=25&&g.arank<=25)||g.type!=='reg';const crowd=g.neutral?rint(60,78):(g.crowd||crowdFor(g).crowd);
   const extra=g.hc===g.home?' Homecoming weekend: alumni everywhere, the band on the field early.':g.sd===g.home?' Senior Day. The seniors walk out with their families before kickoff.':'';
-  const scene=(R&&R.name?`${R.name}. ${crowd},000 and the student section has been in since noon. ${R.streak&&R.streak.n>=2?T(R.streak.team).name+' has won '+R.streak.n+' straight in this series.':'Series '+(R.w[h.id]||0)+'-'+(R.w[a.id]||0)+' with '+(R.w[h.id]>=(R.w[a.id]||0)?h.name:a.name)+' in front.'}`:big?`${crowd},000 in the building for a ranked matchup. It is loud.`:g.neutral?`Neutral site, ${crowd},000 split down the middle.`:`${crowd},000 at kickoff.`)+extra;
+  const stage=g.type==='po'?(g.round==='f'?'The national championship game. ':g.round==='sf'?'A playoff semifinal. ':g.round==='qf'?'A playoff quarterfinal. ':'College Football Playoff, first round, on campus in December. ')+(g.round==='r1'?'':'')+(g.hrank<=25||g.arank<=25?`${a.name} ${a.rank<=25?'(No. '+a.rank+') ':''}at ${h.name}${h.rank<=25?' (No. '+h.rank+')':''}. `:''):g.type==='ccg'?`The ${CONFS[g.confName]?CONFS[g.confName].name:''} championship game. A trophy and a playoff bid on the line. `:g.type==='bowl'?`The ${g.name} Bowl. ${pick(['Bowl season: half the stadium is on vacation and the other half is loud.','Two weeks of practice and a trophy at the end of it.','Pageantry everywhere, and some players already have one foot in the portal.'])} `:'';
+  const scene=stage+(R&&R.name?`${R.name}. ${crowd},000 and the student section has been in since noon. ${R.streak&&R.streak.n>=2?T(R.streak.team).name+' has won '+R.streak.n+' straight in this series.':'Series '+(R.w[h.id]||0)+'-'+(R.w[a.id]||0)+' with '+(R.w[h.id]>=(R.w[a.id]||0)?h.name:a.name)+' in front.'}`:big?`${crowd},000 in the building for a ranked matchup. It is loud.`:g.neutral?`Neutral site, ${crowd},000 split down the middle.`:`${crowd},000 at kickoff.`)+extra;
   const wx=wxFor(g);const jn=isHuman(g.home)?withCoachRet(g.home,()=>jerseyNight(g)):null;const feed=[{k:'q',text:`Kickoff: ${a.name} at ${h.name}`,hs:0,as:0},{k:'f',team:g.home,text:scene+(jn?` ${jn.n} walks out at midfield with his family and the number goes up on the facade. The place loses it.`:'')+(wx?' '+({snow:'Snow is falling and the yard lines are going.',rain:'Steady rain. The ball is already slick.',wind:'Flags are standing straight out. Kickers are nervous.',heat:'It is brutally hot. Trainers have the tents up.',cold:'Teens at kickoff. Breath hanging over the sideline.'})[wx]:''),hs:0,as:0}];let hs=0,as=0,q=1;
   const CROWD=['The crowd noise forces a false start on {t}','{d} gets the whole stadium on its feet with a third-down stop','The student section is chanting at the {t} sideline','A scuffle after the whistle; flags on both teams','{t} goes for it on fourth down and the place is shaking','{d} jaws with the {t} bench after a sack'];
   // drive state: who has it and where (yards from the offense's own goal line)
