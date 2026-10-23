@@ -1,4 +1,4 @@
 {
-  "version": "1.10.1",
-  "notes": "Saves are four to six times smaller (compressed on the fly), so many dynasties fit on a phone. Fixed a transfer-portal bug where a reloaded save could credit a transfer's stats to a stale copy. Mobile tab bar and header fit on narrow phones."
+  "version": "1.11.0",
+  "notes": "Conference realignment: rising Group of Five programs get Power invitations (yours comes with a choice), powers jump leagues, independents join. A proper offseason calendar on Home walks you through departures, staff, portal, schedule, budget and roster before camp opens. Saves now compress one at a time, which keeps memory flat over long dynasties."
 }
