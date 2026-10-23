@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.137.1",
+  "notes": "Playbook help and website updated for pregame speeches, coordinator advice, captains, ticket prices, game-day looks and retirement."
+ },
+ {
   "version": "1.137.0",
   "notes": "Locker room before kickoff: in big games (rivalries, ranked opponents, the postseason) the broadcast opens in the locker room and you pick the speech. Fire them up when it is personal or nobody believes in you, stay calm on the road and the biggest stages, or play for each other when the room is tight. The right speech wins the first half; the wrong one costs you a false start. Conference power rankings also live on Polls > Standings."
  },
