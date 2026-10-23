@@ -1,4 +1,4 @@
 {
-  "version": "1.53.0",
-  "notes": "Home-game promotions: once a season pick a Blackout, Whiteout or Stripe the stadium for a home game (/bin/bash.5M). The crowd swells, the edge jumps, fans love it, and recruits who visit that weekend remember it. It shows on the matchup card and the game plan."
+  "version": "1.54.0",
+  "notes": "The message board now reacts to your media days promise, your promotion night, a flip you landed and the weather. A busted promise gets its own press conference question, and how you answer it matters."
 }
