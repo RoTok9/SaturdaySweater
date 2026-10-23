@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.34.0">
+<meta name="app-version" content="1.35.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -966,7 +966,7 @@ function myRivals(){const u=G.user;return Object.values(G.riv).filter(r=>(r.a===
 function gameRiv(g){const r=G.riv[rkey(g.home,g.away)];if(g.played&&g.rivPre){const p=g.rivPre;return p.heat>=35||p.name?Object.assign({a:Math.min(g.home,g.away),b:Math.max(g.home,g.away),games:[]},p):null;}return r&&r.heat>=35?r:null;}
 
 /* ===================== MULTI-COACH (co-op) ===================== */
-const COACH_KEYS=['coach','hours','hoursMax','nil','budget','staff','market','mediaLeft','adLobbied','boosterUsed','lastResult','summary','portalAdds','pendingTeam','app','presser','pressLog','offers','fired','plan','contract','losingRun','startPrestige','seatHigh','goals','talks','lameDuck','tipsSeen','guideOff','eventLog','event','_eventFx','eventsThisSeason','eventSeen','schedOffers','schedPicks','hhDue','signing','spring','battles','springBoost','pendingScandal','realign','_optP','waverSeen','news','history','ready','draft','fallout','_pre','ripLog','boosters'];
+const COACH_KEYS=['coach','hours','hoursMax','nil','budget','staff','market','mediaLeft','adLobbied','boosterUsed','lastResult','summary','portalAdds','pendingTeam','app','presser','pressLog','offers','fired','plan','contract','losingRun','startPrestige','seatHigh','goals','talks','lameDuck','tipsSeen','guideOff','eventLog','event','_eventFx','eventsThisSeason','eventSeen','schedOffers','schedPicks','hhDue','signing','spring','battles','springBoost','pendingScandal','realign','_optP','waverSeen','news','history','ready','draft','fallout','_pre','ripLog','boosters','nilAsks'];
 const REC_KEYS=['offer','texted','convo','pitched','visited','visitQ','visitNote','nilGiven','promise','scouted','inWk','inSeen','waver','heldFly','heldFam','lostWhy','finalOdds','flipped'];
 function isHuman(id){return !!G&&(id===G.user||!!(G.h&&G.h[id]));}
 function humanIds(){if(!G)return [];const ids=[G.user];if(G.h)Object.keys(G.h).forEach(k=>{if(+k!==G.user)ids.push(+k);});return ids;}
@@ -1606,6 +1606,14 @@ function perkPending(){const xp=G.coach;if(!xp)return null;xp.perks=xp.perks||{}
 function actPerk(id){const pend=perkPending();if(!pend||!pend.opts.some(([x])=>x===id))return;G.coach.perks=G.coach.perks||{};G.coach.perks[id]=true;const o=pend.opts.find(([x])=>x===id);news(`${G.coach.name} picks up a new trait: ${o[1]}. ${o[2]}`,true);ripple(`Perk unlocked: ${o[1]}`);}
 function renderPerkChoice(){const pend=perkPending();if(!pend)return '';const nm={rec:'Recruiter',dev:'Developer',big:'Big-game coach',media:'Media operator'}[pend.k];return `<div class="card sec presser" style="border-left-color:var(--gold)"><div class="eyebrow">Level ${pend.L} ${nm}: choose a trait</div><div class="small muted">Earned, permanent, yours. Pick one.</div><div class="grid2">${pend.opts.map(([id,t,d])=>`<button class="answer" data-act="perk" data-id="${id}"><b>${t}</b> <span class="muted">${d}</span></button>`).join('')}</div></div>`;}
 function renderPerks(){const ps=G.coach.perks||{};const all=[];Object.keys(PERKS).forEach(k=>Object.keys(PERKS[k]).forEach(L=>PERKS[k][L].forEach(([id,t,d])=>{if(ps[id])all.push([t,d]);})));if(!all.length)return '';return `<div class="chips" style="margin-top:6px">${all.map(([t,d])=>`<span class="chip good" title="${esc(d)}">${t}</span>`).join('')}</div>`;}
+/* ===================== NIL RETENTION (your stars want paper) ===================== */
+function nilAsks(){const u=userTeam();const asks=[];u.roster.map(P).forEach(p=>{if(!p||p.yr>=3||p.ovr<82)return;const starter=isStarterAll(p);const pr=starter?0.55:0.3;if(Math.random()<pr*(hasT(p,'flight')?1.6:1)*(hasT(p,'homebody')?0.4:1)*(p.unhappy?1.5:1)){asks.push({pid:p.id,ask:Math.round(((p.ovr-72)*6+(p.heisman?150:0)+rint(0,20))/5)*5,st:'open'});}});asks.sort((a,b)=>b.ask-a.ask);G.nilAsks=asks.slice(0,4);}
+function actNilAsk(pid,kind){const a=(G.nilAsks||[]).find(x=>x.pid===pid&&x.st==='open');const p=P(pid);if(!a||!p)return;if(kind==='pay'){if(G.nil<a.ask)return;G.nil-=a.ask;a.st='paid';p.nilDeal=G.season+1;delete p.unhappy;bumpForm(p,0.5);news(`${p.pos} ${p.n} signs a ${fmtK(a.ask)} NIL deal to stay. The locker room noticed who got paid.`);adj('locker',hasT(p,'leader')?2:-1);}
+  else if(kind==='counter'){const ok=Math.random()<(hasT(p,'homebody')?0.75:hasT(p,'flight')?0.3:0.5)+(G.app.locker-55)/150;const half=Math.round(a.ask*0.6/5)*5;if(G.nil<half)return;if(ok){G.nil-=half;a.st='paid';a.ask=half;p.nilDeal=G.season+1;news(`${p.pos} ${p.n} takes the smaller number (${fmtK(half)}) and stays. He wanted to be here.`);}else{a.st='portal';news(`${p.pos} ${p.n} did not like the counter. His agent says the portal is the move.`,true);}}
+  else{a.st='portal';news(`You let ${p.pos} ${p.n} test the portal.`);}}
+function nilResolve(){const u=userTeam();(G.nilAsks||[]).forEach(a=>{const p=P(a.pid);if(!p||p.team!==u.id)return;if(a.st==='open'){a.st=Math.random()<0.5?'stay':'portal';if(a.st==='stay')news(`${p.pos} ${p.n} never got an answer on his NIL ask. He stayed anyway, for now.`);}
+  if(a.st==='portal'){u.roster=u.roster.filter(id=>id!==p.id);p.team=-1;p.from=u.name;p.ask=Math.round((p.ovr-55)*8);G.portal.push(p);news(`${p.pos} ${p.n} (${p.ovr}) enters the portal over NIL money.`,true);adj('fans',-2);}});G.nilAsks=[];}
+function renderNilAsks(){const asks=(G.nilAsks||[]);if(!asks.length)return '';const open=asks.filter(a=>a.st==='open');return `<div class="card sec"><div class="row between"><div class="eyebrow">NIL retention</div><span class="tiny muted">Fund: ${fmtK(G.nil)}</span></div><div class="small muted">Agents are calling. Pay the number, counter at 60%, or let him test the portal. Unanswered asks get decided for you at camp.</div><div class="list">${asks.map(a=>{const p=P(a.pid);if(!p)return '';return `<div class="item"><div class="posb">${p.pos}</div><div class="grow"><div class="nm">${esc(p.n)} <span class="tiny muted">${p.ovr} OVR · ${YR[Math.min(p.yr,3)]}${isStarterAll(p)?' · starter':''}</span></div><div class="sub">${a.st==='open'?`Asking <b>${fmtK(a.ask)}</b>${hasT(p,'flight')?' · flight risk':hasT(p,'homebody')?' · wants to stay':''}`:a.st==='paid'?`Signed for ${fmtK(a.ask)}`:a.st==='stay'?'Staying':'Entering the portal'}</div></div>${a.st==='open'?`<div class="btnrow"><button class="btn sm" data-act="nilpay" data-id="${p.id}" ${G.nil<a.ask?'disabled':''}>Pay</button><button class="btn sm ghost" data-act="nilcounter" data-id="${p.id}" ${G.nil<Math.round(a.ask*0.6/5)*5?'disabled':''}>Counter</button><button class="btn sm ghost" data-act="nillet" data-id="${p.id}">Let him test it</button></div>`:''}</div>`;}).join('')}</div>${open.length?'':'<div class="tiny muted">All asks answered.</div>'}</div>`;}
 function careerLine(p){const c=p.car;if(!c)return '';if(p.pos==='QB')return `${c.py.toLocaleString()} pass yds, ${c.ptd} TD`;if(p.pos==='RB')return `${c.ry.toLocaleString()} rush yds, ${c.rtd} TD`;if(p.pos==='WR'||p.pos==='TE')return `${c.recy.toLocaleString()} rec yds, ${c.rectd} TD`;if(['DL','LB','CB','S'].includes(p.pos))return `${c.tk} tkl, ${c.sk} sacks, ${c.dint} INT`;return `${c.gp} games`;}
 function accrueCareers(){Object.values(G.players).forEach(p=>{if(!p.st)return;if(!isHuman(p.team)&&!(p.aw&&p.aw.length)&&!p.heisman){return;}const c=p.car||(p.car={from:G.season,gp:0,py:0,ptd:0,ry:0,rtd:0,recy:0,rectd:0,tk:0,sk:0,dint:0});['gp','py','ptd','ry','rtd','recy','rectd','tk','sk','dint'].forEach(k=>c[k]+=p.st[k]||0);});}
 function awardHeisman(){const top=heismanWatch(5);const w=top[0];if(!w)return;const p=w.p;if(isHuman(p.team))ach('heisman');p.heisman=G.season;const tot=top.reduce((a,x)=>a+Math.pow(Math.max(x.v,1),7),0);const fin=top.map(x=>({n:x.p.n,pos:x.p.pos,team:T(x.p.team).name,tid:x.p.team,line:statLine(x.p),pct:Math.round(Math.pow(Math.max(x.v,1),7)/tot*100),yr:YR[Math.min(x.p.yr,3)]}));G.heisman={pid:p.id,n:p.n,pos:p.pos,team:T(p.team).name,line:statLine(p),season:G.season,fin};news(`${p.n}, ${p.pos}, ${T(p.team).name}, wins the ${G.season} Heisman Trophy (${statLine(p)}).`,true);}
@@ -1871,7 +1879,8 @@ function runOffseason(){
   forEachCoach(proTick);runDraft(draftCands);
   // transfer portal
   G.portal=[];
-  G.teams.forEach(t=>{const body=()=>{POS.forEach(pos=>{const d=depth(t,pos);d.slice(STARTERS[pos]).forEach(p=>{const leaders=t.roster.filter(id=>hasT(P(id),'leader')).length;const cpp=isUser(t)?null:coachPersona(t.coach);let pc=(isUser(t)?0.05*(1+(50-G.app.locker)/50):0.07*(cpp==='players'?0.55:cpp==='oldschool'?0.75:cpp==='gambler'?1.25:1))*(hasT(p,'flight')?2.5:1)*(hasT(p,'homebody')?0.3:1)*Math.max(0.5,1-leaders*0.12)*(p.unhappy?5:1);if(p.ovr>=62&&Math.random()<pc){t.roster=t.roster.filter(id=>id!==p.id);p.team=-1;p.from=t.name;p.ask=Math.round((p.ovr-55)*8);G.portal.push(p);if(isUser(t))news(`${pos} ${p.n} (${p.ovr}) has entered the transfer portal looking for playing time.`);}});});};if(isHuman(t.id))withCoach(t.id,body);else body();});
+  G.teams.forEach(t=>{const body=()=>{POS.forEach(pos=>{const d=depth(t,pos);d.slice(STARTERS[pos]).forEach(p=>{const leaders=t.roster.filter(id=>hasT(P(id),'leader')).length;const cpp=isUser(t)?null:coachPersona(t.coach);let pc=(isUser(t)?0.05*(1+(50-G.app.locker)/50):0.07*(cpp==='players'?0.55:cpp==='oldschool'?0.75:cpp==='gambler'?1.25:1))*(hasT(p,'flight')?2.5:1)*(hasT(p,'homebody')?0.3:1)*Math.max(0.5,1-leaders*0.12)*(p.unhappy?5:1)*(p.nilDeal&&p.nilDeal>=G.season?0.15:1);if(p.ovr>=62&&Math.random()<pc){t.roster=t.roster.filter(id=>id!==p.id);p.team=-1;p.from=t.name;p.ask=Math.round((p.ovr-55)*8);G.portal.push(p);if(isUser(t))news(`${pos} ${p.n} (${p.ovr}) has entered the transfer portal looking for playing time.`);}});});};if(isHuman(t.id))withCoach(t.id,body);else body();});
+  forEachCoach(nilAsks);
   humanIds().forEach(h=>T(h).roster.forEach(id=>{const p=P(id);if(p.unhappy){delete p.unhappy;}}));
   G.portal.sort((a,b)=>b.ovr-a.ovr);if(G.portal.length>90){G.portal.slice(90).forEach(p=>delete G.players[p.id]);G.portal.length=90;}
   // budget
@@ -1883,6 +1892,7 @@ function runOffseason(){
 }
 function startNextSeason(){
   if(G.phase!=='offseason')return;if(humanIds().some(h=>T(h).roster.length>ROSTER_CAP||bagOf(h).fired||bagOf(h).realign))return;
+  forEachCoach(nilResolve);
   G.portal.forEach(p=>{const t=pick(G.teams.filter(t=>!isHuman(t.id)));const c=G.players[p.id]||p;G.players[p.id]=c;c.team=t.id;delete c.from;delete c.ask;t.roster.push(c.id);});G.portal=[];
   G.season++;forEachCoach(()=>{G.coach.years++;});startSeason();save();
 }
@@ -2098,6 +2108,7 @@ function renderHome(){
       ${sp.risers.length?`<div class="small"><b>Spring risers:</b> ${sp.risers.map(r=>`${r.pos} ${esc(r.n)} ${r.from} to ${r.to}`).join(', ')}.</div>`:''}
       ${sp.battles.length?`<div class="small"><b>Position battles for camp:</b> ${sp.battles.map(b=>`${b.pos}: ${esc(b.a)} (${b.ao}) vs ${esc(b.b)} (${b.bo})`).join(' · ')}. Pin a starter on the Roster tab to settle it yourself.</div>`:'<div class="small muted">No open position battles. The depth chart is settled.</div>'}</div>`
     :`<div class="card sec"><div class="eyebrow">Spring game</div><div class="row between"><div class="grow"><div class="nm">Play the spring game</div><div class="sub">Intrasquad scrimmage. See who flashed, who rose over the winter, and which starting jobs are up for grabs. Recruits with offers come watch.</div></div><button class="btn sm" data-act="spring">Kick off</button></div></div>`);
+    {const na=renderNilAsks();if(na)parts.push(na);}
     {const pc=renderPerkChoice();if(pc)parts.push(pc);}
     {const gd=renderGuide();if(gd)parts.push(gd);}
     parts.push(`<div class="card sec"><div class="eyebrow">Offseason calendar</div><h2>Get ready for ${G.season+1}</h2>
@@ -2106,6 +2117,7 @@ function renderHome(){
     <div class="osteps">
     ${step('Jan','Departures and the draft','done','Home',G.draft&&G.draft.s===G.season?`${G.draft.mine.length} drafted, ${G.draft.mine.filter(x=>x.rd===1).length} in round one. Pros card above.`:'Seniors gone, early entries declared. See the newswire.')}
     ${step('Feb','Coaching staff',staffOpen?'todo':'done','Program',staffOpen?'A coordinator job is open or expiring. Hire or extend.':'Staff set. Payroll paid.')}
+    ${step('Feb','NIL retention',(G.nilAsks||[]).some(a=>a.st==='open')?'todo':'done','Home',(G.nilAsks||[]).length?`${(G.nilAsks||[]).filter(a=>a.st==='open').length} of ${(G.nilAsks||[]).length} asks still open.`:'Nobody is holding out.')}
     ${step('Mar','Transfer portal',G.portalAdds>0?'done':'todo','Roster',`${G.portalAdds}/${PORTAL_CAP} adds used, ${G.portal.length} in the portal.`)}
     ${step('Apr','Spring game',sp?'done':'todo','Home',sp?`Offense ${sp.os}, defense ${sp.ds}. ${sp.battles.length} position battle${sp.battles.length===1?'':'s'} heading to camp.`:'Play it to see who flashed, who rose, and which jobs are open.')}
     ${step('May','Schedule',picked>=slots?'done':'todo','Season',`${picked}/${slots} non-conference slots chosen. Open slots get filled at random.`)}
@@ -2428,6 +2440,9 @@ function onAction(act,el){
     case 'adlobby':actADLobby();break;
     case 'upgrade':actUpgrade(id);break;
     case 'stadium':actStadium();break;
+    case 'nilpay':actNilAsk(+id,'pay');break;
+    case 'nilcounter':actNilAsk(+id,'counter');break;
+    case 'nillet':actNilAsk(+id,'let');break;
     case 'practice':G.plan.prac=id;break;
     case 'nilinvest':actNILInvest();break;
     case 'job':UI.confirm='job'+id;break;
