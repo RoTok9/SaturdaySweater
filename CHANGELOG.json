@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.107.0",
+  "notes": "Clinching scenarios: in the last three weeks the Conference race card and the newswire spell out exactly what you need (You are in if you win Saturday and BYU loses to Utah), computed from every possible outcome of the remaining conference games. Career milestones: 50, 100, 150 and 200 wins, multiple titles and long tenures get their moment in the news."
+ },
+ {
   "version": "1.106.0",
   "notes": "Career stops: when you change jobs the game records the tenure (seasons, record, best finish, conference titles, playoffs, national titles), the departure news carries it, and a Career stops card in Program keeps the list."
  },
