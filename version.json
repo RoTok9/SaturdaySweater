@@ -1,4 +1,4 @@
 {
-  "version": "1.93.0",
-  "notes": "Pass-and-play head-to-head: when two coaches on the same device play each other, both make the calls. The halftime panel takes the first coach's call, then says pass the device and takes the other coach's, same at the fourth-quarter break, and in crunch time the coach with the ball picks the offense while the other picks the defense. Both sets of calls shape the result. Also fixed a scoring edge case where stacked aggressive calls could produce absurd totals."
+  "version": "1.94.0",
+  "notes": "Post-game win probability chart: after the final, the live card draws how your win chance moved through the game, with scoring plays marked and quarter lines. Crunch-time wording fixed for one- and two-point games (a field goal wins it, not ties it)."
 }
