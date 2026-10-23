@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.118.0",
+  "notes": "Single-game records: the Records card on Program now keeps the best single games of your tenure (passing yards, passing TDs, rushing yards, receiving yards, points), and breaking one makes the newswire."
+ },
+ {
   "version": "1.117.0",
   "notes": "Your coordinators talk in the headset: every halftime, fourth-quarter and two-minute call now comes with a recommendation from your OC or DC, with their reasoning. Better coordinators read the game right more often; a weak one will steer you wrong sometimes."
  },
