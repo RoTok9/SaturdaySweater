@@ -1,4 +1,4 @@
 {
-  "version": "1.143.0",
-  "notes": "Friday night lights: every other week one of your commits has a big high school game and the newswire tells you about it (and sometimes he gets a little better)."
+  "version": "1.144.0",
+  "notes": "Newswire gets filters (All, Big, Recruiting, Roster) and a Show more button, and keeps more history."
 }
