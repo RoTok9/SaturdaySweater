@@ -1,4 +1,4 @@
 {
-  "version": "1.24.0",
-  "notes": "Gameday look: varsity lettering for team names, headings and tabs; yard-line texture in the masthead and behind the page; helmet-stripe trim on the masthead and the matchup card; the live game and replays now run on a stadium scoreboard (amber digits, GUEST and HOME, quarter and clock); section headers carry a pennant; warm program-paper light theme and a turf-dark dark theme. Gameday tags on the week's matchup: Homecoming and Senior Day (now scheduled every season), Conference opener, Rivalry week, Ranked matchup, expected crowd and sellouts, hostile crowds on the road; the live feed opens with the same scene."
+  "version": "1.24.1",
+  "notes": "Desktop: the varsity font is now embedded so PC installs get it through the in-app updater."
 }
