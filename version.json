@@ -1,4 +1,4 @@
 {
-  "version": "1.84.0",
-  "notes": "Around the Country score tiles are now watchable: tap any ranked game for a replay with the drive feed and field strip, built from both rosters. Heisman moments: when a top candidate of yours scores big in a big game, the broadcast says so. Rivalry finals name the right trophy."
+  "version": "1.85.0",
+  "notes": "AD mandates: every coach now carries a stated goal from the athletic director (make a bowl, finish ranked, win the conference, make the playoff, win it all) with a deadline. Meeting it adds a year to your deal and settles the boosters; missing it heats the seat and the AD starts taking calls. Shown on your coach card in Program with seasons left. Hot news items now survive longer in the feed."
 }
