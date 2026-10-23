@@ -1,4 +1,4 @@
 {
-  "version": "1.37.0",
-  "notes": "Roster now opens on a Two-deep view: every position group as a card with starters, the next man up, and how the unit ranks nationally. Team rankings (scoring, total, passing, rushing offense, scoring defense, point margin) on the Polls Leaders view. Around the Country is a real scoreboard: score tiles with crests, ranks, and Upset and Ranked matchup tags. Real school abbreviations on every crest. Defensive stats are now tracked for every team, so the national sack, interception and tackle leaders are no longer just your guys. Recruiting board runs two columns on desktop."
+  "version": "1.38.0",
+  "notes": "Five new in-season decisions with teeth: your agent calls about a bigger job (make calls quietly, stand down, or use it to ask the AD for an extension), TV wants to move your game to Friday night or an 11 a.m. kick, a team leader asks for a players-only meeting after a loss, a backup's dad threatens the portal unless his son starts, and academics flags a starter who could miss the postseason in December. Choices change your game edge next week, your budget, approval, promises, and the January portal. Up to five decisions a season now."
 }
