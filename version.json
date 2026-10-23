@@ -1,4 +1,4 @@
 {
-  "version": "1.76.1",
-  "notes": "Fix: a live game could pick up a phantom overtime score in the box score when the pre-call simulation happened to tie. The box now always matches the broadcast."
+  "version": "1.77.0",
+  "notes": "Recruits text about more of what happens: a flip you landed, a snow or heat game, and your media days promise."
 }
