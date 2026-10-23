@@ -1,4 +1,4 @@
 {
-  "version": "1.14.1",
-  "notes": "Coach's guide: the first-season tutorial is now a contextual card that reacts to what you have not done yet (no offers, unscouted opponent, unspent hours, unsent texts, NIL sitting idle, a wavering commit, the bracket week, the offseason portal and schedule). Each tip has an Open button and a Got it. Long dynasties: team history is capped at 12 seasons to keep saves lean."
+  "version": "1.15.0",
+  "notes": "Recruits text first. After a big win, a bad loss, a Top 25 ranking, an injury at their position, a rival coach's offer, another commit at their spot, or a word about your program's identity, recruits (and the occasional mom) reach out on their own. Inbound texts cost no hours; a 'texts waiting' pill in the header and a 'Texted you' tag on the Recruit tab show who. Leave one on read for a week and he notices. Your own commits text too, and one answer can turn into a playing-time promise."
 }
