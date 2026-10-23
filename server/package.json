@@ -2,7 +2,14 @@
   "name": "saturday-sweater-league",
   "private": true,
   "type": "module",
-  "version": "1.0.0",
-  "scripts": { "deploy": "wrangler deploy", "dev": "wrangler dev" },
-  "devDependencies": { "wrangler": "^3.90.0" }
+  "version": "2.0.0",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "test": "node test/stress.mjs && node test/stress.mjs --chaos",
+    "mock": "node mock.mjs 8787"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
 }

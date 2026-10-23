@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.159.0",
+  "notes": "Rock-solid saves and online leagues. Your dynasty now keeps a weekly backup and restores it automatically if the latest save is ever damaged, warns you if browser storage is full, and can be exported to a file and imported on any device. The league server was rebuilt: one request at a time per league, crash-safe save uploads, per-coach storage, input validation, coaches who join, leave, get removed or take a new job no longer wipe anyone's week, and idle leagues clean themselves up. Weekly gauntlet shares now include your W/L string, with tougher tiers."
+ },
+ {
   "version": "1.158.1",
   "notes": "Historic programs now come with a tradition or two of their own, and they make road trips there tougher. Fix: taking a new job now wipes the three-losing-seasons count from your old school, so a fresh start is actually a fresh start."
  },
