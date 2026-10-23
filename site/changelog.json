@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.126.0",
+  "notes": "Sellout streaks: big programs start with a long one, every home sellout extends it (milestones make the news), the game hero shows it, and the day it ends the AD notices the empty seats in the upper deck."
+ },
+ {
   "version": "1.125.0",
   "notes": "Media days poll: the season preview tells you where the conference picked you to finish (and who they picked to win it), and the season story remembers if you blew past it or fell short."
  },
