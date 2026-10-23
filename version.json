@@ -1,4 +1,4 @@
 {
-  "version": "1.75.1",
-  "notes": "Switching tabs during a live game no longer ends it: the broadcast keeps running and the coach's call waits for you on Home."
+  "version": "1.76.0",
+  "notes": "Rivalry finals hand over the trophy on the broadcast. Coach profile tracks your sideline record in games you called live and how your bold calls have gone. Unsigned late-period recruits no longer clutter the main board."
 }
