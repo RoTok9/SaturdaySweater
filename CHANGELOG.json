@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.105.0",
+  "notes": "Bug reporting: Program > Save and settings has a Copy diagnostics button that puts the version, where you are in the season, the last 30 actions and any recent errors on the clipboard so you can paste them into a bug report."
+ },
+ {
   "version": "1.104.0",
   "notes": "Coach background on the start screen: Walk-on, Recruiter, Developer, Big-game or CEO. Each starts you at level 1 of that track, so your coach has an identity from day one."
  },
