@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.139.0",
+  "notes": "Stay or go: after the season, your draft-eligible underclassmen are deciding. You get one conversation with each: sell him on coming back to win it all (works best if you just did), put a NIL package on the table, or bless his decision and send him off with your support."
+ },
+ {
   "version": "1.138.1",
   "notes": "Call buttons keep their text clear of the key-number badge on narrow screens; the scorebug reads Pregame during the locker-room speech."
  },
