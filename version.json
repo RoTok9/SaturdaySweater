@@ -1,4 +1,4 @@
 {
-  "version": "1.156.0",
-  "notes": "Weekly gauntlet: a new challenge where everyone gets the same school, league and recruits for the week. Play one season and it gets scored (wins, titles, the playoff, your class); copy the result and see who in your group sweated it best. New gauntlet every Monday. Also: after a safety, the team that scored now gets the ball in the broadcast."
+  "version": "1.156.1",
+  "notes": "Copy season: the season recap card has a button that copies your record, finish, postseason and class to the clipboard for bragging."
 }
