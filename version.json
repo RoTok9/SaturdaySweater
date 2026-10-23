@@ -1,4 +1,4 @@
 {
-  "version": "1.138.0",
-  "notes": "Bowl invitations: when you are headed to a bowl, the reps call and you choose where to spend December. The destination bowl (players love it), the best opponent on the board (poll points if you win), or the bowl close to home (recruits can make the drive). Then you plan the trip."
+  "version": "1.138.1",
+  "notes": "Call buttons keep their text clear of the key-number badge on narrow screens; the scorebug reads Pregame during the locker-room speech."
 }
