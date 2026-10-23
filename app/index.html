@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.80.0">
+<meta name="app-version" content="1.81.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -1329,8 +1329,9 @@ function decompose(s){ // split a score into TDs, FGs, a 2-pt TD or a safety
 }
 function st(p){return p.st||(p.st={gp:0,pa:0,pc:0,py:0,ptd:0,int:0,ra:0,ry:0,rtd:0,rec:0,recy:0,rectd:0,tk:0,sk:0,dint:0,fgm:0,fga:0});}
 function bumpForm(p,d){p.form=clamp((p.form||0)*0.6+d,-2,3);}
-function evCtx(t){const d=pos=>depth(t,pos);const qb=d('QB')[0],rbs=d('RB').slice(0,2),rb1=rbs[0],rb2=rbs[1],wrs=d('WR').slice(0,3),te=d('TE')[0],k=d('K')[0];const targets=[...wrs,te,rb1].filter(Boolean);const tw=[0.3,0.22,0.15,0.18,0.08].slice(0,targets.length);return {d,qb,rb1,rb2,targets,tw,k};}
-function pickEvent(e,c){if(e==='fg'){const y=rint(19,55);return {kind:'fg',y,desc:`${c.k?c.k.n:'Kicker'} ${y}-yd field goal`};}if(e==='saf')return {kind:'saf',desc:'Safety'};const r=Math.random();let o;if(r<0.53&&c.qb&&c.targets.length){const rc=weightedPick(c.targets,x=>c.tw[c.targets.indexOf(x)]);const y=rint(2,65);o={kind:'pass',rc:rc.id,y,desc:`${rc.n} ${y}-yd pass from ${c.qb.n}`};}else if(r<0.93||!c.qb){const r2=Math.random();const p=(r2<0.62?c.rb1:r2<0.82?c.qb:c.rb2)||c.rb1||c.qb;const y=rint(1,35);o={kind:'run',p:p?p.id:null,y,desc:`${p?p.n:'Offense'} ${y}-yd run`};}else{const dp=c.d(Math.random()<0.5?'CB':'LB')[0];const y=rint(25,98);o={kind:'ret',y,desc:`${dp?dp.n:'Defense'} ${y}-yd ${Math.random()<0.6?'interception':'fumble'} return`};}if(e==='td2')o.desc+=' (2-pt good)';return o;}
+function featuredOf(t){if(!isHuman(t.id))return null;const b=bagOf(t.id);const f=b&&b.plan&&b.plan.feature;if(!f)return null;const p=P(f);return p&&p.team===t.id&&!(p.inj>0)?p:null;}
+function evCtx(t){const d=pos=>depth(t,pos);const qb=d('QB')[0],rbs=d('RB').slice(0,2),rb1=rbs[0],rb2=rbs[1],wrs=d('WR').slice(0,3),te=d('TE')[0],k=d('K')[0];const targets=[...wrs,te,rb1].filter(Boolean);const tw=[0.3,0.22,0.15,0.18,0.08].slice(0,targets.length);const f=featuredOf(t);if(f){const i=targets.indexOf(f);if(i>=0)tw[i]*=1.7;}return {d,qb,rb1,rb2,targets,tw,k,feat:f};}
+function pickEvent(e,c){if(e==='fg'){const y=rint(19,55);return {kind:'fg',y,desc:`${c.k?c.k.n:'Kicker'} ${y}-yd field goal`};}if(e==='saf')return {kind:'saf',desc:'Safety'};const r=Math.random();let o;if(r<0.53&&c.qb&&c.targets.length){const rc=weightedPick(c.targets,x=>c.tw[c.targets.indexOf(x)]);const y=rint(2,65);o={kind:'pass',rc:rc.id,y,desc:`${rc.n} ${y}-yd pass from ${c.qb.n}`};}else if(r<0.93||!c.qb){const r2=Math.random();const fr=c.feat&&c.rb1&&c.feat.id===c.rb1.id;const p=(r2<(fr?0.8:0.62)?c.rb1:r2<(fr?0.9:0.82)?c.qb:c.rb2)||c.rb1||c.qb;const y=rint(1,35);o={kind:'run',p:p?p.id:null,y,desc:`${p?p.n:'Offense'} ${y}-yd run`};}else{const dp=c.d(Math.random()<0.5?'CB':'LB')[0];const y=rint(25,98);o={kind:'ret',y,desc:`${dp?dp.n:'Defense'} ${y}-yd ${Math.random()<0.6?'interception':'fumble'} return`};}if(e==='td2')o.desc+=' (2-pt good)';return o;}
 const evPts=e=>e==='fg'?3:e==='saf'?2:e==='td2'?8:7;const evTime=()=>`${rint(0,14)}:${String(rint(0,59)).padStart(2,'0')}`;
 function previewEvents(t,score){const c=evCtx(t);return decompose(score).map(e=>({e,q:weightedPick([1,2],x=>x===1?0.42:0.58),time:evTime(),ch:pickEvent(e,c)}));}
 function genTeamStats(t,score,oppScore,full,pre,ot,through){
@@ -1353,7 +1354,7 @@ function genTeamStats(t,score,oppScore,full,pre,ot,through){
   // spread the rest of the passing and rushing production
   let cLeft=comp-Object.values(rec).reduce((a,r)=>a+r.rec,0),yLeft=PY-Object.values(rec).reduce((a,r)=>a+r.y,0);
   targets.forEach((p,i)=>{const share=tw[i]/tw.reduce((a,b)=>a+b,0);const c=Math.max(0,Math.round(cLeft*share*rnd(0.7,1.3)));const y=Math.max(0,Math.round(yLeft*share*rnd(0.6,1.4)));R(rec,p,'rec',c);R(rec,p,'y',y);});
-  const rb1a=clamp(Math.round(11+score/5+gauss()*4),5,30),qba=qb?rint(2,8):0,rb2a=clamp(Math.round(7+gauss()*2),2,14);
+  const featRB=c.feat&&rb1&&c.feat.id===rb1.id;const rb1a=clamp(Math.round((11+score/5+gauss()*4)*(featRB?1.35:1)),5,36),qba=qb?rint(2,8):0,rb2a=clamp(Math.round((7+gauss()*2)*(featRB?0.6:1)),2,14);
   const tot=rb1a+qba+rb2a;if(rb1)R(rush,rb1,'a',rb1a),R(rush,rb1,'y',Math.round(RY*rb1a/tot*rnd(0.85,1.15)));if(qb)R(rush,qb,'a',qba),R(rush,qb,'y',Math.round(RY*qba/tot*rnd(0.5,1.3)));if(rb2)R(rush,rb2,'a',rb2a),R(rush,rb2,'y',Math.round(RY*rb2a/tot*rnd(0.7,1.3)));
   const fgm=plays.filter(p=>p.pts===3).length,fga=fgm+pois(0.45);
   // accumulate season stats
@@ -1752,7 +1753,7 @@ function promiseCheck(){const u=userTeam();u.roster.forEach(id=>{const p=P(id);i
   if(starting||p.inj>0){p.promise.kept=true;ach('promise');G.app.locker=clamp(G.app.locker+2,0,100);G.coach.rep=clamp(G.coach.rep+1,0,100);news(`${p.pos} ${p.n} is starting, as promised. Word gets around to recruits.`);}
   else{p.promise.kept=false;p.unhappy=true;G.app.locker=clamp(G.app.locker-5,0,100);G.coach.rep=clamp(G.coach.rep-2,0,100);news(`${p.pos} ${p.n} was promised playing time and is buried on the depth chart. His high school coach stopped taking your calls, and he is looking at the portal.`,true);}});}
 function injuryTick(){G.teams.forEach(t=>{const body=()=>{t.roster.forEach(id=>{const p=P(id);if(p.inj>0){p.inj--;if(p.inj===0&&isUser(t))news(`${p.pos} ${p.n} is cleared to return.`);}});
-  if(G.week>19)return;POS.forEach(pos=>{depth(t,pos).slice(0,STARTERS[pos]).forEach(p=>{let c=0.014;if(hasT(p,'fragile'))c*=3;if(hasT(p,'workhorse'))c*=0.5;if(pos==='K')c*=0.2;if(isUser(t)&&hasPerk('ironman'))c*=0.7;if(isUser(t)&&G.plan&&G.plan.prac==='conditioning')c*=0.5;if(isUser(t)&&G._restWk===G.week)c*=0.25;if(Math.random()<c){p.inj=rint(1,6);p.injW=G.week;p.injN=pick(['hamstring','ankle','shoulder','knee','concussion protocol','wrist','back']);if(isUser(t))news(`${p.pos} ${p.n} (${p.ovr}) out ${p.inj} week${p.inj>1?'s':''} with a ${p.injN} injury.`,true);}});});};if(isHuman(t.id))withCoach(t.id,body);else body();});}
+  if(G.week>19)return;POS.forEach(pos=>{depth(t,pos).slice(0,STARTERS[pos]).forEach(p=>{let c=0.014;if(hasT(p,'fragile'))c*=3;if(hasT(p,'workhorse'))c*=0.5;if(pos==='K')c*=0.2;if(isUser(t)&&hasPerk('ironman'))c*=0.7;if(isUser(t)&&G.plan&&G.plan.prac==='conditioning')c*=0.5;if(isUser(t)&&G._restWk===G.week)c*=0.25;if(isUser(t)&&G.plan&&G.plan.feature===p.id)c*=1.3;if(Math.random()<c){p.inj=rint(1,6);p.injW=G.week;p.injN=pick(['hamstring','ankle','shoulder','knee','concussion protocol','wrist','back']);if(isUser(t))news(`${p.pos} ${p.n} (${p.ovr}) out ${p.inj} week${p.inj>1?'s':''} with a ${p.injN} injury.`,true);}});});};if(isHuman(t.id))withCoach(t.id,body);else body();});}
 function diffMult(){const d=G?G.diff:(UI.diff||'normal');return d==='brutal'?2:d==='hard'?1:0;}
 function targetEdge(g){ // everyone plays up against the user when the user is ranked; harder difficulties stack more
   if(isHuman(g.home)&&isHuman(g.away))return 0;const u=isHuman(g.home)?g.home:isHuman(g.away)?g.away:null;if(u==null)return 0;const me=T(u);const rank=me.rank||99;let e=rank===1?40:rank<=5?26:rank<=10?14:rank<=25?6:0;e+=diffMult()*22;return g.home===u?-e:e;}
@@ -2440,6 +2441,7 @@ function renderGamePlan(g){const u=userTeam();const PE=planEdge(g);const plan=G.
     <div class="row" style="flex-wrap:wrap;gap:6px"><span class="tiny muted" style="width:64px">Practice</span>${Object.keys(PRACTICE).map(k=>chip('practice',k,PRACTICE[k][0],(plan.prac||'none')===k)).join('')}</div>
     <div class="row" style="flex-wrap:wrap;gap:6px"><span class="tiny muted" style="width:64px">Defense</span>${chip('plandef','base','Base',(plan.def||'base')==='base')}${chip('plandef','stack','Stack the box',plan.def==='stack')}${chip('plandef','cover','Two-high coverage',plan.def==='cover')}${chip('plandef','blitz','Blitz heavy',plan.def==='blitz')}</div>
     <div class="row" style="flex-wrap:wrap;gap:6px"><span class="tiny muted" style="width:64px">Tempo</span>${chip('planagg','conservative','Conservative',plan.agg==='conservative')}${chip('planagg','standard','Standard',plan.agg==='standard')}${chip('planagg','aggressive','Aggressive',plan.agg==='aggressive')}</div>
+    ${(()=>{const u2=userTeam();const cands=['RB','WR','TE'].flatMap(ps=>depth(u2,ps).slice(0,ps==='WR'?2:1));return cands.length?`<div class="row" style="flex-wrap:wrap;gap:6px"><span class="tiny muted" style="width:64px">Feature</span>${chip('planfeat','none','Spread it around',!plan.feature)}${cands.map(p=>chip('planfeat',String(p.id),`${p.pos} ${p.n.split(' ').slice(-1)[0]}`,plan.feature===p.id)).join('')}<span class="tiny muted">Force-feed one guy: more touches and a Heisman case, a little more wear.</span></div>`:'';})()}
     ${g.home===G.user&&!g.neutral?`<div class="row" style="flex-wrap:wrap;gap:6px"><span class="tiny muted" style="width:64px">Promo</span>${G.promo&&G.promo.s===G.season?(G.promo.gid===g.id?`<span class="tag team">${esc(G.promo.t)} this week</span>`:`<span class="tiny muted">Used this season: ${esc(G.promo.t)} in ${weekLabel(G.promo.w)}</span>`):['Blackout','Whiteout','Stripe the stadium'].map(t=>`<button class="chip" data-act="promo" data-id="${g.id}" data-kind="${t}" ${G.budget<0.5?'disabled':''}>${t}</button>`).join('')+'<span class="tiny muted">$0.5M, once a season: the place goes nuts, visiting recruits remember it.</span>'}</div>`:''}
     <div class="small">${PE.notes.map(esc).join(' · ')} · plan edge <b class="${PE.edge>2?'ok':PE.edge<-2?'no':''}">${PE.edge>0?'+':''}${Math.round(PE.edge)}</b></div>${scout}</div>`;}
 function actPromo(gid,kind){const g=G.games.find(x=>x.id===gid);if(!g||g.played||g.home!==G.user||g.neutral||G.budget<0.5||(G.promo&&G.promo.s===G.season))return;G.budget=Math.round((G.budget-0.5)*10)/10;G.promo={s:G.season,gid,w:g.week,t:kind};G.edgeOnce={w:g.week,s:G.season,v:3,why:`${kind}: the place is shaking`};adj('fans',2);news(`${kind} announced for ${T(g.away).name} week. Students are already planning the tailgate.`);ripple(`${kind} set for ${weekLabel(g.week)}`,'good');}
@@ -2687,6 +2689,7 @@ function onAction(act,el){
     case 'leadmine':UI.leadMine=!UI.leadMine;break;
     case 'pollsview':if(UI.live)endLive();UI.tab='polls';UI.pollsView=id;window.scrollTo(0,0);break;
     case 'planoff':G.plan.off=id;break;
+    case 'planfeat':G.plan.feature=id==='none'?null:+id;break;
     case 'hire':actHire(+id);break;
     case 'schedpick':{const [k,i]=id.split(':');actSchedPick(k,+i);break;}
     case 'schedundo':actSchedUndo(+id);break;
