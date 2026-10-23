@@ -1,0 +1,34 @@
+name: tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: League server tests (normal and chaos)
+        run: cd server && npm test
+  game:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Play two seasons headless
+        run: node tools/tests/compat.js "$PWD/app/index.html" "$PWD/app/index.html"
+      - name: Saves from older releases load and play
+        run: |
+          for back in 10 30; do
+            c=$(git log --format=%h -n 1 --skip=$back -- app/index.html)
+            [ -z "$c" ] && continue
+            git show $c:app/index.html > /tmp/old.html
+            node tools/tests/compat.js /tmp/old.html "$PWD/app/index.html"
+          done
