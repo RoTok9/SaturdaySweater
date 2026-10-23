@@ -1,4 +1,4 @@
 {
-  "version": "1.154.1",
-  "notes": "A hot seat costs you on the trail: when your seat is over 70, rival recruiters go after your commits more often and harder, and they use your job security as the pitch."
+  "version": "1.154.2",
+  "notes": "Fix: players following you to a new job can no longer push the roster over the limit and stall the next season in pass-and-play."
 }
