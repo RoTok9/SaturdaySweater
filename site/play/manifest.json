@@ -1,0 +1,19 @@
+{
+ "name": "Saturday Sweater: CFB Dynasty",
+ "short_name": "Saturday Sweater",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#0d1014",
+ "theme_color": "#0d1014",
+ "description": "Run a college football program. Recruit, manage the roster, make the calls on Saturday and chase the 12-team playoff.",
+ "icons": [
+  {
+   "src": "../icon.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
+}

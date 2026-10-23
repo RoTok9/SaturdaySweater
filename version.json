@@ -1,4 +1,4 @@
 {
-  "version": "1.70.0",
-  "notes": "Online leagues get the live game too: each coach plays their own game with the halftime and fourth-quarter calls before hitting Ready, the result travels with their delta, and the week resolves with everyone's calls honored. The fictional league (web build) seeds its own set of historic named rivalries."
+  "version": "1.71.0",
+  "notes": "The web version is now an installable app: open saturdaysweater.com/play on a phone and Add to Home Screen for a full-screen, offline-capable version with its own icon."
 }

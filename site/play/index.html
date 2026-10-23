@@ -4,8 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Saturday Sweater: run a college football program. Recruit, manage the roster, win press conferences, chase the 12-team playoff.">
-<meta name="theme-color" content="#0f3d2e">
+<meta name="theme-color" content="#0d1014">
 <link rel="icon" href="../icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="../icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Saturday Sweater">
 <title>Saturday Sweater</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=Graduate&display=swap">
 <style>
@@ -2762,5 +2767,6 @@ if(typeof window!=='undefined'&&app){boot({});}
 if(typeof module!=='undefined'){module.exports={newDynasty,simWeek,runOffseason,startNextSeason,get:()=>G,T,userTeam,actOffer,actCall,actVisitStart,actVisitAnswer,actText,actReply,actPitch,actNIL,actAutoTrim,teamOvr,userCommits};}
 </script>
 
+<script>if("serviceWorker" in navigator){addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});}</script>
 </body>
 </html>
