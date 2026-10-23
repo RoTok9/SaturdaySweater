@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.109.0",
+  "notes": "Website redesigned in the game's own language: stadium-night glass cards, condensed display type, a working miniature of the live broadcast in the hero (two-minute drill, ball tracking, win chance, the coach's call), a Game day section built around the three calls, the season track, co-op, fresh screenshots (crunch time, conference race) and a What's new section fed by the changelog. In the game, the two-minute marker now shows the ball with the right team."
+ },
+ {
   "version": "1.108.0",
   "notes": "Package deals: some recruits from the same region want to play together. The board tags them (package with WR X), and when one commits, the school he picked jumps to the top of his friend's list, so landing one can land two, and losing one can cost you both."
  },

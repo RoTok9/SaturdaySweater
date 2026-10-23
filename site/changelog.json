@@ -1,0 +1,466 @@
+[
+ {
+  "version": "1.109.0",
+  "notes": "Website redesigned in the game's own language: stadium-night glass cards, condensed display type, a working miniature of the live broadcast in the hero (two-minute drill, ball tracking, win chance, the coach's call), a Game day section built around the three calls, the season track, co-op, fresh screenshots (crunch time, conference race) and a What's new section fed by the changelog. In the game, the two-minute marker now shows the ball with the right team."
+ },
+ {
+  "version": "1.108.0",
+  "notes": "Package deals: some recruits from the same region want to play together. The board tags them (package with WR X), and when one commits, the school he picked jumps to the top of his friend's list, so landing one can land two, and losing one can cost you both."
+ },
+ {
+  "version": "1.107.0",
+  "notes": "Clinching scenarios: in the last three weeks the Conference race card and the newswire spell out exactly what you need (You are in if you win Saturday and BYU loses to Utah), computed from every possible outcome of the remaining conference games. Career milestones: 50, 100, 150 and 200 wins, multiple titles and long tenures get their moment in the news."
+ },
+ {
+  "version": "1.106.0",
+  "notes": "Career stops: when you change jobs the game records the tenure (seasons, record, best finish, conference titles, playoffs, national titles), the departure news carries it, and a Career stops card in Program keeps the list."
+ },
+ {
+  "version": "1.105.0",
+  "notes": "Bug reporting: Program > Save and settings has a Copy diagnostics button that puts the version, where you are in the season, the last 30 actions and any recent errors on the clipboard so you can paste them into a bug report."
+ },
+ {
+  "version": "1.104.0",
+  "notes": "Coach background on the start screen: Walk-on, Recruiter, Developer, Big-game or CEO. Each starts you at level 1 of that track, so your coach has an identity from day one."
+ },
+ {
+  "version": "1.103.0",
+  "notes": "Career splits on the coach profile: vs ranked, vs Top 10, one-score games, rivalry games, on the road, postseason, against the spread. Nemesis coaches: the game tracks your record against every opposing coach; a coach who owns you shows up in the game hero and a Nemesis storyline, and finally beating him is a moment."
+ },
+ {
+  "version": "1.102.0",
+  "notes": "Betting lines: the game hero shows the spread and the over/under (built from ratings, form, home field, rivalry heat and your game plan), and the Last result card says whether you covered and whether it went over. Playbook help updated for crunch time, mandates, challenges, bye and bowl weeks and head-to-head co-op."
+ },
+ {
+  "version": "1.101.0",
+  "notes": "Crunch time tracks timeouts: the offense's remaining timeouts show in the panel and the broadcast, and each one makes the drive a little more likely to score (bleeding the clock in the fourth burns the other side's). What's new card shows the full count of updates since you last played and links to all release notes."
+ },
+ {
+  "version": "1.100.0",
+  "notes": "Season story: the season recap opens with a written account of your year (the signature win, the loss that stung, the streak, one-possession luck, rivalry trophies, crunch-time record, how the playoff ended)."
+ },
+ {
+  "version": "1.99.0",
+  "notes": "Replays keep the real broadcast: Watch the replay on your games now shows the exact feed you watched live, with your call lines, crunch time and injuries, instead of a regenerated one. In pass-and-play the other coach in a head-to-head game sees that same broadcast."
+ },
+ {
+  "version": "1.98.0",
+  "notes": "Selection Sunday card on Home in Week 16: your seed, bye or first-round opponent, top seeds and the first four out. Final broadcast lines now name the stakes: conference champions, who advances in the playoff, bowl trophies, national champions."
+ },
+ {
+  "version": "1.97.0",
+  "notes": "Postseason games are now live: the conference title game, every playoff round and your bowl game play out in the broadcast with halftime, fourth-quarter and crunch-time calls (they were simulated silently before). Bowl week: pick what the trip is for (business trip, let them enjoy it, play the young guys, showcase the stars). What's new card is compact with expandable notes. Commitment announcements from four- and five-stars come with hat ceremonies and live streams. Your agent now points at jobs already opened by midseason firings."
+ },
+ {
+  "version": "1.96.0",
+  "notes": "Midseason firings: programs that are 1-6 in October now fire their coach and name an interim. It hits the newswire, the Hot seat index marks the job as open with the interim tag, and the winter carousel fills it (an interim who wins can keep the job). Fired coaches enter the rehire pool."
+ },
+ {
+  "version": "1.95.0",
+  "notes": "Rivalry week guarantee: a veteran goes on local radio and guarantees a win. Let it ride (juice for both locker rooms, and the result follows him), walk it back at the podium, or bench him a quarter. Win probability charts now also show on replays of any game. The Home AD goals card shows your mandate and seasons left. Top 25 lists teams also receiving votes."
+ },
+ {
+  "version": "1.94.0",
+  "notes": "Post-game win probability chart: after the final, the live card draws how your win chance moved through the game, with scoring plays marked and quarter lines. Crunch-time wording fixed for one- and two-point games (a field goal wins it, not ties it)."
+ },
+ {
+  "version": "1.93.0",
+  "notes": "Pass-and-play head-to-head: when two coaches on the same device play each other, both make the calls. The halftime panel takes the first coach's call, then says pass the device and takes the other coach's, same at the fourth-quarter break, and in crunch time the coach with the ball picks the offense while the other picks the defense. Both sets of calls shape the result. Also fixed a scoring edge case where stacked aggressive calls could produce absurd totals."
+ },
+ {
+  "version": "1.92.0",
+  "notes": "What's new: Home shows the updates shipped since you last played, with a Got it button; full release notes live under Program > Save and settings. Rain games can now have a lightning delay."
+ },
+ {
+  "version": "1.91.0",
+  "notes": "Challenges: start a dynasty as a Rebuild (prestige 4 or less, four years to reach the postseason), Title or bust (blue blood, win it all in three seasons), Giant killer (Group of Five school, make the playoff in five) or Hot seat (inherit two losing seasons and a seat at 65). Each sets the AD mandate, contract and seat to match, with a Pick a school for me button. Challenge shows on your coach card. Site copy updated for crunch time, handoff screen, mandates and the title race."
+ },
+ {
+  "version": "1.90.0",
+  "notes": "Bye week focus: on an open Saturday you choose what the week is for. Self-scout (+5 edge next game), heal up (every injured player gets a week back, no pads), hit the road (+12 recruiting hours) or a development week (young players get reps, some take a step). Crunch-time field goals now depend on your kicker, and a miss is narrated. Last result card lists all your calls (half, fourth, crunch)."
+ },
+ {
+  "version": "1.89.0",
+  "notes": "Halftime training room: sometimes a starter is banged up at the half. Play him (he may be fine, he may go down for good and miss weeks) or sit him (the backup steps in, the edge drops, the player stays healthy). Injury-prone and workhorse traits matter. The broadcast narrates whichever way it goes."
+ },
+ {
+  "version": "1.88.0",
+  "notes": "Pass and play: a handoff screen now appears when the game passes to the next coach (Pass the device to Coach B), so nobody sees the other sideline's screen. Coach profile tracks your crunch-time record."
+ },
+ {
+  "version": "1.87.0",
+  "notes": "Crunch time: when a game is within one score at the two-minute mark, the broadcast stops and you make the last call. With the ball: air it out, work the sideline, or set up the kick. On defense: prevent, bring pressure, or base. Outcomes depend on your quarterback, your coaching, the matchup and the opposing coach's habits. Two-point tries, onside kicks, walk-off field goals and overtime all flow from it, and the box score matches the broadcast. Works in pass-and-play and online leagues."
+ },
+ {
+  "version": "1.86.0",
+  "notes": "Conference title race: standings now mark who has clinched a title-game spot, who controls their own destiny and who is eliminated, with a legend. A Conference race card on Home from Week 6 on tells you exactly where you stand (clinched, in control, alive but need help, out), and the feed fires when you clinch, when you are eliminated, and on win-and-in weeks."
+ },
+ {
+  "version": "1.85.0",
+  "notes": "AD mandates: every coach now carries a stated goal from the athletic director (make a bowl, finish ranked, win the conference, make the playoff, win it all) with a deadline. Meeting it adds a year to your deal and settles the boosters; missing it heats the seat and the AD starts taking calls. Shown on your coach card in Program with seasons left. Hot news items now survive longer in the feed."
+ },
+ {
+  "version": "1.84.0",
+  "notes": "Around the Country score tiles are now watchable: tap any ranked game for a replay with the drive feed and field strip, built from both rosters. Heisman moments: when a top candidate of yours scores big in a big game, the broadcast says so. Rivalry finals name the right trophy."
+ },
+ {
+  "version": "1.83.0",
+  "notes": "Redshirts. Open a true freshman's card by week 4 and sit him for the year: he does not burn eligibility, comes back a redshirt freshman with a development bump, and stays off the depth chart until then. RS tags on the roster."
+ },
+ {
+  "version": "1.82.0",
+  "notes": "The other sideline makes fourth-quarter calls too (gamblers go for it when trailing, old-school coaches run out the clock, schemers save something). Every player on your roster now keeps a game log for the season: open a player card and expand it to see his line from every game."
+ },
+ {
+  "version": "1.81.0",
+  "notes": "Game plan gets a Feature row: force-feed one back or receiver for more touches (and a Heisman case) at the cost of a little more wear and tear. His carries and targets climb, the backup's shrink."
+ },
+ {
+  "version": "1.80.0",
+  "notes": "Trophy case on the Program tab: national titles, conference titles, bowl wins and every rivalry trophy, with whether it is in your building or theirs and the last result."
+ },
+ {
+  "version": "1.79.0",
+  "notes": "Season recap adds the team banquet: your offensive MVP, defensive MVP and newcomer of the year with their lines."
+ },
+ {
+  "version": "1.78.0",
+  "notes": "Halftime calls now read the matchup: opening it up against a soft pass defense gains more than against a stout one, and the same for shortening the game against their run defense. If you scouted the opponent, the halftime panel tells you which is which."
+ },
+ {
+  "version": "1.77.0",
+  "notes": "Recruits text about more of what happens: a flip you landed, a snow or heat game, and your media days promise."
+ },
+ {
+  "version": "1.76.1",
+  "notes": "Fix: a live game could pick up a phantom overtime score in the box score when the pre-call simulation happened to tie. The box now always matches the broadcast."
+ },
+ {
+  "version": "1.76.0",
+  "notes": "Rivalry finals hand over the trophy on the broadcast. Coach profile tracks your sideline record in games you called live and how your bold calls have gone. Unsigned late-period recruits no longer clutter the main board."
+ },
+ {
+  "version": "1.75.1",
+  "notes": "Switching tabs during a live game no longer ends it: the broadcast keeps running and the coach's call waits for you on Home."
+ },
+ {
+  "version": "1.75.0",
+  "notes": "Replays of past games now use the full broadcast: drive-by-drive feed, the field strip, the real clock, drive summaries and injuries, at the live speed you chose. Skip to the box score any time."
+ },
+ {
+  "version": "1.74.0",
+  "notes": "The other sideline makes halftime adjustments too: gamblers open it up, old-school coaches sit on a lead, schemers find the matchup, players' coaches punch back when behind, and the broadcast tells you. A Playbook card on the Program tab explains every system in the game in a few lines each."
+ },
+ {
+  "version": "1.73.0",
+  "notes": "Tap any upcoming game on the Season tab for a preview: win chance, unit-by-unit matchups (your air vs their pass defense and so on), their best player, the head coach and his style, rivalry heat, and the forecast once the game is within two weeks."
+ },
+ {
+  "version": "1.72.0",
+  "notes": "Matchup card now shows the opponent's best player, the series record and streak, and the weather outlook. Bowl trips pay into the offseason budget (a win pays double) and the budget newswire line itemizes bowl and playoff money."
+ },
+ {
+  "version": "1.71.0",
+  "notes": "The web version is now an installable app: open saturdaysweater.com/play on a phone and Add to Home Screen for a full-screen, offline-capable version with its own icon."
+ },
+ {
+  "version": "1.70.0",
+  "notes": "Online leagues get the live game too: each coach plays their own game with the halftime and fourth-quarter calls before hitting Ready, the result travels with their delta, and the week resolves with everyone's calls honored. The fictional league (web build) seeds its own set of historic named rivalries."
+ },
+ {
+  "version": "1.69.0",
+  "notes": "Visiting recruits show up on the broadcast sideline. Bold calls that win (going for it, sending the house, lighting into them, opening it up) earn big-game XP. Website screenshots and copy refreshed for the live calls."
+ },
+ {
+  "version": "1.68.0",
+  "notes": "Start screen: the school picker now lays out as a proper grid on desktop (it was collapsing to one column), every school gets a crest in its colors and a prestige star rating. Playoff, conference championship and bowl games open with the right broadcast framing."
+ },
+ {
+  "version": "1.67.0",
+  "notes": "Injuries happen on the broadcast now: when one of your players goes down that week, the feed shows it in the second half with the trainers, the tent or the cart, and the diagnosis."
+ },
+ {
+  "version": "1.66.0",
+  "notes": "Live games now run entirely on the broadcast you watch: the box score is built from the exact plays you saw, including overtime. Pass-and-play co-op gets the full live experience: each coach plays their own game with the halftime and fourth-quarter calls before readying up, and the week resolves once everyone has."
+ },
+ {
+  "version": "1.65.0",
+  "notes": "New midseason decision: tampering. A rival collective is texting your young star's family. Report it to compliance (the AD approves, the kid may not), match the money from your NIL fund, or trust him and find out in December."
+ },
+ {
+  "version": "1.64.0",
+  "notes": "Live broadcast speed control (slow, normal, fast) on the live card, remembered between games. Field strip now mirrors the score bug: away team's end zone on the left, home on the right, so the ball and the scores read the same direction."
+ },
+ {
+  "version": "1.63.0",
+  "notes": "Fifty historic rivalries ship named and hot from day one in the real-names league: The Game, the Iron Bowl, the Red River Rivalry, the Egg Bowl, Bedlam, the Apple Cup, the Holy War, the Backyard Brawl and the rest, with series history, trophies, and a protected spot in the last two weeks of the schedule. Earned rivalries still form on top of them."
+ },
+ {
+  "version": "1.62.0",
+  "notes": "Fourth-quarter coach's call. After the halftime call the third quarter plays out, and if the game is within ten going to the fourth the broadcast stops again: play it straight, go for it (fourth downs and two-point tries live), bleed the clock or drop into a prevent when you lead, send the house when you trail. The fourth quarter is simulated from that choice, and the final recaps both calls."
+ },
+ {
+  "version": "1.61.0",
+  "notes": "Record book gets a seasons chart: wins per year as bars, gold for a national title, team color for a conference title, final rank above each. Last result on Home now lists your top performers and your halftime call."
+ },
+ {
+  "version": "1.60.0",
+  "notes": "Broadcast feed: every scoring play carries a drive summary (plays, yards, time) and repeat scorers get a 2nd TD tag. Scoring plays are ordered by the real clock, and drive summaries track the actual starting spot."
+ },
+ {
+  "version": "1.59.0",
+  "notes": "Overtime. Tied at the end of regulation now means an actual overtime: an End of regulation marker, OT possessions in the feed, an OT column in the scoring table and the box score, and a Final in overtime call. The live final also recaps your halftime call and how the second half went."
+ },
+ {
+  "version": "1.58.0",
+  "notes": "Halftime coach's call. Your game now plays live before the rest of the week: at the half the broadcast stops and you make the call (stay the course, open it up, shorten the game, light into them, or rest the starters when it is out of hand) and the second half is simulated from that choice. The field strip now tracks a real drive model: every update says where the ball is and the marker matches it, scoring plays line up with their yardage, second-half kickoff flips possession. The score bug carries a real quarter and clock on every update, and the scoring-by-quarter table follows it. Random-action fuzz testing across four programs and five seasons each, no crashes."
+ },
+ {
+  "version": "1.57.0",
+  "notes": "Transfer portal: position filters, and every portal player shows whether he would start for you, be the next man up, or whether you are thin at his spot, plus his traits."
+ },
+ {
+  "version": "1.56.0",
+  "notes": "Season preview on Home in weeks 1 and 2: projected wins from the real schedule, ranked opponents, what the AD expects, the three games to circle with win chances, and your players to watch."
+ },
+ {
+  "version": "1.55.0",
+  "notes": "Jersey retirement nights: when a program legend enters your Hall of Fame, his number goes up at your first home game the next fall, with a gameday tag, a broadcast moment and a bump for the home side. Flip a recruit from another program and that coach holds a grudge all season, working your commits harder."
+ },
+ {
+  "version": "1.54.0",
+  "notes": "The message board now reacts to your media days promise, your promotion night, a flip you landed and the weather. A busted promise gets its own press conference question, and how you answer it matters."
+ },
+ {
+  "version": "1.53.0",
+  "notes": "Home-game promotions: once a season pick a Blackout, Whiteout or Stripe the stadium for a home game (/bin/bash.5M). The crowd swells, the edge jumps, fans love it, and recruits who visit that weekend remember it. It shows on the matchup card and the game plan."
+ },
+ {
+  "version": "1.52.0",
+  "notes": "Weather. Late-season games in the Midwest, Northeast and Mid-Atlantic can bring snow, rain, wind or bitter cold; September in the South brings heat. It shows on the matchup card and in the broadcast, and it changes the edge: air it out in the snow and pay for it, ground and pound and gain, conditioning weeks pay off in the heat, warm-weather teams shiver on the road in November. Coach's guide tips for flips, the portal window, media days and the late signing period."
+ },
+ {
+  "version": "1.51.0",
+  "notes": "Media days. In week 1 a reporter asks what this team is going to do. Promise an undefeated regular season, the conference, a top-10 finish, a win total, a winning season or a rivalry win: fans and media love it now, the AD winces, and in December you either cash the boosters' check or they replay the clip and your seat heats up. Coach reputation now regresses toward what your program is: a 4-8 year at a bottom-tier school no longer builds a 90 rep."
+ },
+ {
+  "version": "1.50.0",
+  "notes": "Late signing period. Every offseason a fresh pool of late qualifiers, decommits and prep-school prospects (two and three stars, the odd four) shows up on the Recruit tab. First come, first served: NIL money closes them on the spot and they arrive with the class at camp. It is a calendar step, so the offseason checklist tracks it."
+ },
+ {
+  "version": "1.49.0",
+  "notes": "Flip attempts. Open a recruit committed to another program (weeks 5 to 14) and work on a flip for 6 hours. Your pull on him plus a push from your recruiter level and perks goes against the other school's hold; he decides at the end of the week. Land him and the fans notice, rivalry heat rises, and a five-star gets confetti. Miss and his coach flew in the night you called. One flip at a time, one try per recruit per season."
+ },
+ {
+  "version": "1.48.0",
+  "notes": "Poll movement arrows on every Top 25 row (up, down, NEW). Schedule rows carry tags: rivalry names, bad blood, homecoming, Senior Day, former assistant on the other sideline, and Top-10 win."
+ },
+ {
+  "version": "1.47.0",
+  "notes": "Co-op: a league table on Home for pass-and-play and online leagues (every coach's record, rank, live class rank, hot seat and head-to-head record, plus this week's coach-vs-coach games), and recruits contested by another coach in your league are tagged on the board."
+ },
+ {
+  "version": "1.46.0",
+  "notes": "Confetti in your colors when you win a rivalry game, a conference title, a playoff game, a bowl, knock off a top-five team, or land a five-star commit. A national title gets the big one."
+ },
+ {
+  "version": "1.45.0",
+  "notes": "Midseason mock draft on the Program tab: from week 6, where the scouts have your draft-eligible players (round and pick), moving week to week with production, awards and your ranking. Keyboard navigation on desktop: 1 through 6 jump to tabs, left and right arrows move between them, Escape closes an open player or recruit."
+ },
+ {
+  "version": "1.44.0",
+  "notes": "Hot seat index and coach rankings on Polls > Standings: which jobs around the country are likely to open this winter (projected on current pace, with a note when a job would be a step up for you) and where you rank among all 136 coaches by reputation. Your agent's midseason call now targets the programs on that list."
+ },
+ {
+  "version": "1.43.0",
+  "notes": "Recruit rankings move during the season: in weeks 5, 9 and 12 a handful of uncommitted recruits rise or fall a star on their tape. Risers draw new suitors and cost more NIL; fallers get cheaper as the big schools back off. Riser and Faller tags on the board, newswire alerts for players you have offered. Offseason calendar moved up under the draft card. Recruit tags no longer use emoji."
+ },
+ {
+  "version": "1.42.0",
+  "notes": "Way-too-early Top 25 for next season in the recap and on the Polls tab all offseason, built from returning starters (seniors and likely early entrants discounted), prestige and the class so far. Transfers remember where they came from: when your transfer faces his old team you get a gameday tag and a small edge. Big games (ranked matchups, rivalries, conference title games, playoffs) get a gold broadcast score bug in the live view."
+ },
+ {
+  "version": "1.41.0",
+  "notes": "December portal window: after the regular season your backups who plan to transfer say so, and you get one conversation each (2 hours) to keep them before January. Players on a deal or with a believable path to the field tend to stay. Conference Player of the Week for your guys after big Saturdays, with a Heisman bump. Live game on desktop gets a side panel: scoring by quarter, keys to the game from your plan, and your top performers and total yards at the final."
+ },
+ {
+  "version": "1.40.0",
+  "notes": "Coaching tree. When a coordinator leaves for a head job he actually takes one: a real program hires him in the carousel, your newswire follows it, and the Program tab tracks every former assistant with his current team and record. Play one of them and he knows your tendencies: a gameday tag and a small edge against you."
+ },
+ {
+  "version": "1.39.0",
+  "notes": "Storylines on Home: the week's live narratives (undefeated watch, Heisman campaign, playoff bubble or first four out, hot seat, contract year, rivalry week, ranked showdown, trap game, QB questions, bowl chase, class rank, injury bug) with why each one matters. Stat grids go single-column on phones so names stop truncating."
+ },
+ {
+  "version": "1.38.0",
+  "notes": "Five new in-season decisions with teeth: your agent calls about a bigger job (make calls quietly, stand down, or use it to ask the AD for an extension), TV wants to move your game to Friday night or an 11 a.m. kick, a team leader asks for a players-only meeting after a loss, a backup's dad threatens the portal unless his son starts, and academics flags a starter who could miss the postseason in December. Choices change your game edge next week, your budget, approval, promises, and the January portal. Up to five decisions a season now."
+ },
+ {
+  "version": "1.37.0",
+  "notes": "Roster now opens on a Two-deep view: every position group as a card with starters, the next man up, and how the unit ranks nationally. Team rankings (scoring, total, passing, rushing offense, scoring defense, point margin) on the Polls Leaders view. Around the Country is a real scoreboard: score tiles with crests, ranks, and Upset and Ranked matchup tags. Real school abbreviations on every crest. Defensive stats are now tracked for every team, so the national sack, interception and tackle leaders are no longer just your guys. Recruiting board runs two columns on desktop."
+ },
+ {
+  "version": "1.36.0",
+  "notes": "Live game: end zones now sit on the correct sides of the field strip and the duplicate skip button is gone. Website screenshots updated to the Stadium Night look."
+ },
+ {
+  "version": "1.35.0",
+  "notes": "NIL retention: in the offseason your best young players' agents come calling with a number. Pay it, counter at 60 percent (homebodies usually take it, flight risks usually walk), or let him test the portal. Unanswered asks get decided for you at camp. Players on a deal stay out of the portal. Shows on Home and in the offseason calendar."
+ },
+ {
+  "version": "1.34.0",
+  "notes": "Desktop layouts: Program, Polls and Season now flow into two columns on wide screens. Position badges on recruit and roster rows, a glowing odds bar under every offer on the Recruit tab, roomier list rows."
+ },
+ {
+  "version": "1.33.0",
+  "notes": "Stadiums and practice weeks. Every program has a stadium capacity; home crowds now come from demand (prestige, ranking, opponent, rivalry heat, homecoming, fan approval, your record) capped by your seats, sellouts are real, and the gate is now a big part of the offseason budget (the newswire shows it). Expand the stadium by 8,000 seats for 0M on the Program tab. Practice focus on the game-plan card: Red zone, Pass rush, Conditioning (half the injury risk) or Young guys (freshmen get the reps), each with a trade-off on Saturday."
+ },
+ {
+  "version": "1.32.0",
+  "notes": "Coach traits: at levels 2 and 4 of each track (Recruiter, Developer, Big-game, Media) you choose one of two permanent traits. Closer or Road warrior; Living room legend or Pipeline; Position coach (pick a group to develop faster) or Camp culture; Iron man program or Next level; Rivalry fuel or Road dog; Fourth-quarter closer or Primetime; Spin doctor or Fan favorite; Insider or Booster whisperer. The choice shows up on Home when you earn it and your traits live on the Program tab."
+ },
+ {
+  "version": "1.31.0",
+  "notes": "Defensive game plans: Base, Stack the box, Two-high coverage or Blitz heavy, graded against the opponent's scheme and quarterback (stack a run team and it pays; stack a passing team and they go over the top; blitz a shaky QB for chaos, blitz a great one at your peril). The last-result card now shows your full plan and whether it worked or hurt you. Named rivalries can come with a trophy (the Iron Skillet, the Old Oaken Bucket and friends) that changes hands with the series. Heisman ceremony: five finalists with vote shares on the Polls tab. School records: when one of your players passes a single-season school mark midseason, it hits the newswire the week it happens."
+ },
+ {
+  "version": "1.30.0",
+  "notes": "Recruits on the sideline: visitors who came in that week react to your home result (a ranked or rivalry win lands hard, a blowout loss stings). Coach legacy on the Program tab: a score and tier (Unproven, Climber, Riser, Program builder, Icon, Legend) built from titles, conference crowns, playoff trips, top-10 finishes and wins, with a title at a low-prestige program counting double. Swipe left or right between tabs on phones."
+ },
+ {
+  "version": "1.29.0",
+  "notes": "Live games now show the ball: a field strip under the score bug with both end zones in team colors and a glowing ball marker that moves drive by drive (punts, turnovers, first downs, field goals, touchdowns), with the spot called out underneath."
+ },
+ {
+  "version": "1.28.0",
+  "notes": "Boosters and the board. Three named boosters with money and a cause (facilities, the rival, local kids, defense, offense, loyalty) sit on the Program tab with a mood that moves with every result and every season; take one to dinner, ask for NIL money, and keep them off the AD's phone. Unhappy boosters heat your seat; happy ones write checks in the offseason. A fan message board on Home reacts to every game, with rival fans showing up in rivalry weeks. Home-field edge now depends on your fan approval."
+ },
+ {
+  "version": "1.27.0",
+  "notes": "Start screen rebuilt in the new look (glowing wordmark, glass school tiles that light up in their colors when picked). Ratings glow by tier on the Roster (gold for 90+, team color for 80+), stars and win/loss marks glow, your rows in lists are lit. Home order tightened: the week's matchup, then anything waiting on you (midweek decision, press conference), last result and its fallout, then the game plan."
+ },
+ {
+  "version": "1.26.0",
+  "notes": "Stadium Night: a complete visual pass built for glow and depth. Dark glass panels with blur and soft shadows over a deep background lit by your team color, glowing score bug, Sim button and progress bars, a lit-up versus panel with both teams' colors, a glowing active tab, smooth entrance motion when you change tabs, hover and press feedback on every control, and a Theme setting (Stadium night, Daylight, Match device). The PC app now checks for updates by itself on launch. Also in this build: online leagues (create or join with a six-letter code, everyone readies up, the week advances when all are in) and pass-and-play on one device, both from the start screen and the Program tab."
+ },
+ {
+  "version": "1.25.0",
+  "notes": "Complete visual revamp, broadcast style: the textures are gone. Dark neutral masthead with a team-color score bug (crest, wordmark, nickname and conference in an angled block), record and rank on the right. The week's game is a versus panel: two angled team-color blocks with crests, names, rank and record, a split win-probability bar in both colors, and gameday tags (rivalry week, homecoming, senior day, conference opener, ranked matchup, expected crowd, sellout, hostile crowd). Live games and replays use a broadcast score bug. Sharper corners, uppercase condensed buttons and labels, team-color section titles, neutral light and dark themes."
+ },
+ {
+  "version": "1.24.1",
+  "notes": "Desktop: the varsity font is now embedded so PC installs get it through the in-app updater."
+ },
+ {
+  "version": "1.24.0",
+  "notes": "Gameday look: varsity lettering for team names, headings and tabs; yard-line texture in the masthead and behind the page; helmet-stripe trim on the masthead and the matchup card; the live game and replays now run on a stadium scoreboard (amber digits, GUEST and HOME, quarter and clock); section headers carry a pennant; warm program-paper light theme and a turf-dark dark theme. Gameday tags on the week's matchup: Homecoming and Senior Day (now scheduled every season), Conference opener, Rivalry week, Ranked matchup, expected crowd and sellouts, hostile crowds on the road; the live feed opens with the same scene."
+ },
+ {
+  "version": "1.23.0",
+  "notes": "Quieter masthead: darker, shorter, and it shrinks to a slim bar when you scroll on phones; on desktop the tab bar is now sticky with the Sim button in it and no longer slides under the header (that overlap glitch is fixed). Ripples: every move now shows what it changed the moment you make it (a recruit's interest and your odds, who leads now, fans, locker room, admin, media, seat, NIL, budget, XP, hours spent). Fallout: after each week a card on Home lists what the week did to you, from approval and seat swings to poll movement, recruits who warmed or cooled and why, rivalry heat, commits and losses, injuries."
+ },
+ {
+  "version": "1.22.0",
+  "notes": "Contract talks: when your deal runs out and the AD wants you back, the extension lands on the Program tab as an offer you can sign, push for another year, push for 15 percent more (twice at most, each push costs goodwill and a bad read gets the offer pulled), or decline and play out a lame-duck year that makes bigger programs come calling. Header pills now scroll on one row with alerts first, so the Sim button always sits beside them."
+ },
+ {
+  "version": "1.21.0",
+  "notes": "Share your season: the season recap now has a Share season card button that renders a 1080x1350 card in your team colors (record, final rank, postseason result, ranked wins, class rank, signature win, player of the year, class headliner, coach line) and shares it on phones or saves the PNG on PC."
+ },
+ {
+  "version": "1.20.1",
+  "notes": "Live sim drama: momentum lines when a team rips off 14 and 28 unanswered, late-game tension lines in the fourth quarter of close games (the feed slows down for them), and a last-possession final call. Team crests now appear on the Season tab schedule and the Top 25."
+ },
+ {
+  "version": "1.20.0",
+  "notes": "Hub redesign. New masthead with a team crest, coach line, gradient and a rank badge; a proper matchup card for the week (both crests, records, rank badges, kick window, rivalry line, win-probability bar, opposing coach and identity); a quick-action row (hours, texts waiting, wavering commits, NIL, playoff picture, depth chart); Program pulse rebuilt as tiles with gauges (roster rank, poll movement, hot seat, class progress). Responsive layout: on desktop and tablets the hub is two columns with a top tab bar; phones in portrait keep the bottom bar; phones held sideways get a compact header and two columns. Polls tab now has sub-views: Top 25, Playoff, Leaders, Standings. The new Playoff view is a real bracket (first round through championship) that updates every week with seed arrows, NEW tags, auto-bid markers, first four out and who dropped out, plus a week-by-week seed tracker; during the playoff it shows the live bracket with scores and winners."
+ },
+ {
+  "version": "1.19.0",
+  "notes": "Player cards. Tap any player on the Roster tab: season stats by position, career line, rating by year, honors, traits, and a Mood score with the reasons (starting, in a slump, thinks he should start, eyes on the portal, trusting your promise). Talk to him for 2 hours: clear the air with an unhappy player, lay out a backup's path, challenge a starter, or praise him in front of the team. In the offseason you can move a player to a neighboring position (WR to CB, S to LB, TE to OL and so on) for a 5-point hit he grows back from."
+ },
+ {
+  "version": "1.18.0",
+  "notes": "Playoff resume on the Polls tab: seed or bubble status with a plain-English verdict, Top-10 and Top-25 wins, bad losses, strength of schedule rank, conference record, a game-by-game list with opponents' rank then and now, and your remaining chances to add to it. Bowl week: bowl invitations arrive with opponent and payout, non-eligible seasons end with a note, and a projected early pick may ask to sit out the bowl, which is your call."
+ },
+ {
+  "version": "1.17.0",
+  "notes": "Saturday wrap: after every week a league show card on Home gives the game of the week, upset of the week, poll risers and fallers (with a new No. 1 call-out) and the Heisman top three. Signing day show: when the class closes you get a card with your national and conference class rank, star breakdown, headliner, gems found, steals (recruits you landed at long odds), the ones that got away and why, and the top five classes. Scores of 2 no longer happen."
+ },
+ {
+  "version": "1.16.0",
+  "notes": "AD season goals: every preseason the athletic director hands you three or four goals scaled to the program (win total, playoff or conference title or Top 25 or postseason, class rank, beat your named rival). A Home card tracks them live; at season's end the review pays budget for each goal met, cools or heats your seat, and moves admin approval. New achievement: Clean sheet. Recruits now come with a high school, classification and senior tape line (position-specific stats), and scouting can reveal a Gem (more upside than his stars say), a Capped prospect, or a Late bloomer."
+ },
+ {
+  "version": "1.15.0",
+  "notes": "Recruits text first. After a big win, a bad loss, a Top 25 ranking, an injury at their position, a rival coach's offer, another commit at their spot, or a word about your program's identity, recruits (and the occasional mom) reach out on their own. Inbound texts cost no hours; a 'texts waiting' pill in the header and a 'Texted you' tag on the Recruit tab show who. Leave one on read for a week and he notices. Your own commits text too, and one answer can turn into a playing-time promise."
+ },
+ {
+  "version": "1.14.1",
+  "notes": "Coach's guide: the first-season tutorial is now a contextual card that reacts to what you have not done yet (no offers, unscouted opponent, unspent hours, unsent texts, NIL sitting idle, a wavering commit, the bracket week, the offseason portal and schedule). Each tip has an Open button and a Got it. Long dynasties: team history is capped at 12 seasons to keep saves lean."
+ },
+ {
+  "version": "1.14.0",
+  "notes": "Spring game. The offseason calendar now has an April spring game: an intrasquad scrimmage with a score and stat lines, two players who flashed (their breakout odds go up at camp), spring risers who gained a point or two over the winter, and open position battles that get settled at camp with news (pin a starter on the Roster tab to settle one yourself). Next year's recruits watch from the stands, so your early offers land harder."
+ },
+ {
+  "version": "1.13.0",
+  "notes": "Program identity and rival coaches. Your program earns an identity from what it actually does over three seasons (Air raid, Ground and pound, Defense wins, QB factory, NFL pipeline, Giant killer, Portal U, Homegrown); it shows on the Program tab, recruits at matching positions warm faster and are tagged 'fits your identity', and it can be lost. Every opposing head coach now has a personality (Recruiter, Riverboat gambler, Old school, Players' coach, Showman, Schemer) that changes how they recruit, keep rosters, and play; it shows in the scouting report. Recruiter coaches work on your commits midseason: a wavering commit gets a warning and you can fly out, call the family, or promise playing time before he decides. Showmen talk at their pressers before your game and heat up rivalries."
+ },
+ {
+  "version": "1.12.0",
+  "notes": "Draft night and pro careers. Every offseason runs a 224-pick draft league-wide: your picks get a Draft Night card on Home (round, slot, senior or early entry), with the top 10 and picks by conference. Your former players now have pro careers you can follow on the Program tab: rookie to starter to Pro Bowler, second contracts, retirements, with news as it happens. The Pro pitch in recruiting is now graded on the last four drafts at your position instead of raw prestige. New midweek event: a Pro Bowl alum comes back to campus on his bye week. Two new achievements: Day one (first-rounder) and No. 1 overall."
+ },
+ {
+  "version": "1.11.0",
+  "notes": "Conference realignment: rising Group of Five programs get Power invitations (yours comes with a choice), powers jump leagues, independents join. A proper offseason calendar on Home walks you through departures, staff, portal, schedule, budget and roster before camp opens. Saves now compress one at a time, which keeps memory flat over long dynasties."
+ },
+ {
+  "version": "1.10.1",
+  "notes": "Saves are four to six times smaller (compressed on the fly), so many dynasties fit on a phone. Fixed a transfer-portal bug where a reloaded save could credit a transfer's stats to a stale copy. Mobile tab bar and header fit on narrow phones."
+ },
+ {
+  "version": "1.10.0",
+  "notes": "Sound and effects everywhere (crowd, whistle, score stings, screen flash, controller rumble), 26 achievements earned across all your dynasties, and a short first-week guide for new coaches."
+ },
+ {
+  "version": "1.9.0",
+  "notes": "Schedule builder: in the offseason, fill your non-conference slots yourself. Buy an easy home game, agree to a home-and-home with a peer (the return trip books itself), or take a neutral-site payday against a power. Rankings reward who you beat, so the slate you build is a decision you own."
+ },
+ {
+  "version": "1.8.0",
+  "notes": "Midweek situations: a starter in a bar fight, a booster with strings attached, a QB controversy, an academic hold, a reporter chasing a job rumor, a trainer offering an early return, rivalry-week trash talk. Each lands on your desk with two or three choices and consequences that can surface weeks later. Ignore one and it resolves itself, badly."
+ },
+ {
+  "version": "1.7.0",
+  "notes": "Awards night and the record book: All-America and all-conference teams, Offensive and Defensive Player of the Year, Freshman of the Year, national and team stat leaders, single-season records for your program and the league, career stats, and a program Hall of Fame for the players who earned it."
+ },
+ {
+  "version": "1.6.0",
+  "notes": "Coaching staff, contracts and a coach profile. Hire and extend an offensive, defensive and recruiting coordinator from an offseason market; they shape your game edge, development and recruiting hours, and the good ones get poached for head jobs. Your own contract has years and a lame-duck season. Earn Recruiter, Developer, Big-game and Media levels that pay off on the field."
+ },
+ {
+  "version": "1.5.0",
+  "notes": "Game plans and scouting: pick your offense (ground, balanced, air) and tempo each week, scout the opponent for 2 hours to see where they are soft, and watch the plan edge move your win odds. Box scores show the plan you used; AI teams now lean pass or run by their rosters."
+ },
+ {
+  "version": "1.4.0",
+  "notes": "Recruiting you can read: real commit odds on every recruit, a decision window, the reason whenever you lose one, playing-time promises that come due next season, and Call-my-board and Scout-my-board batch actions."
+ },
+ {
+  "version": "1.3.1",
+  "notes": "multiple dynasty save slots"
+ },
+ {
+  "version": "1.3.0",
+  "notes": "earned rivalries, rivalry week, atmosphere, target on your back, difficulty, losing-seasons rule"
+ },
+ {
+  "version": "1.2.1",
+  "notes": "iMessage-style recruit text threads"
+ },
+ {
+  "version": "1.2.0",
+  "notes": "traits, injuries, depth chart pins, recruit texts and family dinner, living league"
+ }
+]
