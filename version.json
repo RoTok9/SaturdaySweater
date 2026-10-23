@@ -1,4 +1,4 @@
 {
-  "version": "1.24.1",
-  "notes": "Desktop: the varsity font is now embedded so PC installs get it through the in-app updater."
+  "version": "1.25.0",
+  "notes": "Complete visual revamp, broadcast style: the textures are gone. Dark neutral masthead with a team-color score bug (crest, wordmark, nickname and conference in an angled block), record and rank on the right. The week's game is a versus panel: two angled team-color blocks with crests, names, rank and record, a split win-probability bar in both colors, and gameday tags (rivalry week, homecoming, senior day, conference opener, ranked matchup, expected crowd, sellout, hostile crowd). Live games and replays use a broadcast score bug. Sharper corners, uppercase condensed buttons and labels, team-color section titles, neutral light and dark themes."
 }
