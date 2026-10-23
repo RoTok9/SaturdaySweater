@@ -1,4 +1,4 @@
 {
-  "version": "1.88.0",
-  "notes": "Pass and play: a handoff screen now appears when the game passes to the next coach (Pass the device to Coach B), so nobody sees the other sideline's screen. Coach profile tracks your crunch-time record."
+  "version": "1.89.0",
+  "notes": "Halftime training room: sometimes a starter is banged up at the half. Play him (he may be fine, he may go down for good and miss weeks) or sit him (the backup steps in, the edge drops, the player stays healthy). Injury-prone and workhorse traits matter. The broadcast narrates whichever way it goes."
 }
