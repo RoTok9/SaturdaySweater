@@ -1,4 +1,4 @@
 {
-  "version": "1.85.0",
-  "notes": "AD mandates: every coach now carries a stated goal from the athletic director (make a bowl, finish ranked, win the conference, make the playoff, win it all) with a deadline. Meeting it adds a year to your deal and settles the boosters; missing it heats the seat and the AD starts taking calls. Shown on your coach card in Program with seasons left. Hot news items now survive longer in the feed."
+  "version": "1.86.0",
+  "notes": "Conference title race: standings now mark who has clinched a title-game spot, who controls their own destiny and who is eliminated, with a legend. A Conference race card on Home from Week 6 on tells you exactly where you stand (clinched, in control, alive but need help, out), and the feed fires when you clinch, when you are eliminated, and on win-and-in weeks."
 }
