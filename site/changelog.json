@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.149.1",
+  "notes": "Recruits notice your scheme: an Air raid OC helps with quarterbacks and receivers, a Power run OC with backs and linemen, a Pressure DC with pass rushers, a Two-high DC with defensive backs. The board tags who fits."
+ },
+ {
   "version": "1.149.0",
   "notes": "Coordinator schemes: every OC runs an Air raid, Power run or Pro style offense and every DC a Pressure, Two-high or Multiple defense. Game plans that fit your coordinators' schemes play better, the ones that fight them play worse, and the hiring market shows each candidate's scheme so who you hire shapes how you play."
  },
