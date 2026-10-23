@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.159.5",
+  "notes": "Safety net: simming a week, finishing a game and other big steps now run as a transaction. If anything ever goes wrong partway, the dynasty rolls back to just before that step instead of saving a half-finished week."
+ },
+ {
   "version": "1.159.4",
   "notes": "Phone apps keep a second copy of every save in the app's private files, so a dynasty survives even if the phone clears web storage; it restores automatically. Exporting a dynasty on a phone saves it to the Files app."
  },

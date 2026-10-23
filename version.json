@@ -1,5 +1,5 @@
 {
-  "version": "1.159.4",
-  "notes": "Phone apps keep a second copy of every save in the app's private files, so a dynasty survives even if the phone clears web storage; it restores automatically. Exporting a dynasty on a phone saves it to the Files app.",
-  "sha256": "e6accbc427790bcf99a44897ec10e14abea4f87ff6cdcf4b99776f8bb9bc86ab"
+  "version": "1.159.5",
+  "notes": "Safety net: simming a week, finishing a game and other big steps now run as a transaction. If anything ever goes wrong partway, the dynasty rolls back to just before that step instead of saving a half-finished week.",
+  "sha256": "35dab27d82e33aae063ce161e42464d67e719f86c92ef9f63a438086238eac85"
 }
