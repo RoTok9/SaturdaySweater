@@ -1,4 +1,4 @@
 {
-  "version": "1.63.0",
-  "notes": "Fifty historic rivalries ship named and hot from day one in the real-names league: The Game, the Iron Bowl, the Red River Rivalry, the Egg Bowl, Bedlam, the Apple Cup, the Holy War, the Backyard Brawl and the rest, with series history, trophies, and a protected spot in the last two weeks of the schedule. Earned rivalries still form on top of them."
+  "version": "1.64.0",
+  "notes": "Live broadcast speed control (slow, normal, fast) on the live card, remembered between games. Field strip now mirrors the score bug: away team's end zone on the left, home on the right, so the ball and the scores read the same direction."
 }
