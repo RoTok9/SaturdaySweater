@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.14.0">
+<meta name="app-version" content="1.14.1">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -919,6 +919,28 @@ function springGame(){if(G.phase!=='offseason'||(G.spring&&G.spring.s===G.season
   G.spring={s:G.season,os,ds,stars:stars.map(x=>({n:x.p.n,pos:x.p.pos,line:x.line})),flashes:flashes.map(p=>({n:p.n,pos:p.pos,ovr:p.ovr,pot:p.pot})),risers,battles:battles.map(b=>({pos:b.pos,a:P(b.a).n,ao:P(b.a).ovr,b:P(b.b).n,bo:P(b.b).ovr}))};
   news(`Spring game: offense ${os}, defense ${ds}. ${stars[0]?`${stars[0].p.pos} ${stars[0].p.n} ${stars[0].line}.`:''}${flashes.length?` ${flashes.map(p=>p.pos+' '+p.n).join(' and ')} flashed.`:''}`,true);}
 function resolveBattles(){const u=userTeam();(G.battles||[]).forEach(b=>{const a=P(b.a),c=P(b.b);if(!a||!c||a.team!==u.id||c.team!==u.id)return;const sa=a.ovr+(a.form||0)*2+gauss()*2,sc=c.ovr+(c.form||0)*2+gauss()*2;const w=sa>=sc?a:c,l=w===a?c:a;w.ovr=clamp(w.ovr+1,40,99);bumpForm(w,1);if(hasT(l,'flight')&&Math.random()<0.5)l.unhappy=true;news(`Camp: ${b.pos} ${w.n} ${w===a?'holds off':'beats out'} ${l.n} for the starting job.${l.unhappy?' '+l.n+' is not happy about it.':''}`);});G.battles=[];}
+/* ===================== COACH'S GUIDE (contextual tips) ===================== */
+function guideTips(){if(G.guideOff)return [];const seen=G.tipsSeen||[];const u=userTeam();const out=[];const add=(id,t,d,tab)=>{if(!seen.includes(id))out.push({id,t,d,tab});};
+  const yr1=G.coach.years<=1;const g=nextGame();
+  if(G.phase==='season'){
+    if(yr1&&G.week<=2&&!G.recruits.some(r=>r.offer))add('offer','Start recruiting now','Recruit tab: offer 15 to 20 players you actually want. Offers cost nothing; the hours come after. Every kid lists what he wants, and your grade next to it.','recruit');
+    if(yr1&&G.week<=3&&g&&!g.scouted&&G.hours>=2)add('scout','Scout your opponent','Two hours buys the scouting report: where they are soft, who is hurt, what your staff suggests. Then set the game plan below it.');
+    if(yr1&&G.week>=2&&G.week<=6&&G.hours>=G.hoursMax-4)add('hours',`You have ${G.hours}h sitting there`,'Hours reset every week and do not carry over. Calls, texts, pitches and visits all cost hours. Spend them.','recruit');
+    if(yr1&&G.week>=2&&!G.recruits.some(r=>r.texted))add('text','Text a recruit','Open a recruit and hit Text. It is a real conversation: his persona decides what lands. A good answer moves the needle more than a call.','recruit');
+    if(G.week>=3&&G.week<=8&&G.pressLog.length>=1&&!seen.includes('press'))add('press','Pressers have teeth','Every answer moves fans, admin, media or the locker room. Those four numbers decide your seat, your job offers and who transfers. Program tab shows them.','program');
+    if(yr1&&G.week>=5&&G.week<=10)add('decide','Recruits decide on a clock','Each recruit shows the week he decides and your odds. Odds are what they say. Trailing on a kid you need? Visit, pitch what he wants, or pay the NIL ask.','recruit');
+    if(yr1&&G.week>=6&&G.week<=11&&G.nil>=100)add('nil',`$${Math.round(G.nil)}K of NIL is unspent`,'NIL money closes recruits who want it and keeps your own stars out of the portal. Program tab raises more; recruit detail spends it.','recruit');
+    if(G.week>=10&&G.week<=14&&yr1)add('signing','Signing day is Championship Week','Anyone still uncommitted decides by week 15. Your class rank hits the newswire and the AD notices.');
+    if(G.week===16)add('bracket','The 12-team bracket is set','Season tab shows the bracket. Five automatic bids for conference champs, seven at-large, top four seeds get a bye.','schedule');
+    if(G.coach.seat>=55&&!seen.includes('seat'))add('seat','Your seat is warm','The AD compares you to expected wins. Three losing seasons in a row ends it. Winning fixes everything; lobbying the AD on the Program tab buys time.','program');
+    if(G.recruits.some(r=>r.waver&&r.committed===G.user))add('waver','A commit is wavering','Another coach is in his living room. Open him on the Recruit tab: fly out, call his family, or promise playing time before the week ends.','recruit');
+  }else if(G.phase==='offseason'){
+    if(yr1)add('calendar','Work the calendar top to bottom','Departures, staff, portal, spring game, schedule, budget, roster. Each row opens the right tab. Camp opens when the roster is legal.');
+    if(G.portal.length&&G.portalAdds===0&&yr1)add('portal','The portal is open','Roster tab: up to six adds. Players ask for NIL money and playing time. Stars you ignore here go to someone else.','roster');
+    if(G.schedOffers&&G.schedOffers.length&&!(G.schedPicks&&G.schedPicks.length)&&yr1)add('sched','Build your schedule','Season tab: pick non-conference games. Home games pay, ranked opponents build your resume, cupcakes are free wins. Open slots get filled at random.','schedule');
+  }
+  return out.slice(0,2);}
+function renderGuide(){const tips=guideTips();if(!tips.length)return '';return `<div class="card sec" style="border-left:5px solid var(--gold)"><div class="row between"><div class="eyebrow">Coach’s guide</div><button class="btn sm ghost" data-act="guideoff">Hide guide</button></div>${tips.map(t=>`<div class="row between" style="align-items:flex-start;gap:10px;margin-top:6px"><div class="grow"><div class="nm">${t.t}</div><div class="small">${t.d}</div></div><div style="display:flex;flex-direction:column;gap:4px;flex:none">${t.tab?`<button class="btn sm" data-act="tab" data-id="${t.tab}">Open</button>`:''}<button class="btn sm ghost" data-act="tipseen" data-id="${t.id}">Got it</button></div></div>`).join('')}</div>`;}
 function careerLine(p){const c=p.car;if(!c)return '';if(p.pos==='QB')return `${c.py.toLocaleString()} pass yds, ${c.ptd} TD`;if(p.pos==='RB')return `${c.ry.toLocaleString()} rush yds, ${c.rtd} TD`;if(p.pos==='WR'||p.pos==='TE')return `${c.recy.toLocaleString()} rec yds, ${c.rectd} TD`;if(['DL','LB','CB','S'].includes(p.pos))return `${c.tk} tkl, ${c.sk} sacks, ${c.dint} INT`;return `${c.gp} games`;}
 function accrueCareers(){Object.values(G.players).forEach(p=>{if(!p.st)return;if(p.team!==G.user&&!(p.aw&&p.aw.length)&&!p.heisman){return;}const c=p.car||(p.car={from:G.season,gp:0,py:0,ptd:0,ry:0,rtd:0,recy:0,rectd:0,tk:0,sk:0,dint:0});['gp','py','ptd','ry','rtd','recy','rectd','tk','sk','dint'].forEach(k=>c[k]+=p.st[k]||0);});}
 function awardHeisman(){const w=heismanWatch(1)[0];if(!w)return;const p=w.p;if(p.team===G.user)ach('heisman');p.heisman=G.season;G.heisman={pid:p.id,n:p.n,pos:p.pos,team:T(p.team).name,line:statLine(p),season:G.season};news(`${p.n}, ${p.pos}, ${T(p.team).name}, wins the ${G.season} Heisman Trophy (${statLine(p)}).`,true);}
@@ -1091,7 +1113,7 @@ function finishSeason(){
   G.summary={season:G.season,team:u.name,record:`${u.w}-${u.l}`,rank:u.rank,confChamp:u.confChamp,poRes,champion:T(G.playoff.champion).name,classRank:G.classRank?G.classRank[u.id]:null,poy:G.heisman?`${G.heisman.n}, ${G.heisman.pos}, ${G.heisman.team}`:(poy?`${poy.n} (${T(poy.team).name})`:''),coy:coy.name,E:E.toFixed(1),rw:u.rw||0};
   G.history.push({season:G.season,team:u.name,record:`${u.w}-${u.l}`,rank:u.rank,conf:u.confChamp,po:poRes,champ:T(G.playoff.champion).name,cls:G.summary.classRank,heis:G.heisman?`${G.heisman.n} (${G.heisman.team})`:''});
   accrueCareers();updateRecords();
-  G.teams.forEach(t=>t.hist.push({s:G.season,w:t.w,l:t.l,rank:t.rank,po:t.po}));seasonProfiles();
+  G.teams.forEach(t=>{t.hist.push({s:G.season,w:t.w,l:t.l,rank:t.rank,po:t.po});if(t.hist.length>12)t.hist.splice(0,t.hist.length-12);});seasonProfiles();
   const fin=G.games.find(g=>g.type==='po'&&g.round==='f');const runner=fin?T(gameWinner(fin)===fin.home?fin.away:fin.home):null;
   const topClass=G.classRank?Object.entries(G.classRank).sort((a,b)=>a[1]-b[1])[0]:null;
   const champ=T(G.playoff.champion);
@@ -1372,7 +1394,7 @@ function renderHome(){
     ${step('Jul','Roster limit',over>0?'todo':'done','Roster',over>0?`${over} over the ${ROSTER_CAP}-man limit. Cut or auto-trim.`:`${u.roster.length}/${ROSTER_CAP}. Walk-ons fill any gaps at camp.`)}
     </div>
     <div class="btnrow"><button class="btn" data-act="sim" ${over>0||G.fired||G.realign?'disabled':''}>Camp opens: start ${G.season+1}</button></div></div>`);}
-  if(G.phase==='season'&&!G.guideOff&&G.coach.years===1&&G.week<=3){const steps=[['Recruit','Spend your hours on the Recruit tab: offer, text, pitch what each kid wants. Odds are real.'],['Plan','Scout this week\u2019s opponent and set a game plan below.'],['Lobby','Program tab: raise NIL money, work the media, lobby the AD.'],['Sim','Hit Sim. Watch the game. Face the press. Repeat.']];parts.push(`<div class="card sec" style="border-left:5px solid var(--gold)"><div class="row between"><div class="eyebrow">Your week, coach</div><button class="btn sm ghost" data-act="guideoff">Got it</button></div><div class="grid2">${steps.map(([t,d],i)=>`<div class="stat" style="padding:8px 10px"><div class="k">${i+1}. ${t}</div><div class="small">${d}</div></div>`).join('')}</div><div class="tiny muted">The AD expects about ${Math.round(expectedWins(u))} wins. Three losing seasons in a row and you are gone.</div></div>`);}
+  {const gd=renderGuide();if(gd)parts.push(gd);}
   if(G.phase==='season'){
     const g=G.games.find(x=>x.week===G.week&&!x.played&&(x.home===u.id||x.away===u.id));
     if(g){const gl=gameLine(g,u.id);const isHome=g.home===u.id;const p=isHome?winProb(u,T(g.away),g.neutral,g):1-winProb(T(g.home),u,g.neutral,g);const opp=T(isHome?g.away:g.home);const RR=gameRiv(g);
@@ -1641,6 +1663,7 @@ function onAction(act,el){
     case 'importsave':if(window.desktop)window.desktop.importSave().then(txt=>{if(!txt)return;try{const g=JSON.parse(txt);if(!g||!g.teams||!g.players)throw 0;if(G)save();G=g;newSlot();migrate();save();UI.tab='home';render();}catch(e){UI.leagueMsg='';}});return;
     case 'fxtoggle':fxToggle();ac();break;
     case 'guideoff':G.guideOff=true;break;
+    case 'tipseen':(G.tipsSeen=G.tipsSeen||[]).push(id);break;
     case 'realign':actRealign(id==='yes');break;
     case 'leaguetoggle':UI.leagueOpen=!UI.leagueOpen;UI.leagueIO=null;break;
     case 'leaguepreset':applyLeaguePreset(id);break;
