@@ -1,4 +1,4 @@
 {
-  "version": "1.94.0",
-  "notes": "Post-game win probability chart: after the final, the live card draws how your win chance moved through the game, with scoring plays marked and quarter lines. Crunch-time wording fixed for one- and two-point games (a field goal wins it, not ties it)."
+  "version": "1.95.0",
+  "notes": "Rivalry week guarantee: a veteran goes on local radio and guarantees a win. Let it ride (juice for both locker rooms, and the result follows him), walk it back at the podium, or bench him a quarter. Win probability charts now also show on replays of any game. The Home AD goals card shows your mandate and seasons left. Top 25 lists teams also receiving votes."
 }
