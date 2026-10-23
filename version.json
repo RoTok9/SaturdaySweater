@@ -1,4 +1,4 @@
 {
-  "version": "1.44.0",
-  "notes": "Hot seat index and coach rankings on Polls > Standings: which jobs around the country are likely to open this winter (projected on current pace, with a note when a job would be a step up for you) and where you rank among all 136 coaches by reputation. Your agent's midseason call now targets the programs on that list."
+  "version": "1.45.0",
+  "notes": "Midseason mock draft on the Program tab: from week 6, where the scouts have your draft-eligible players (round and pick), moving week to week with production, awards and your ranking. Keyboard navigation on desktop: 1 through 6 jump to tabs, left and right arrows move between them, Escape closes an open player or recruit."
 }
