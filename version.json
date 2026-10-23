@@ -1,4 +1,4 @@
 {
-  "version": "1.17.0",
-  "notes": "Saturday wrap: after every week a league show card on Home gives the game of the week, upset of the week, poll risers and fallers (with a new No. 1 call-out) and the Heisman top three. Signing day show: when the class closes you get a card with your national and conference class rank, star breakdown, headliner, gems found, steals (recruits you landed at long odds), the ones that got away and why, and the top five classes. Scores of 2 no longer happen."
+  "version": "1.18.0",
+  "notes": "Playoff resume on the Polls tab: seed or bubble status with a plain-English verdict, Top-10 and Top-25 wins, bad losses, strength of schedule rank, conference record, a game-by-game list with opponents' rank then and now, and your remaining chances to add to it. Bowl week: bowl invitations arrive with opponent and payout, non-eligible seasons end with a note, and a projected early pick may ask to sit out the bowl, which is your call."
 }
