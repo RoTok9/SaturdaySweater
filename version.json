@@ -1,4 +1,4 @@
 {
-  "version": "1.20.0",
-  "notes": "Hub redesign. New masthead with a team crest, coach line, gradient and a rank badge; a proper matchup card for the week (both crests, records, rank badges, kick window, rivalry line, win-probability bar, opposing coach and identity); a quick-action row (hours, texts waiting, wavering commits, NIL, playoff picture, depth chart); Program pulse rebuilt as tiles with gauges (roster rank, poll movement, hot seat, class progress). Responsive layout: on desktop and tablets the hub is two columns with a top tab bar; phones in portrait keep the bottom bar; phones held sideways get a compact header and two columns. Polls tab now has sub-views: Top 25, Playoff, Leaders, Standings. The new Playoff view is a real bracket (first round through championship) that updates every week with seed arrows, NEW tags, auto-bid markers, first four out and who dropped out, plus a week-by-week seed tracker; during the playoff it shows the live bracket with scores and winners."
+  "version": "1.20.1",
+  "notes": "Live sim drama: momentum lines when a team rips off 14 and 28 unanswered, late-game tension lines in the fourth quarter of close games (the feed slows down for them), and a last-possession final call. Team crests now appear on the Season tab schedule and the Top 25."
 }

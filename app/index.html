@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.20.0">
+<meta name="app-version" content="1.20.1">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -208,6 +208,8 @@ textarea{font:inherit;font-size:12px;color:var(--fg);background:var(--surface);b
 .play.mine{border-left-color:var(--team);background:color-mix(in srgb,var(--team) 8%,transparent);padding-right:6px}
 .play.theirs{border-left-color:var(--bad)}
 .play.qmark{border-left-color:transparent;padding-top:4px;padding-bottom:4px}
+.play.mom{border-left-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,transparent);font-weight:600;padding-right:6px}
+.play.drama{font-style:italic}
 .live .scoreline .sc{font-size:42px}
 @media (prefers-reduced-motion:no-preference){ .item.clickable:active{opacity:.7} .play.new{animation:pop .35s ease-out} @keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}} }
 @media (min-width:720px){ .tabs{max-width:760px;margin:0 auto;border-left:1px solid var(--line);border-right:1px solid var(--line)} }
@@ -219,6 +221,7 @@ textarea{font:inherit;font-size:12px;color:var(--fg);background:var(--surface);b
 .top>*{position:relative;z-index:1}
 .top-wrap{max-width:1100px;margin:0 auto}
 .crest{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:.02em;flex:none;color:var(--team-fg)}
+.crest.sm{width:32px;height:32px;font-size:11px;border-radius:9px;border-width:1px}.crest.sm.l4{font-size:9px}
 .crest.l4{font-size:13px;letter-spacing:0}.muT .crest.l4{font-size:16px}
 .crest.team{background:var(--c);color:var(--cf);border-color:rgba(255,255,255,.25);box-shadow:0 2px 6px rgba(0,0,0,.25)}
 .top-in{align-items:center}
@@ -1569,12 +1572,16 @@ function buildFeed(g){
   const feed=[{k:'q',text:`Kickoff: ${a.name} at ${h.name}`,hs:0,as:0},{k:'f',team:g.home,text:scene,hs:0,as:0}];let hs=0,as=0,q=1;
   const CROWD=['The crowd noise forces a false start on {t}','{d} gets the whole stadium on its feet with a third-down stop','The student section is chanting at the {t} sideline','A scuffle after the whistle; flags on both teams','{t} goes for it on fourth down and the place is shaking','{d} jaws with the {t} bench after a sack'];
   const fill=()=>{const n=Math.random()<0.45?0:Math.random()<0.7?1:2;for(let i=0;i<n;i++){const tid=Math.random()<0.5?g.home:g.away;const opp=tid===g.home?g.away:g.home;const t=T(tid);const tpl=(R&&Math.random()<0.4)||(big&&Math.random()<0.2)?pick(CROWD):pick(FILLER);const dl=defs(opp);feed.push({k:'f',team:tid,text:tpl.replace('{t}',t.name).replace('{d}',dl.length?pick(dl)+' ('+T(opp).name+')':T(opp).name+' defense').replace('{y}',rint(22,52)),hs,as});}};
-  b.plays.forEach(p=>{while(q<p.q){fill();feed.push({k:'q',text:`End of ${['1st','2nd','3rd'][q-1]} quarter`,hs,as});q++;}fill();if(p.team===g.home)hs+=p.pts;else as+=p.pts;feed.push({k:'s',team:p.team,text:`${T(p.team).name}: ${p.desc}`,q:p.q,time:p.time,hs,as});});
+  let lastScorer=null,run=0,momSaid=0;const TENSE=['{t} needs a stop here and everybody in the building knows it','Timeouts are getting burned. {t} is managing the clock','The {d} sideline is screaming for a flag','Third and long. The place is on its feet','{t} ball, trailing, with the clock becoming a problem','A long review. Nobody sits down'];
+  b.plays.forEach(p=>{while(q<p.q){fill();feed.push({k:'q',text:`End of ${['1st','2nd','3rd'][q-1]} quarter`,hs,as});q++;}
+    const close=p.q===4&&Math.abs(hs-as)<=8&&parseInt(p.time)<=8;if(close){const tr=hs<as?g.home:hs>as?g.away:p.team;const o=tr===g.home?g.away:g.home;feed.push({k:'f',drama:true,team:tr,text:pick(TENSE).replace('{t}',T(tr).name).replace('{d}',T(o).name),hs,as});}else fill();
+    if(p.team===g.home)hs+=p.pts;else as+=p.pts;if(p.team!==lastScorer)momSaid=0;run=p.team===lastScorer?run+p.pts:p.pts;lastScorer=p.team;feed.push({k:'s',team:p.team,text:`${T(p.team).name}: ${p.desc}`,q:p.q,time:p.time,hs,as,drama:close});
+    if(((run>=14&&momSaid<1)||(run>=28&&momSaid<2))&&p.pts>=6){momSaid++;const lead=p.team===g.home?hs-as:as-hs;feed.push({k:'m',team:p.team,text:`${run} unanswered for ${T(p.team).name}${lead>0?'. They lead by '+lead:lead<0?'. Still down '+(-lead):'. Tied'}`,hs,as});}});
   while(q<4){fill();feed.push({k:'q',text:`End of ${['1st','2nd','3rd'][q-1]} quarter`,hs,as});q++;}fill();
-  feed.push({k:'end',text:'Final',hs:g.hs,as:g.as});return feed;
+  const fin=Math.abs(g.hs-g.as)<=3;feed.push({k:'end',text:fin?'Final. That one came down to the last possession':'Final',hs:g.hs,as:g.as});return feed;
 }
 function startLive(g,snap){UI.live={gid:g.id,snap,feed:buildFeed(g),shown:1,done:false};UI.tab='home';clearTimeout(liveTimer);liveTimer=setTimeout(liveTick,900);}
-function liveTick(){const L=UI.live;if(!L||L.done)return;if(L.shown<L.feed.length){L.shown++;const item=L.feed[L.shown-1];feedback(item);render();if(item.k==='end'){L.done=true;render();return;}liveTimer=setTimeout(liveTick,item.k==='s'?1700:item.k==='q'?1100:950);}}
+function liveTick(){const L=UI.live;if(!L||L.done)return;if(L.shown<L.feed.length){L.shown++;const item=L.feed[L.shown-1];feedback(item);render();if(item.k==='end'){L.done=true;render();return;}liveTimer=setTimeout(liveTick,item.drama?(item.k==='s'?2600:1900):item.k==='s'?1700:item.k==='q'?1100:item.k==='m'?1300:950);}}
 function endLive(){const L=UI.live;if(!L)return;clearTimeout(liveTimer);UI.live=null;}
 function liveState(){const L=UI.live;const g=G.games.find(x=>x.id===L.gid);const item=L.feed[L.shown-1];const me=G.user===g.home;const ms=me?item.hs:item.as,os=me?item.as:item.hs;const idx=L.shown/L.feed.length;const rem=Math.max(0,1-idx);const h=T(g.home),a=T(g.away);const edge=((me?1:-1)*(h.elo+(g.neutral?0:60)-a.elo))/17;const p=1/(1+Math.exp(-((ms-os)+edge*rem)/(3+12*rem)));return {g,item,me,ms,os,p,rem,opp:T(me?g.away:g.home)};}
 function renderLiveLine(){const s=liveState();return `<div class="nextline"><span class="nx">LIVE · ${s.me||s.g.neutral?'vs':'at'} ${esc(s.opp.name)}</span><span class="od">${s.ms}-${s.os}</span></div>`;}
@@ -1587,7 +1594,7 @@ function renderLive(){
     <div class="scoreline"><div class="t"><div class="nm">${esc(a.name)}${g.arank<=25?' <span class="tiny muted">#'+g.arank+'</span>':''}</div><div class="sc">${s.item.as}</div></div><div class="mid">${q}</div><div class="t"><div class="nm">${esc(h.name)}${g.hrank<=25?' <span class="tiny muted">#'+g.hrank+'</span>':''}</div><div class="sc">${s.item.hs}</div></div></div>
     <div class="meter"><span class="small" style="width:90px">${L.done?(won===G.user?'<b class="ok">You win</b>':'<b class="no">You lose</b>'):'Win chance'}</span><div class="bar grow"><i class="${L.done?(won===G.user?'good':'bad'):'me'}" style="width:${L.done?100:pct}%"></i></div><span class="small num" style="width:40px;text-align:right">${L.done?'':pct+'%'}</span></div>
     ${L.done?`<div class="btnrow"><button class="btn" data-act="livedone">Continue${G.presser?' to the press conference':''}</button><button class="btn ghost" data-act="livebox" data-id="${g.id}">Box score</button></div>`:`<div class="btnrow"><button class="btn ghost sm" data-act="liveskip">Skip to final</button></div>`}
-    <div class="plays">${items.map((it,i)=>`<div class="play ${it.k==='s'?(it.team===G.user?'mine':'theirs'):it.k==='q'||it.k==='end'?'qmark':''} ${i===0&&!L.done?'new':''}">${it.k==='s'?`<b>${esc(it.text)}</b> <span class="muted">(${it.team===g.home?it.hs+'-'+it.as:it.as+'-'+it.hs})</span>`:it.k==='q'||it.k==='end'?`<span class="eyebrow">${esc(it.text)}${it.k==='end'?` · ${a.name} ${it.as}, ${h.name} ${it.hs}`:''}</span>`:esc(it.text)}</div>`).join('')}</div></div>`;
+    <div class="plays">${items.map((it,i)=>`<div class="play ${it.k==='s'?(it.team===G.user?'mine':'theirs'):it.k==='q'||it.k==='end'?'qmark':it.k==='m'?'mom':''} ${it.drama&&it.k==='f'?'drama':''} ${i===0&&!L.done?'new':''}">${it.k==='s'?`<b>${esc(it.text)}</b> <span class="muted">(${it.team===g.home?it.hs+'-'+it.as:it.as+'-'+it.hs})</span>`:it.k==='q'||it.k==='end'?`<span class="eyebrow">${esc(it.text)}${it.k==='end'?` · ${a.name} ${it.as}, ${h.name} ${it.hs}`:''}</span>`:esc(it.text)}</div>`).join('')}</div></div>`;
 }
 function renderNextLine(u){
   if(G.phase==='postseason')return `<div class="nextline"><span class="nx">Season over. ${esc(T(G.playoff.champion).name)} won the title.</span><span class="od">Final No. ${u.rank}</span></div>`;
@@ -1727,7 +1734,7 @@ function renderSchedBuilder(){const u=userTeam();const slots=nonConfSlots();cons
     <div class="eyebrow">Neutral-site showcase</div><div class="list">${of.neutral.map((o,i)=>row('neutral',o,i)).join('')}</div></div>`;}
 function renderSchedule(){
   const u=userTeam();if(G.phase==='offseason')return renderSchedBuilder()+renderStandings(u.conf,true);const mine=G.games.filter(g=>g.home===u.id||g.away===u.id).sort((a,b)=>a.week-b.week);
-  const row=(g,lbl)=>{const gl=gameLine(g,u.id);const open=UI.watch&&UI.watch.gid===g.id;return `<div class="item ${g.played&&g.box?'clickable':''}" ${g.played&&g.box?`data-act="watch" data-id="${g.id}"`:''}><div class="rk">${lbl}</div><div class="grow"><div class="nm">${gl.label}</div><div class="sub">${gl.where}${g.played&&g.box?' · tap for box score':''}</div></div><div class="res ${gl.cls}">${gl.res||'<span class="muted tiny">upcoming</span>'}</div></div>${open?`<div class="detail">${renderWatch(g)}</div>`:''}`;};
+  const row=(g,lbl)=>{const gl=gameLine(g,u.id);const open=UI.watch&&UI.watch.gid===g.id;const opp=T(g.home===u.id?g.away:g.home);return `<div class="item ${g.played&&g.box?'clickable':''}" ${g.played&&g.box?`data-act="watch" data-id="${g.id}"`:''}><div class="rk">${lbl}</div>${crest(opp,'sm')}<div class="grow"><div class="nm">${gl.label}</div><div class="sub">${gl.where}${g.played&&g.box?' · tap for box score':''}</div></div><div class="res ${gl.cls}">${gl.res||'<span class="muted tiny">upcoming</span>'}</div></div>${open?`<div class="detail">${renderWatch(g)}</div>`:''}`;};
   const rows=[];for(let w=1;w<=14;w++){const g=mine.find(x=>x.week===w);if(!g){rows.push(`<div class="item"><div class="rk">${w}</div><div class="grow muted">Bye</div></div>`);continue;}rows.push(row(g,w));}
   const post=mine.filter(g=>g.week>14).map(g=>row(g,g.week===15?'CCG':g.week===16?'R1':g.week===17?'QF':g.week===18?'SF':'NC')).join('');
   const lastWeek=G.phase==='season'?G.week-1:19;const board=G.games.filter(g=>g.played&&g.week===lastWeek&&(g.hrank<=25||g.arank<=25)).sort((a,b)=>Math.min(a.hrank,a.arank)-Math.min(b.hrank,b.arank)).slice(0,14);
@@ -1788,7 +1795,7 @@ function renderRoster(){
     <div class="list">${rows||'<div class="item muted">Nobody here. Walk-ons will fill the spot at kickoff.</div>'}</div></div>${portal}`;
 }
 function renderPolls(){
-  const u=userTeam();const top=G.poll.slice(0,25).map((id,i)=>{const t=T(id);return `<div class="item ${isUser(t)?'me':''}"><div class="rk">${i+1}</div><div class="grow"><div class="nm">${esc(t.name)}${t.confChamp?' <span class="tag good">Champ</span>':''}${t.po==='champ'?' <span class="tag good">Title</span>':''}</div><div class="sub">${CONFS[t.conf].name} · ${esc(isUser(t)?G.coach.name:t.coach.n)} · ${t.rw||0} ranked W${t.rl?', '+t.rl+' ranked L':''}</div></div><div class="res">${t.w}-${t.l}</div></div>`;}).join('');
+  const u=userTeam();const top=G.poll.slice(0,25).map((id,i)=>{const t=T(id);return `<div class="item ${isUser(t)?'me':''}"><div class="rk">${i+1}</div>${crest(t,'sm')}<div class="grow"><div class="nm">${esc(t.name)}${t.confChamp?' <span class="tag good">Champ</span>':''}${t.po==='champ'?' <span class="tag good">Title</span>':''}</div><div class="sub">${CONFS[t.conf].name} · ${esc(isUser(t)?G.coach.name:t.coach.n)} · ${t.rw||0} ranked W${t.rl?', '+t.rl+' ranked L':''}</div></div><div class="res">${t.w}-${t.l}</div></div>`;}).join('');
   const mineLine=u.rank>25?`<div class="item me"><div class="rk">${u.rank}</div><div class="grow"><div class="nm">${esc(u.name)}</div><div class="sub">Your team</div></div><div class="res">${u.w}-${u.l}</div></div>`:'';
   const bracket="";
   const hw=heismanWatch(5);const heis=G.heisman?`<div class="card sec"><div class="eyebrow">${G.heisman.season} Heisman Trophy</div><div class="hero"><div class="vs">${esc(G.heisman.n)}</div><div class="small muted">${G.heisman.pos} · ${esc(G.heisman.team)} · ${G.heisman.line}</div></div></div>`:(hw.length&&hw[0].v>0?`<div class="card sec"><div class="eyebrow">Heisman watch</div><div class="list">${hw.map((x,i)=>{const t=T(x.p.team);return `<div class="item ${isUser(t)?'me':''}"><div class="rk">${i+1}</div><div class="grow"><div class="nm">${esc(x.p.n)} <span class="tiny muted">${x.p.pos} · ${esc(t.name)}</span></div><div class="sub">${statLine(x.p)}</div></div></div>`;}).join('')}</div><div class="tiny muted">Awarded after championship week. Production counts, but so do wins and your team's ranking.</div></div>`:'');
