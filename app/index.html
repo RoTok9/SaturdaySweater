@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.75.0">
+<meta name="app-version" content="1.75.1">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -2664,7 +2664,7 @@ function onAction(act,el){
     case 'pick':UI.pickTeam=+id;{const inp=document.getElementById('coachName');if(inp)UI.coachName=inp.value;}break;
     case 'diff':UI.diff=id;break;
     case 'start':{const inp=document.getElementById('coachName');const nm=(inp&&inp.value.trim())||'Coach';if(UI.pickTeam==null)return;newDynasty(UI.pickTeam,nm,UI.diff||'normal');UI.tab='home';save();break;}
-    case 'tab':resolvePreLive();if(UI.live)endLive();UI.tab=id;UI.confirm=null;window.scrollTo(0,0);break;
+    case 'tab':if(UI.live&&!UI.live.pre)endLive();UI.tab=id;UI.confirm=null;window.scrollTo(0,0);break;
     case 'sim':if(fxOn())ac();if(resolvePreLive())break;if(UI.live)endLive();if(G.online&&NET){if(G.ready)return;if(fxOn()&&G.phase==='season'){const pg=G.games.find(x=>x.week===G.week&&!x.played&&!x._forced&&(x.home===G.user||x.away===G.user));if(pg){const u0=userTeam();startPreLive(pg,{w:u0.w,l:u0.l,cw:u0.cw,cl:u0.cl,rank:u0.rank,rw:u0.rw||0,rl:u0.rl||0,confChamp:u0.confChamp,week:G.week,hw:G.coach.w,hl:G.coach.l});return;}}onlineReady(true);return;}if(coopOn()){if(liveEligible()&&G.phase==='season'&&!G.ready){const pg=G.games.find(x=>x.week===G.week&&!x.played&&!x._forced&&(x.home===G.user||x.away===G.user));if(pg){const u0=userTeam();startPreLive(pg,{w:u0.w,l:u0.l,cw:u0.cw,cl:u0.cl,rank:u0.rank,rw:u0.rw||0,rl:u0.rl||0,confChamp:u0.confChamp,week:G.week,hw:G.coach.w,hl:G.coach.l});break;}}G.ready=true;const next=humanIds().find(h=>!bagOf(h).ready);if(next!=null){switchCoach(next);UI.tab='home';break;}clearReady();}if(G.phase==='season'){const u0=userTeam();const snap={w:u0.w,l:u0.l,cw:u0.cw,cl:u0.cl,rank:u0.rank,rw:u0.rw||0,rl:u0.rl||0,confChamp:u0.confChamp,week:G.week,hw:G.coach.w,hl:G.coach.l};const pg=G.games.find(x=>x.week===G.week&&!x.played&&(x.home===G.user||x.away===G.user));if(pg&&!pg._forced&&liveEligible()){startPreLive(pg,snap);break;}const hasGame=!!pg;simWeek();const lg=hasGame?G.games.find(x=>x.week===snap.week&&x.played&&x.box&&(x.home===G.user||x.away===G.user)):null;if(lg&&lg._callBy!==G.user)startLive(lg,snap);}else if(G.phase==='postseason'){runOffseason();UI.tab='home';}else startNextSeason();break;
     case 'liveskip':resolvePreLive();if(UI.live){UI.live.shown=UI.live.feed.length;UI.live.done=true;clearTimeout(liveTimer);}break;
     case 'halftime':actHalftime(id);break;

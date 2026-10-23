@@ -1,4 +1,4 @@
 {
-  "version": "1.75.0",
-  "notes": "Replays of past games now use the full broadcast: drive-by-drive feed, the field strip, the real clock, drive summaries and injuries, at the live speed you chose. Skip to the box score any time."
+  "version": "1.75.1",
+  "notes": "Switching tabs during a live game no longer ends it: the broadcast keeps running and the coach's call waits for you on Home."
 }
