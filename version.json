@@ -1,4 +1,4 @@
 {
-  "version": "1.13.0",
-  "notes": "Program identity and rival coaches. Your program earns an identity from what it actually does over three seasons (Air raid, Ground and pound, Defense wins, QB factory, NFL pipeline, Giant killer, Portal U, Homegrown); it shows on the Program tab, recruits at matching positions warm faster and are tagged 'fits your identity', and it can be lost. Every opposing head coach now has a personality (Recruiter, Riverboat gambler, Old school, Players' coach, Showman, Schemer) that changes how they recruit, keep rosters, and play; it shows in the scouting report. Recruiter coaches work on your commits midseason: a wavering commit gets a warning and you can fly out, call the family, or promise playing time before he decides. Showmen talk at their pressers before your game and heat up rivalries."
+  "version": "1.14.0",
+  "notes": "Spring game. The offseason calendar now has an April spring game: an intrasquad scrimmage with a score and stat lines, two players who flashed (their breakout odds go up at camp), spring risers who gained a point or two over the winter, and open position battles that get settled at camp with news (pin a starter on the Roster tab to settle one yourself). Next year's recruits watch from the stands, so your early offers land harder."
 }
