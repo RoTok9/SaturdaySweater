@@ -1,4 +1,4 @@
 {
-  "version": "1.82.0",
-  "notes": "The other sideline makes fourth-quarter calls too (gamblers go for it when trailing, old-school coaches run out the clock, schemers save something). Every player on your roster now keeps a game log for the season: open a player card and expand it to see his line from every game."
+  "version": "1.83.0",
+  "notes": "Redshirts. Open a true freshman's card by week 4 and sit him for the year: he does not burn eligibility, comes back a redshirt freshman with a development bump, and stays off the depth chart until then. RS tags on the roster."
 }
