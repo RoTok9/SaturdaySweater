@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.146.1",
+  "notes": "Top 25 shows first-place votes."
+ },
+ {
   "version": "1.146.0",
   "notes": "Onside kicks: when a late touchdown and a failed two-point try leave a team down two with time left, the onside kick can actually work, and a recovered onside sets up a walk-off field goal attempt."
  },
