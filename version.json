@@ -1,4 +1,4 @@
 {
-  "version": "1.30.0",
-  "notes": "Recruits on the sideline: visitors who came in that week react to your home result (a ranked or rivalry win lands hard, a blowout loss stings). Coach legacy on the Program tab: a score and tier (Unproven, Climber, Riser, Program builder, Icon, Legend) built from titles, conference crowns, playoff trips, top-10 finishes and wins, with a title at a low-prestige program counting double. Swipe left or right between tabs on phones."
+  "version": "1.31.0",
+  "notes": "Defensive game plans: Base, Stack the box, Two-high coverage or Blitz heavy, graded against the opponent's scheme and quarterback (stack a run team and it pays; stack a passing team and they go over the top; blitz a shaky QB for chaos, blitz a great one at your peril). The last-result card now shows your full plan and whether it worked or hurt you. Named rivalries can come with a trophy (the Iron Skillet, the Old Oaken Bucket and friends) that changes hands with the series. Heisman ceremony: five finalists with vote shares on the Polls tab. School records: when one of your players passes a single-season school mark midseason, it hits the newswire the week it happens."
 }
