@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.148.2",
+  "notes": "Season-tab game previews add the betting line and your record against the opposing coach; the playoff bracket labels each game's bowl site."
+ },
+ {
   "version": "1.148.1",
   "notes": "Banner day: the first home game after a national or conference title opens with the banner going up (and the rings at midfield)."
  },
