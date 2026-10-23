@@ -1,4 +1,4 @@
 {
-  "version": "1.43.0",
-  "notes": "Recruit rankings move during the season: in weeks 5, 9 and 12 a handful of uncommitted recruits rise or fall a star on their tape. Risers draw new suitors and cost more NIL; fallers get cheaper as the big schools back off. Riser and Faller tags on the board, newswire alerts for players you have offered. Offseason calendar moved up under the draft card. Recruit tags no longer use emoji."
+  "version": "1.44.0",
+  "notes": "Hot seat index and coach rankings on Polls > Standings: which jobs around the country are likely to open this winter (projected on current pace, with a note when a job would be a step up for you) and where you rank among all 136 coaches by reputation. Your agent's midseason call now targets the programs on that list."
 }
