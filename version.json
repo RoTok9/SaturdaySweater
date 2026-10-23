@@ -1,4 +1,4 @@
 {
-  "version": "1.99.0",
-  "notes": "Replays keep the real broadcast: Watch the replay on your games now shows the exact feed you watched live, with your call lines, crunch time and injuries, instead of a regenerated one. In pass-and-play the other coach in a head-to-head game sees that same broadcast."
+  "version": "1.100.0",
+  "notes": "Season story: the season recap opens with a written account of your year (the signature win, the loss that stung, the streak, one-possession luck, rivalry trophies, crunch-time record, how the playoff ended)."
 }
