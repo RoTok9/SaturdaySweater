@@ -1,4 +1,4 @@
 {
-  "version": "1.77.0",
-  "notes": "Recruits text about more of what happens: a flip you landed, a snow or heat game, and your media days promise."
+  "version": "1.78.0",
+  "notes": "Halftime calls now read the matchup: opening it up against a soft pass defense gains more than against a stout one, and the same for shortening the game against their run defense. If you scouted the opponent, the halftime panel tells you which is which."
 }
