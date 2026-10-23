@@ -1,4 +1,4 @@
 {
-  "version": "1.87.0",
-  "notes": "Crunch time: when a game is within one score at the two-minute mark, the broadcast stops and you make the last call. With the ball: air it out, work the sideline, or set up the kick. On defense: prevent, bring pressure, or base. Outcomes depend on your quarterback, your coaching, the matchup and the opposing coach's habits. Two-point tries, onside kicks, walk-off field goals and overtime all flow from it, and the box score matches the broadcast. Works in pass-and-play and online leagues."
+  "version": "1.88.0",
+  "notes": "Pass and play: a handoff screen now appears when the game passes to the next coach (Pass the device to Coach B), so nobody sees the other sideline's screen. Coach profile tracks your crunch-time record."
 }
