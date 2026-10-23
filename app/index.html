@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.28.0">
+<meta name="app-version" content="1.29.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -530,6 +530,13 @@ body{background:var(--bg);background-image:radial-gradient(900px 420px at 8% -6%
 .post .h{font-size:11px;color:var(--team-accent,var(--team));font-weight:700;letter-spacing:.04em}
 .post .t{font-size:14px;margin-top:2px}
 .post.rival{box-shadow:inset 3px 0 0 var(--bad)}
+
+.field{position:relative;height:38px;margin-top:8px;border-radius:8px;background:linear-gradient(180deg,#1f6b3a,#17552d);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.field .ez{position:absolute;top:0;bottom:0;width:10%;background:var(--c);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:11px;color:rgba(255,255,255,.85);letter-spacing:.05em}
+.field .ez.l{left:0} .field .ez.r{right:0}
+.field .yl{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.28)}
+.field .ball{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px #fff,0 0 14px var(--c);transition:left .8s var(--ease)}
+.field .spot{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.85);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap}
 </style>
 
 </head>
@@ -1982,23 +1989,35 @@ function buildFeed(g){
   let lastScorer=null,run=0,momSaid=0;const TENSE=['{t} needs a stop here and everybody in the building knows it','Timeouts are getting burned. {t} is managing the clock','The {d} sideline is screaming for a flag','Third and long. The place is on its feet','{t} ball, trailing, with the clock becoming a problem','A long review. Nobody sits down'];
   b.plays.forEach(p=>{while(q<p.q){fill();feed.push({k:'q',text:`End of ${['1st','2nd','3rd'][q-1]} quarter`,hs,as});q++;}
     const close=p.q===4&&Math.abs(hs-as)<=8&&parseInt(p.time)<=8;if(close){const tr=hs<as?g.home:hs>as?g.away:p.team;const o=tr===g.home?g.away:g.home;feed.push({k:'f',drama:true,team:tr,text:pick(TENSE).replace('{t}',T(tr).name).replace('{d}',T(o).name),hs,as});}else fill();
-    if(p.team===g.home)hs+=p.pts;else as+=p.pts;if(p.team!==lastScorer)momSaid=0;run=p.team===lastScorer?run+p.pts:p.pts;lastScorer=p.team;feed.push({k:'s',team:p.team,text:`${T(p.team).name}: ${p.desc}`,q:p.q,time:p.time,hs,as,drama:close});
+    if(p.team===g.home)hs+=p.pts;else as+=p.pts;if(p.team!==lastScorer)momSaid=0;run=p.team===lastScorer?run+p.pts:p.pts;lastScorer=p.team;feed.push({k:'s',team:p.team,pts:p.pts,text:`${T(p.team).name}: ${p.desc}`,q:p.q,time:p.time,hs,as,drama:close});
     if(((run>=14&&momSaid<1)||(run>=28&&momSaid<2))&&p.pts>=6){momSaid++;const lead=p.team===g.home?hs-as:as-hs;feed.push({k:'m',team:p.team,text:`${run} unanswered for ${T(p.team).name}${lead>0?'. They lead by '+lead:lead<0?'. Still down '+(-lead):'. Tied'}`,hs,as});}});
   while(q<4){fill();feed.push({k:'q',text:`End of ${['1st','2nd','3rd'][q-1]} quarter`,hs,as});q++;}fill();
-  const fin=Math.abs(g.hs-g.as)<=3;feed.push({k:'end',text:fin?'Final. That one came down to the last possession':'Final',hs:g.hs,as:g.as});return feed;
+  const fin=Math.abs(g.hs-g.as)<=3;feed.push({k:'end',text:fin?'Final. That one came down to the last possession':'Final',hs:g.hs,as:g.as});
+  // ball tracking for the field strip: possession and yard line (distance from the offense's own goal line)
+  let pos=g.away,yd=25;const other=t=>t===g.home?g.away:g.home;
+  feed.forEach(it=>{if(it.k==='f'&&it.team!=null){const tx=it.text;const off=it.team;if(/three-and-out|punt/.test(tx)){it.pos=off;it.yd=Math.min(yd,45);pos=other(off);yd=rint(20,40);}
+      else if(/turns it over|fumbles|picks off|interception|intercept|recovers/.test(tx)){it.pos=off;it.yd=yd;pos=other(off);yd=clamp(100-yd+rint(-5,5),10,90);}
+      else if(/misses a/.test(tx)){it.pos=off;it.yd=rint(65,80);pos=other(off);yd=rint(20,35);}
+      else if(/first down|marches|converts|catch|run|breaks|goes for it/.test(tx)){pos=off;yd=clamp(yd+rint(6,22),5,96);it.pos=pos;it.yd=yd;}
+      else if(/drops the quarterback|sack|breaks up|stop|stuffed/.test(tx)){pos=other(it.team)===pos?pos:pos;yd=clamp(yd-rint(0,6),2,96);it.pos=pos;it.yd=yd;}
+      else{it.pos=pos;it.yd=yd;}}
+    else if(it.k==='s'){it.pos=it.team;it.yd=it.pts===3?rint(70,85):100;it.sp=it.pts===3?'Field goal is good':'Touchdown';pos=other(it.team);yd=25;}
+    else{it.pos=pos;it.yd=yd;}});
+  return feed;
 }
 function startLive(g,snap){UI.live={gid:g.id,snap,feed:buildFeed(g),shown:1,done:false};UI.tab='home';clearTimeout(liveTimer);liveTimer=setTimeout(liveTick,900);}
 function liveTick(){const L=UI.live;if(!L||L.done)return;if(L.shown<L.feed.length){L.shown++;const item=L.feed[L.shown-1];feedback(item);render();if(item.k==='end'){L.done=true;render();return;}liveTimer=setTimeout(liveTick,item.drama?(item.k==='s'?2600:1900):item.k==='s'?1700:item.k==='q'?1100:item.k==='m'?1300:950);}}
 function endLive(){const L=UI.live;if(!L)return;clearTimeout(liveTimer);UI.live=null;}
 function liveState(){const L=UI.live;const g=G.games.find(x=>x.id===L.gid);const item=L.feed[L.shown-1];const me=G.user===g.home;const ms=me?item.hs:item.as,os=me?item.as:item.hs;const idx=L.shown/L.feed.length;const rem=Math.max(0,1-idx);const h=T(g.home),a=T(g.away);const edge=((me?1:-1)*(h.elo+(g.neutral?0:60)-a.elo))/17;const p=1/(1+Math.exp(-((ms-os)+edge*rem)/(3+12*rem)));return {g,item,me,ms,os,p,rem,opp:T(me?g.away:g.home)};}
 function renderLiveLine(){const s=liveState();return `<div class="nextline"><span class="nx">LIVE · ${s.me||s.g.neutral?'vs':'at'} ${esc(s.opp.name)}</span><span class="od">${s.ms}-${s.os}</span></div>`;}
+function fieldStrip(g,item){const h=T(g.home),a=T(g.away);const pos=item.pos!=null?T(item.pos):null;const yd=item.yd!=null?item.yd:50;const x=pos&&pos.id===g.home?10+yd*0.8:90-yd*0.8;const col=pos?pos.color:'#fff';const spot=pos?(item.sp?item.sp:yd<50?`own ${yd}`:yd===50?'midfield':`opp ${100-yd}`):'';return `<div class="field"><div class="ez l" style="--c:${a.color}">${abbr(a)}</div><div class="ez r" style="--c:${h.color}">${abbr(h)}</div>${[10,20,30,40,50,60,70,80,90].map(v=>`<i class="yl" style="left:${10+v*0.8}%"></i>`).join('')}${pos?`<div class="ball" style="left:${x}%;--c:${col}"></div>`:''}<div class="spot">${pos?`${esc(pos.name)} ball · ${spot}`:''}</div></div>`;}
 function renderLive(){
   const L=UI.live;const s=liveState();const g=s.g;const h=T(g.home),a=T(g.away);const items=L.feed.slice(0,L.shown).reverse();
   const q=s.item.k==='end'?'Final':s.item.k==='s'?`Q${s.item.q} ${s.item.time}`:s.item.k==='q'?s.item.text:`Q${Math.min(4,1+Math.floor((L.shown/L.feed.length)*4))}`;
   const pct=Math.round(s.p*100);const won=g.hs>g.as?g.home:g.away;
   const R=gameRiv(g);const banner=R?`<div class="rivban ${R.heat>=85?'feud':''}"><div class="eyebrow" style="color:inherit;opacity:.85">${rivTier(R)}${R.name?' · '+esc(R.name):''}</div><div class="small">Series ${R.w[a.id]||0}-${R.w[h.id]||0}${R.streak?' · '+esc(T(R.streak.team).name)+' has won '+R.streak.n+' straight':''} · heat ${Math.round(R.heat)}</div></div>`:'';
   return `<div class="card sec live">${banner}<div class="row between"><div class="eyebrow">${L.done?'Final':'Live'} · ${weekLabel(L.snap.week)}</div>${L.done?'':'<span class="tag team">On air</span>'}</div>
-    ${scoreBug(a,h,s.item.as,s.item.hs,q,g.arank,g.hrank)}
+    ${scoreBug(a,h,s.item.as,s.item.hs,q,g.arank,g.hrank)}${L.done?'':fieldStrip(g,s.item)}
     <div class="meter"><span class="small" style="width:90px">${L.done?(won===G.user?'<b class="ok">You win</b>':'<b class="no">You lose</b>'):'Win chance'}</span><div class="bar grow"><i class="${L.done?(won===G.user?'good':'bad'):'me'}" style="width:${L.done?100:pct}%"></i></div><span class="small num" style="width:40px;text-align:right">${L.done?'':pct+'%'}</span></div>
     ${L.done?`<div class="btnrow"><button class="btn" data-act="livedone">Continue${G.presser?' to the press conference':''}</button><button class="btn ghost" data-act="livebox" data-id="${g.id}">Box score</button></div>`:`<div class="btnrow"><button class="btn ghost sm" data-act="liveskip">Skip to final</button></div>`}
     <div class="plays">${items.map((it,i)=>`<div class="play ${it.k==='s'?(it.team===G.user?'mine':'theirs'):it.k==='q'||it.k==='end'?'qmark':it.k==='m'?'mom':''} ${it.drama&&it.k==='f'?'drama':''} ${i===0&&!L.done?'new':''}">${it.k==='s'?`<b>${esc(it.text)}</b> <span class="muted">(${it.team===g.home?it.hs+'-'+it.as:it.as+'-'+it.hs})</span>`:it.k==='q'||it.k==='end'?`<span class="eyebrow">${esc(it.text)}${it.k==='end'?` · ${a.name} ${it.as}, ${h.name} ${it.hs}`:''}</span>`:esc(it.text)}</div>`).join('')}</div></div>`;
