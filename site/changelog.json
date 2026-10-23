@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.160.0",
+  "notes": "Vegas win total: every season opens with a betting line on your regular-season wins, tracked on the Home tab (need 3 of 4, over cashed, under locked). Cash the over and the fans are buying; miss it badly and the radio shows notice."
+ },
+ {
   "version": "1.159.5",
   "notes": "Safety net: simming a week, finishing a game and other big steps now run as a transaction. If anything ever goes wrong partway, the dynasty rolls back to just before that step instead of saving a half-finished week."
  },
