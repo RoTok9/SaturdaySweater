@@ -1,4 +1,4 @@
 {
-  "version": "1.58.0",
-  "notes": "Halftime coach's call. Your game now plays live before the rest of the week: at the half the broadcast stops and you make the call (stay the course, open it up, shorten the game, light into them, or rest the starters when it is out of hand) and the second half is simulated from that choice. The field strip now tracks a real drive model: every update says where the ball is and the marker matches it, scoring plays line up with their yardage, second-half kickoff flips possession. The score bug carries a real quarter and clock on every update, and the scoring-by-quarter table follows it. Random-action fuzz testing across four programs and five seasons each, no crashes."
+  "version": "1.59.0",
+  "notes": "Overtime. Tied at the end of regulation now means an actual overtime: an End of regulation marker, OT possessions in the feed, an OT column in the scoring table and the box score, and a Final in overtime call. The live final also recaps your halftime call and how the second half went."
 }
