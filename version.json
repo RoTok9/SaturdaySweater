@@ -1,4 +1,4 @@
 {
-  "version": "1.68.0",
-  "notes": "Start screen: the school picker now lays out as a proper grid on desktop (it was collapsing to one column), every school gets a crest in its colors and a prestige star rating. Playoff, conference championship and bowl games open with the right broadcast framing."
+  "version": "1.69.0",
+  "notes": "Visiting recruits show up on the broadcast sideline. Bold calls that win (going for it, sending the house, lighting into them, opening it up) earn big-game XP. Website screenshots and copy refreshed for the live calls."
 }
