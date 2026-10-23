@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.35.0">
+<meta name="app-version" content="1.36.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -2061,7 +2061,7 @@ function liveTick(){const L=UI.live;if(!L||L.done)return;if(L.shown<L.feed.lengt
 function endLive(){const L=UI.live;if(!L)return;clearTimeout(liveTimer);UI.live=null;}
 function liveState(){const L=UI.live;const g=G.games.find(x=>x.id===L.gid);const item=L.feed[L.shown-1];const me=G.user===g.home;const ms=me?item.hs:item.as,os=me?item.as:item.hs;const idx=L.shown/L.feed.length;const rem=Math.max(0,1-idx);const h=T(g.home),a=T(g.away);const edge=((me?1:-1)*(h.elo+(g.neutral?0:60)-a.elo))/17;const p=1/(1+Math.exp(-((ms-os)+edge*rem)/(3+12*rem)));return {g,item,me,ms,os,p,rem,opp:T(me?g.away:g.home)};}
 function renderLiveLine(){const s=liveState();return `<div class="nextline"><span class="nx">LIVE · ${s.me||s.g.neutral?'vs':'at'} ${esc(s.opp.name)}</span><span class="od">${s.ms}-${s.os}</span></div>`;}
-function fieldStrip(g,item){const h=T(g.home),a=T(g.away);const pos=item.pos!=null?T(item.pos):null;const yd=item.yd!=null?item.yd:50;const x=pos&&pos.id===g.home?10+yd*0.8:90-yd*0.8;const col=pos?pos.color:'#fff';const spot=pos?(item.sp?item.sp:yd<50?`own ${yd}`:yd===50?'midfield':`opp ${100-yd}`):'';return `<div class="field"><div class="ez l" style="--c:${a.color}">${abbr(a)}</div><div class="ez r" style="--c:${h.color}">${abbr(h)}</div>${[10,20,30,40,50,60,70,80,90].map(v=>`<i class="yl" style="left:${10+v*0.8}%"></i>`).join('')}${pos?`<div class="ball" style="left:${x}%;--c:${col}"></div>`:''}<div class="spot">${pos?`${esc(pos.name)} ball · ${spot}`:''}</div></div>`;}
+function fieldStrip(g,item){const h=T(g.home),a=T(g.away);const pos=item.pos!=null?T(item.pos):null;const yd=item.yd!=null?item.yd:50;const x=pos&&pos.id===g.home?10+yd*0.8:90-yd*0.8;const col=pos?pos.color:'#fff';const spot=pos?(item.sp?item.sp:yd<50?`own ${yd}`:yd===50?'midfield':`opp ${100-yd}`):'';return `<div class="field"><div class="ez l" style="--c:${h.color}">${abbr(h)}</div><div class="ez r" style="--c:${a.color}">${abbr(a)}</div>${[10,20,30,40,50,60,70,80,90].map(v=>`<i class="yl" style="left:${10+v*0.8}%"></i>`).join('')}${pos?`<div class="ball" style="left:${x}%;--c:${col}"></div>`:''}<div class="spot">${pos?`${esc(pos.name)} ball · ${spot}`:''}</div></div>`;}
 function renderLive(){
   const L=UI.live;const s=liveState();const g=s.g;const h=T(g.home),a=T(g.away);const items=L.feed.slice(0,L.shown).reverse();
   const q=s.item.k==='end'?'Final':s.item.k==='s'?`Q${s.item.q} ${s.item.time}`:s.item.k==='q'?s.item.text:`Q${Math.min(4,1+Math.floor((L.shown/L.feed.length)*4))}`;
@@ -2070,7 +2070,7 @@ function renderLive(){
   return `<div class="card sec live">${banner}<div class="row between"><div class="eyebrow">${L.done?'Final':'Live'} · ${weekLabel(L.snap.week)}</div>${L.done?'':'<span class="tag team">On air</span>'}</div>
     ${scoreBug(a,h,s.item.as,s.item.hs,q,g.arank,g.hrank)}${L.done?'':fieldStrip(g,s.item)}
     <div class="meter"><span class="small" style="width:90px">${L.done?(won===G.user?'<b class="ok">You win</b>':'<b class="no">You lose</b>'):'Win chance'}</span><div class="bar grow"><i class="${L.done?(won===G.user?'good':'bad'):'me'}" style="width:${L.done?100:pct}%"></i></div><span class="small num" style="width:40px;text-align:right">${L.done?'':pct+'%'}</span></div>
-    ${L.done?`<div class="btnrow"><button class="btn" data-act="livedone">Continue${G.presser?' to the press conference':''}</button><button class="btn ghost" data-act="livebox" data-id="${g.id}">Box score</button></div>`:`<div class="btnrow"><button class="btn ghost sm" data-act="liveskip">Skip to final</button></div>`}
+    ${L.done?`<div class="btnrow"><button class="btn" data-act="livedone">Continue${G.presser?' to the press conference':''}</button><button class="btn ghost" data-act="livebox" data-id="${g.id}">Box score</button></div>`:''}
     <div class="plays">${items.map((it,i)=>`<div class="play ${it.k==='s'?(it.team===G.user?'mine':'theirs'):it.k==='q'||it.k==='end'?'qmark':it.k==='m'?'mom':''} ${it.drama&&it.k==='f'?'drama':''} ${i===0&&!L.done?'new':''}">${it.k==='s'?`<b>${esc(it.text)}</b> <span class="muted">(${it.team===g.home?it.hs+'-'+it.as:it.as+'-'+it.hs})</span>`:it.k==='q'||it.k==='end'?`<span class="eyebrow">${esc(it.text)}${it.k==='end'?` · ${a.name} ${it.as}, ${h.name} ${it.hs}`:''}</span>`:esc(it.text)}</div>`).join('')}</div></div>`;
 }
 function renderNextLine(u){
