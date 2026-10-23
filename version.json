@@ -1,4 +1,4 @@
 {
-  "version": "1.64.0",
-  "notes": "Live broadcast speed control (slow, normal, fast) on the live card, remembered between games. Field strip now mirrors the score bug: away team's end zone on the left, home on the right, so the ball and the scores read the same direction."
+  "version": "1.65.0",
+  "notes": "New midseason decision: tampering. A rival collective is texting your young star's family. Report it to compliance (the AD approves, the kid may not), match the money from your NIL fund, or trust him and find out in December."
 }

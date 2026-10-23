@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.64.0">
+<meta name="app-version" content="1.65.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -1846,6 +1846,10 @@ const EVENTS=[
    {t:'Promise him the job next season.',d:'He stays. Break it and the whole room hears about it.',fx:()=>{p.promise={kind:'start',due:G.season+1};adj('locker',1);news(`${p.n} has been told the ${p.pos} job is his to lose next fall.`);}},
    {t:'Start him this week and let them battle.',d:'Real competition. The incumbent will not love it.',fx:()=>{p.pin=true;s0.pin=false;bumpForm(p,1);bumpForm(s0,-0.6);if(hasT(s0,'hothead'))s0.unhappy=true;news(`${p.n} gets the start over ${s0.n}. Open competition at ${pp}.`);}},
    {t:'Tell him the depth chart is the depth chart.',d:'Honest. He is probably gone in January.',fx:()=>{p.unhappy=true;adj('locker',-1);}}]};}},
+ {id:'tamper',cond:()=>G.week>=5&&G.week<=12&&starters().some(p=>p.ovr>=84&&p.yr<=2)&&G.nil>=100,make:()=>{const p=pick(starters().filter(x=>x.ovr>=84&&x.yr<=2))||starters()[0];const u=userTeam();const cands=G.teams.filter(t=>!isHuman(t.id)&&t.prestige>=u.prestige-1&&t.id!==u.id);const t=cands.length?pick(cands):G.teams.find(x=>x.id!==u.id);const ask=Math.round((p.ovr-70)*8/5)*5;return {p,text:`Compliance forwards a screenshot. A booster tied to ${t.name} has been texting ${p.pos} ${p.n}'s uncle about what he would make in their collective. Tampering, plainly. ${p.n} has not said a word to you.`,opts:[
+   {t:'Report it. Let compliance handle it.',d:'The AD likes the process. The kid hears you went over his head.',fx:()=>{adj('admin',4);adj('media',2);if(Math.random()<0.4){news(`${t.name} is under a conference tampering review after your complaint. ${t.coach.n} denies everything.`,true);const R=G.riv[rkey(G.user,t.id)];if(R)R.heat=Math.min(100,(R.heat||0)+8);}if(hasT(p,'flight')||Math.random()<0.3){p.unhappy=true;news(`${p.n} found out you reported the texts before you talked to him. He is not thrilled.`);}}},
+   {t:`Match it. $${ask}K from the fund.`,d:'He stays, and he knows what he is worth now.',fx:()=>{G.nil=Math.max(0,G.nil-ask);p.nilDeal=G.season+1;bumpForm(p,0.5);adj('locker',1);news(`${p.n} signs a new collective deal. The other program's texts stop.`);}},
+   {t:'Trust the kid. Say nothing.',d:'Costs nothing today. Flight risks fly.',fx:()=>{const leave=hasT(p,'flight')?0.6:hasT(p,'homebody')?0.08:0.3;if(Math.random()<leave){p.portalIntent=G.season;p.unhappy=true;news(`${p.pos} ${p.n} plans to enter the portal in December. The texts worked.`,true);}else{adj('locker',2);news(`${p.n} showed the texts to his position coach and laughed. He is staying.`);}}}]};}},
  {id:'tutor',cond:()=>G.week>=3&&G.week<=11&&starters().some(p=>p.ovr>=80),make:()=>{const p=pick(starters().filter(x=>x.ovr>=80))||starters()[0];return {text:`Academics flags ${p.pos} ${p.n}: two classes slipping, finals in December. If it goes the wrong way he misses the postseason. The learning center can put a tutor on him full-time, but that comes out of your budget.`,opts:[
    {t:'Full-time tutor. $0.5M.',d:'He is fine. The admin notices you cared.',fx:()=>{G.budget=Math.round((G.budget-0.5)*10)/10;adj('admin',2);}},
    {t:'Pull him from Tuesday practice for study hall.',d:'Free. He is a half-step slow this week.',fx:()=>{bumpForm(p,-0.6);if(Math.random()<0.15){p.acadRisk=G.season;}}},
