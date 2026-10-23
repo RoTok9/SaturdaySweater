@@ -1,4 +1,4 @@
 {
-  "version": "1.59.0",
-  "notes": "Overtime. Tied at the end of regulation now means an actual overtime: an End of regulation marker, OT possessions in the feed, an OT column in the scoring table and the box score, and a Final in overtime call. The live final also recaps your halftime call and how the second half went."
+  "version": "1.60.0",
+  "notes": "Broadcast feed: every scoring play carries a drive summary (plays, yards, time) and repeat scorers get a 2nd TD tag. Scoring plays are ordered by the real clock, and drive summaries track the actual starting spot."
 }
