@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.99.0",
+  "notes": "Replays keep the real broadcast: Watch the replay on your games now shows the exact feed you watched live, with your call lines, crunch time and injuries, instead of a regenerated one. In pass-and-play the other coach in a head-to-head game sees that same broadcast."
+ },
+ {
   "version": "1.98.0",
   "notes": "Selection Sunday card on Home in Week 16: your seed, bye or first-round opponent, top seeds and the first four out. Final broadcast lines now name the stakes: conference champions, who advances in the playoff, bowl trophies, national champions."
  },
