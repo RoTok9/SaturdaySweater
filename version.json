@@ -1,4 +1,4 @@
 {
-  "version": "1.23.0",
-  "notes": "Quieter masthead: darker, shorter, and it shrinks to a slim bar when you scroll on phones; on desktop the tab bar is now sticky with the Sim button in it and no longer slides under the header (that overlap glitch is fixed). Ripples: every move now shows what it changed the moment you make it (a recruit's interest and your odds, who leads now, fans, locker room, admin, media, seat, NIL, budget, XP, hours spent). Fallout: after each week a card on Home lists what the week did to you, from approval and seat swings to poll movement, recruits who warmed or cooled and why, rivalry heat, commits and losses, injuries."
+  "version": "1.24.0",
+  "notes": "Gameday look: varsity lettering for team names, headings and tabs; yard-line texture in the masthead and behind the page; helmet-stripe trim on the masthead and the matchup card; the live game and replays now run on a stadium scoreboard (amber digits, GUEST and HOME, quarter and clock); section headers carry a pennant; warm program-paper light theme and a turf-dark dark theme. Gameday tags on the week's matchup: Homecoming and Senior Day (now scheduled every season), Conference opener, Rivalry week, Ranked matchup, expected crowd and sellouts, hostile crowds on the road; the live feed opens with the same scene."
 }
