@@ -477,7 +477,7 @@ function openSlot(id){const s=lsGet(slotKey(id));if(!s)return false;try{G=JSON.p
 function deleteSlot(id){lsDel(slotKey(id));saveSlots(loadSlots().filter(x=>x.id!==id));if(SLOT===id){SLOT=null;G=null;lsDel(CUR_KEY);}}
 function closeDynasty(){if(G)save();G=null;SLOT=null;lsDel(CUR_KEY);}
 function load(){migrateLegacy();const cur=lsGet(CUR_KEY);if(cur&&openSlot(cur))return true;return false;}
-function migrate(){if(!G)return;if(!G.app)G.app={fans:60,locker:60,admin:60,media:55};if(!G.pressLog)G.pressLog=[];if(G.presser===undefined)G.presser=null;if(G.heisman===undefined)G.heisman=null;G.teams.forEach(t=>{if(!t.coach)t.coach=makeCoach(t.prestige);});Object.values(G.players).forEach(p=>{if(!p.tr)p.tr=rollTraits();});G.portal.forEach(p=>{if(!p.tr)p.tr=rollTraits();});if(!G.lh)G.lh=[];if(!G.carousel)G.carousel=[];G.recruits.forEach(r=>{if(!r.persona){r.persona=pick(Object.keys(PERSONAS));r.tr=rollTraits();r.texted=0;r.convo=null;}});if(!G.riv){G.riv={};seedRivalries();}if(!G.diff)G.diff='normal';if(G.losingRun==null)G.losingRun=0;}
+function migrate(){if(!G)return;if(!G.app)G.app={fans:60,locker:60,admin:60,media:55};if(!G.pressLog)G.pressLog=[];if(G.presser===undefined)G.presser=null;if(G.heisman===undefined)G.heisman=null;G.teams.forEach(t=>{if(!t.coach)t.coach=makeCoach(t.prestige);});Object.values(G.players).forEach(p=>{if(!p.tr)p.tr=rollTraits();});G.portal.forEach(p=>{if(!p.tr)p.tr=rollTraits();});if(!G.lh)G.lh=[];if(!G.carousel)G.carousel=[];G.recruits.forEach(r=>{if(!r.persona){r.persona=pick(Object.keys(PERSONAS));r.tr=rollTraits();r.texted=0;r.convo=null;}});if(!G.riv){G.riv={};seedRivalries();}if(!G.diff)G.diff='normal';if(G.losingRun==null)G.losingRun=0;if(!G.plan)G.plan={off:'balanced',agg:'standard'};}
 function news(text,hot){G.news.unshift({w:G.week,s:G.season,text,hot:!!hot});if(G.news.length>60)G.news.length=60;}
 
 /* ===================== TEAMS & PLAYERS ===================== */
@@ -532,7 +532,7 @@ function gameRiv(g){const r=G.riv[rkey(g.home,g.away)];if(g.played&&g.rivPre){co
 function newDynasty(teamId,coachName,diff){newSlot();
   G={season:2026,week:1,phase:'season',pid:1,gid:1,rid:1,user:teamId,teams:[],players:{},games:[],recruits:[],portal:[],news:[],history:[],poll:[],playoff:null,bowls:[],offers:[],fired:false,
     coach:{name:coachName||'Coach',rep:0,seat:20,years:1,w:0,l:0,titles:0,playoffs:0,confTitles:0},
-    hours:0,hoursMax:0,nil:0,budget:0,staff:{coach:1,recruit:1},mediaLeft:3,adLobbied:false,boosterUsed:false,lastResult:null,summary:null,portalAdds:0,classRank:null,pendingTeam:null,app:{fans:60,locker:60,admin:60,media:55},presser:null,pressLog:[],heisman:null,lh:[],carousel:[],riv:{},diff:diff||'normal',losingRun:0};
+    hours:0,hoursMax:0,nil:0,budget:0,staff:{coach:1,recruit:1},mediaLeft:3,adLobbied:false,boosterUsed:false,lastResult:null,summary:null,portalAdds:0,classRank:null,pendingTeam:null,app:{fans:60,locker:60,admin:60,media:55},presser:null,pressLog:[],heisman:null,lh:[],carousel:[],riv:{},diff:diff||'normal',losingRun:0,plan:{off:'balanced',agg:'standard'}};
   G.teams=makeTeams();
   G.teams.forEach(t=>fillRoster(t,false));
   seedRivalries();
@@ -649,7 +649,8 @@ function simGame(g){
   const adv=(g.neutral?0:60)*(1+rivF*0.4);let diff=h.elo+adv-a.elo+(teamForm(h)-teamForm(a))*25;const hElo0=h.elo,aElo0=a.elo;
   diff+=targetEdge(g);
   if(R)diff*=1-rivF*0.3; // rivalry games tighten
-  const margin=diff/17+gauss()*(15+rivF*6);let total=clamp(Math.round(50+gauss()*12),17,95);
+  const PE=planEdge(g);diff+=(g.home===G.user?1:-1)*PE.edge;g.planUsed=(g.home===G.user||g.away===G.user)?Object.assign({},G.plan||{off:'balanced',agg:'standard'},{edge:Math.round(PE.edge)}):null;
+  const margin=diff/17+gauss()*(15+rivF*6+PE.varAdj);let total=clamp(Math.round(50+gauss()*12),17,95);
   let hs=Math.round((total+margin)/2),as=total-hs;if(hs<0){as-=hs;hs=0;}if(as<0){hs-=as;as=0;}
   const snap=s=>s===1?3:s===4?6:s;hs=snap(hs);as=snap(as);if(hs===as){if(Math.random()<0.5)hs+=3;else as+=3;}
   g.hs=hs;g.as=as;g.played=true;
@@ -678,7 +679,7 @@ function genTeamStats(t,score,oppScore,full){
   const d=pos=>depth(t,pos);const qb=d('QB')[0],rbs=d('RB').slice(0,2),rb1=rbs[0],rb2=rbs[1],wrs=d('WR').slice(0,3),te=d('TE')[0],k=d('K')[0];
   const targets=[...wrs,te,rb1].filter(Boolean);const tw=[0.3,0.22,0.15,0.18,0.08].slice(0,targets.length);
   const qbO=qb?qb.ovr+(qb.form||0):50,rbO=rb1?rb1.ovr+(rb1.form||0):50;
-  const PY=clamp(Math.round(115+score*4+gauss()*50+(qbO-70)*1.8),40,520);const RY=clamp(Math.round(80+score*2.6+gauss()*40+(rbO-70)*1.4),10,360);
+  const lean=passLean(t);const PY=clamp(Math.round((115+score*4+gauss()*50+(qbO-70)*1.8)*(lean/0.52)),40,560);const RY=clamp(Math.round((80+score*2.6+gauss()*40+(rbO-70)*1.4)*((1-lean)/0.48)),10,400);
   const att=clamp(Math.round(PY/7.6+gauss()*5),14,60);const comp=clamp(Math.round(att*clamp(0.56+(qbO-70)/140+gauss()*0.04,0.4,0.8)),5,att);
   const ints=Math.min(4,pois(Math.max(0.15,0.6+(score<oppScore?0.5:0)-(qbO-70)/120)));
   const plays=[];const rec={},rush={};
@@ -747,7 +748,29 @@ function injuryTick(){G.teams.forEach(t=>{t.roster.forEach(id=>{const p=P(id);if
 function diffMult(){const d=G?G.diff:(UI.diff||'normal');return d==='brutal'?2:d==='hard'?1:0;}
 function targetEdge(g){ // everyone plays up against the user when the user is ranked; harder difficulties stack more
   const u=G.user;if(g.home!==u&&g.away!==u)return 0;const me=T(u);const rank=me.rank||99;let e=rank===1?40:rank<=5?26:rank<=10?14:rank<=25?6:0;e+=diffMult()*22;return g.home===u?-e:e;}
-function winProb(home,away,neutral,g){let diff=home.elo+(neutral?0:60)-away.elo+(teamForm(home)-teamForm(away))*25;if(g){diff+=targetEdge(g);const R=gameRiv(g);if(R)diff*=1-clamp(R.heat/100,0.35,1)*0.3;}return 1/(1+Math.pow(10,-diff/400));}
+/* ===================== GAME PLANS ===================== */
+function unitAvg(t,pos,n){const d=depth(t,pos).slice(0,n||STARTERS[pos]);return d.length?d.reduce((a,p)=>a+p.ovr+(p.form||0),0)/d.length:45;}
+function units(t){return {air:(unitAvg(t,'QB')*2+unitAvg(t,'WR')+unitAvg(t,'TE')*0.5)/3.5,ground:(unitAvg(t,'RB')+unitAvg(t,'OL'))/2,passD:(unitAvg(t,'CB')+unitAvg(t,'S'))/2,runD:(unitAvg(t,'DL')+unitAvg(t,'LB'))/2};}
+function scheme(t){if(isUser(t))return G.plan&&G.plan.off||'balanced';const u=units(t);return u.air-u.ground>4?'air':u.ground-u.air>4?'ground':'balanced';}
+function passLean(t){const sc=scheme(t);return sc==='air'?0.62:sc==='ground'?0.42:0.52;}
+function planEdge(g){ // elo-equivalent edge for the user's plan; positive favors the user
+  const u=G.user;if(g.home!==u&&g.away!==u)return {edge:0,varAdj:0,notes:[]};const me=T(u),opp=T(g.home===u?g.away:g.home);const plan=G.plan||{off:'balanced',agg:'standard'};const mu=units(me),ou=units(opp);const notes=[];
+  let edge=0;
+  if(plan.off==='air'){edge+=(mu.air-ou.passD)*1.2-(mu.air-mu.ground<0?4:0);notes.push(`Air attack ${mu.air.toFixed(0)} vs their pass defense ${ou.passD.toFixed(0)}`);}
+  else if(plan.off==='ground'){edge+=(mu.ground-ou.runD)*1.2-(mu.ground-mu.air<0?4:0);notes.push(`Ground game ${mu.ground.toFixed(0)} vs their run defense ${ou.runD.toFixed(0)}`);}
+  else{edge+=((mu.air-ou.passD)+(mu.ground-ou.runD))*0.35;notes.push('Balanced: takes what the defense gives');}
+  const p0=winProbRaw(me,opp,g);let varAdj=0;
+  if(plan.agg==='aggressive'){varAdj=6;edge+=p0<0.45?8:p0>0.7?-6:2;notes.push(p0<0.45?'Aggressive as the underdog: swing for it':p0>0.7?'Aggressive as a heavy favorite: unnecessary risk':'Aggressive: more variance');}
+  else if(plan.agg==='conservative'){varAdj=-5;edge+=p0>0.6?6:p0<0.4?-8:0;notes.push(p0>0.6?'Conservative as the favorite: shorten the game':p0<0.4?'Conservative as the underdog: you need more than this':'Conservative: fewer swings');}
+  return {edge:clamp(edge,-35,35),varAdj,notes};}
+function winProbRaw(me,opp,g){const home=g.home===me.id;const h=home?me:opp,a=home?opp:me;let diff=h.elo+(g.neutral?0:60)-a.elo+(teamForm(h)-teamForm(a))*25+targetEdge(g);const R=gameRiv(g);if(R)diff*=1-clamp(R.heat/100,0.35,1)*0.3;const p=1/(1+Math.pow(10,-diff/400));return home?p:1-p;}
+function scoutReport(g){const u=G.user;const opp=T(g.home===u?g.away:g.home);const ou=units(opp);const mu=units(userTeam());const sc=scheme(opp);const last=opp.hist&&opp.hist.length?opp.hist[opp.hist.length-1]:null;
+  const stars=['QB','RB','WR','DL','LB','CB'].map(pos=>depth(opp,pos)[0]).filter(Boolean).sort((a,b)=>b.ovr-a.ovr).slice(0,3);
+  const weak=ou.passD<ou.runD-3?'pass':ou.runD<ou.passD-3?'run':'neither';const sugg=weak==='pass'&&mu.air>=mu.ground-3?'air':weak==='run'&&mu.ground>=mu.air-3?'ground':mu.air>mu.ground+4?'air':mu.ground>mu.air+4?'ground':'balanced';
+  return {opp,ou,mu,sc,weak,sugg,stars,injured:opp.roster.map(P).filter(p=>p.inj>0&&isStarterAll(p)).slice(0,3)};}
+function isStarterAll(p){const t=T(p.team);const d=depth(t,p.pos,true);return d.indexOf(p)<STARTERS[p.pos];}
+function actScoutOpp(g){if(g.scouted||!spend(2))return;g.scouted=true;}
+function winProb(home,away,neutral,g){let diff=home.elo+(neutral?0:60)-away.elo+(teamForm(home)-teamForm(away))*25;if(g){diff+=targetEdge(g);const R=gameRiv(g);if(R)diff*=1-clamp(R.heat/100,0.35,1)*0.3;const PE=planEdge(g);diff+=(g.home===G.user?1:-1)*PE.edge;}return 1/(1+Math.pow(10,-diff/400));}
 function teamForm(t){let s=0,w=0;['QB','RB','WR','TE'].forEach(pos=>{depth(t,pos).slice(0,STARTERS[pos]).forEach(p=>{s+=(p.form||0)*WEIGHT[pos];w+=WEIGHT[pos];});});return w?s/w:0;}
 function postGame(g,r){
   const u=G.user;const uIn=g.home===u||g.away===u;
@@ -1054,6 +1077,7 @@ function renderHome(){
     else if(G.week<=14)parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">Bye week</div><div class="small muted">Hit the road recruiting; nobody to beat this Saturday.</div></div>`);
     else if(G.week===16&&u.po==='in')parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">First-round bye</div><div class="small muted">Top-four seed. You wait for the winner of the ${G.playoff.seeds.indexOf(u.id)===0?'8/9':G.playoff.seeds.indexOf(u.id)===1?'7/10':G.playoff.seeds.indexOf(u.id)===2?'6/11':'5/12'} game.</div></div>`);
     else parts.push(`<div class="hero"><div class="eyebrow">${weekLabel(G.week)}</div><div class="vs">${G.week===15?'Not in the title game':u.po&&u.po!=='champ'?'Eliminated':'Watching from home'}</div><div class="small muted">${G.week===15?'Conference title games this week. Your recruiting class signs after them.':'The bracket plays on without you. Sim ahead to the offseason.'}</div></div>`);
+    if(g&&G.week<=19)parts.push(renderGamePlan(g));
     if(G.presser)parts.push(renderPresser());
     if(G.lastResult){const r=G.lastResult;const lg=G.games.find(x=>x.played&&(x.home===u.id||x.away===u.id)&&x.week===r.week);parts.push(`<div class="card sec"><div class="row between"><div><div class="eyebrow">Last result</div><div class="nm">${r.won?'Beat':'Lost to'} ${esc(T(r.opp).name)}</div></div><div class="res ${r.won?'W':'L'}">${r.won?'W':'L'} ${r.ws}-${r.ls}</div></div>${lg&&lg.box?`<div class="btnrow"><button class="btn sm ${UI.watch&&UI.watch.gid===lg.id?'ghost':''}" data-act="watch" data-id="${lg.id}">${UI.watch&&UI.watch.gid===lg.id?'Close replay':'Watch the replay'}</button></div>${UI.watch&&UI.watch.gid===lg.id?renderWatch(lg):''}`:''}</div>`);}
     const E=expectedWins(u);const seat=G.coach.seat;
@@ -1066,6 +1090,17 @@ function renderHome(){
 }
 function renderRivalries(u){const rs=myRivals();if(!rs.length)return `<div class="card sec"><div class="eyebrow">Rivalries</div><div class="small muted">None yet. Rivalries are earned: ranked matchups, close finishes, upsets and revenge games build heat between two programs. Enough heat and the series gets a name and a permanent spot on the schedule.</div></div>`;
   return `<div class="card sec"><div class="eyebrow">Rivalries</div><div class="list">${rs.map(r=>{const o=T(r.a===u.id?r.b:r.a);const mine=r.w[u.id]||0,theirs=r.w[o.id]||0;const last=r.games[r.games.length-1];const next=G.games.find(g=>!g.played&&((g.home===u.id&&g.away===o.id)||(g.away===u.id&&g.home===o.id)));return `<div class="item" style="flex-direction:column;align-items:stretch;gap:6px"><div class="row between"><div><div class="nm">${esc(o.name)} <span class="tag ${r.heat>=85?'bad':r.heat>=60?'team':''}">${rivTier(r)}</span></div><div class="sub">${r.name?esc(r.name)+' · since '+r.born+' · ':''}Series ${mine}-${theirs}${r.streak?' · '+(r.streak.team===u.id?'you have':esc(o.name)+' has')+' won '+r.streak.n+' straight':''}${last?' · last: '+(last.w===u.id?'W':'L')+' '+last.ws+'-'+last.ls+' ('+last.s+')':''}</div></div><div class="tiny muted" style="text-align:right">${next?weekLabel(next.week):'No game scheduled'}</div></div><div class="meter"><span class="tiny muted" style="width:36px">Heat</span><div class="bar grow"><i class="${r.heat>=85?'bad':r.heat>=60?'warn':''}" style="width:${Math.round(r.heat)}%"></i></div><span class="tiny num" style="width:28px;text-align:right">${Math.round(r.heat)}</span></div></div>`;}).join('')}</div></div>`;}
+function renderGamePlan(g){const u=userTeam();const PE=planEdge(g);const plan=G.plan;const mu=units(u);
+  const chip=(act,k,l,on)=>`<button class="chip ${on?'on':''}" data-act="${act}" data-id="${k}">${l}</button>`;
+  const rep=g.scouted?scoutReport(g):null;
+  const scout=rep?`<div class="detail"><div class="eyebrow">Scouting report · ${esc(rep.opp.name)}</div>
+      <div class="small">They lean <b>${rep.sc==='air'?'pass':rep.sc==='ground'?'run':'balanced'}</b> on offense. Pass defense <b>${rep.ou.passD.toFixed(0)}</b>, run defense <b>${rep.ou.runD.toFixed(0)}</b>${rep.weak!=='neither'?` · <span class="ok">soft against the ${rep.weak}</span>`:' · no obvious weakness'}.</div>
+      <div class="small">Their best: ${rep.stars.map(p=>`${p.pos} ${esc(p.n)} (${p.ovr})`).join(', ')}.${rep.injured.length?` Out: ${rep.injured.map(p=>p.pos+' '+esc(p.n)).join(', ')}.`:''}</div>
+      <div class="small">Your air attack <b>${rep.mu.air.toFixed(0)}</b>, ground game <b>${rep.mu.ground.toFixed(0)}</b>. Staff suggests: <b>${rep.sugg==='air'?'air it out':rep.sugg==='ground'?'pound the rock':'stay balanced'}</b>.</div></div>`:`<div class="tiny muted">Scout them (2h) to see where they are soft and what your staff suggests.</div>`;
+  return `<div class="card sec"><div class="row between"><div class="eyebrow">Game plan · ${weekLabel(G.week)}</div><button class="btn sm ghost" data-act="scoutopp" data-id="${g.id}" ${g.scouted||G.hours<2?'disabled':''}>${g.scouted?'Scouted':'Scout opponent · 2h'}</button></div>
+    <div class="row" style="flex-wrap:wrap;gap:6px"><span class="tiny muted" style="width:64px">Offense</span>${chip('planoff','ground','Ground and pound',plan.off==='ground')}${chip('planoff','balanced','Balanced',plan.off==='balanced')}${chip('planoff','air','Air it out',plan.off==='air')}</div>
+    <div class="row" style="flex-wrap:wrap;gap:6px"><span class="tiny muted" style="width:64px">Tempo</span>${chip('planagg','conservative','Conservative',plan.agg==='conservative')}${chip('planagg','standard','Standard',plan.agg==='standard')}${chip('planagg','aggressive','Aggressive',plan.agg==='aggressive')}</div>
+    <div class="small">${PE.notes.map(esc).join(' · ')} · plan edge <b class="${PE.edge>2?'ok':PE.edge<-2?'no':''}">${PE.edge>0?'+':''}${Math.round(PE.edge)}</b></div>${scout}</div>`;}
 function renderPresser(){const pr=G.presser;return `<div class="card sec presser"><div class="row between"><div class="eyebrow">Post-game press conference</div><span class="tag">${pr.info.won?'After the win':'After the loss'}</span></div><div class="q">“${esc(pr.q)}”</div><div class="sec">${pr.opts.map((o,i)=>`<button class="answer" data-act="press" data-id="${i}">${esc(o.t)}</button>`).join('')}<button class="btn sm ghost" data-act="press" data-id="-1" style="align-self:flex-start">No comment</button></div><div class="tiny muted">Your answers shape how fans, the locker room, the AD and the media see you. Skipping the podium costs you with the press.</div></div>`;}
 function renderApproval(compact){const A=G.app;const m=(k,l)=>`<div class="meter"><span class="small" style="width:${compact?82:100}px">${l}</span><div class="bar grow"><i class="${A[k]>=65?'good':A[k]>=40?'':'bad'}" style="width:${Math.round(A[k])}%"></i></div><span class="small num" style="width:28px;text-align:right">${Math.round(A[k])}</span></div>`;return `<div class="sec" style="gap:6px"><div class="eyebrow">Approval</div>${m('fans','Fans')}${m('locker','Locker room')}${m('admin','Athletic dept')}${m('media','Media')}</div>`;}
 let watchTimer=null;
@@ -1078,7 +1113,8 @@ function renderWatchInner(g){
   const q=last?`Q${last.q} ${last.time}`:'Kickoff';
   const score=`<div class="scoreline"><div class="t"><div class="nm">${esc(a.name)}</div><div class="sc">${as}</div></div><div class="mid">${done?'Final':q}</div><div class="t"><div class="nm">${esc(h.name)}</div><div class="sc">${hs}</div></div></div>`;
   const plays=`<div class="plays">${b.plays.slice(0,n).map((p,i)=>`<div class="play ${p.team===G.user?'mine':''} ${i===n-1&&!done?'new':''}"><span class="muted tiny">Q${p.q} ${p.time}</span> <b>${esc(T(p.team).name)}</b> ${esc(p.desc)} <span class="muted">(${p.team===g.home?p.hs+'-'+p.as:p.as+'-'+p.hs})</span></div>`).join('')||'<div class="muted small">Teams are warming up.</div>'}</div>`;
-  const ctrl=`<div class="btnrow">${done?`<button class="btn sm ghost" data-act="watchreplay" data-id="${g.id}">Replay</button>`:`<button class="btn sm ghost" data-act="watchskip" data-id="${g.id}">Skip to final</button>`}</div>`;
+  const planLine=g.planUsed?`<div class="tiny muted">Your plan: ${g.planUsed.off==='air'?'air it out':g.planUsed.off==='ground'?'ground and pound':'balanced'}, ${g.planUsed.agg} · edge ${g.planUsed.edge>0?'+':''}${g.planUsed.edge}</div>`:'';
+  const ctrl=`${planLine}<div class="btnrow">${done?`<button class="btn sm ghost" data-act="watchreplay" data-id="${g.id}">Replay</button>`:`<button class="btn sm ghost" data-act="watchskip" data-id="${g.id}">Skip to final</button>`}</div>`;
   const qtbl=done?`<div class="tablewrap"><table><tr><th></th><th class="r">1</th><th class="r">2</th><th class="r">3</th><th class="r">4</th><th class="r">T</th><th class="r">Yds</th></tr>${[[a,1],[h,0]].map(([t,i])=>`<tr class="${isUser(t)?'me':''}"><td>${esc(t.name)}</td>${b.qs[i].map(x=>`<td class="r">${x}</td>`).join('')}<td class="r"><b>${i?g.hs:g.as}</b></td><td class="r">${b.yds[i]}</td></tr>`).join('')}</table></div>`:'';
   const box=done?[[a,b.away],[h,b.home]].map(([t,L])=>`<div class="sec"><h3>${esc(t.name)}</h3><div class="tablewrap"><table>
     ${L.pass.length?`<tr><th>Passing</th><th class="r">C/A</th><th class="r">Yds</th><th class="r">TD</th><th class="r">INT</th></tr>${L.pass.map(x=>`<tr><td>${esc(x.n)}</td><td class="r">${x.c}/${x.a}</td><td class="r">${x.y}</td><td class="r">${x.td}</td><td class="r">${x.i}</td></tr>`).join('')}`:''}
@@ -1219,6 +1255,9 @@ function onAction(act,el){
     case 'livebox':endLive();UI.tab='home';startWatch(+id);if(UI.watch){UI.watch.shown=9999;UI.watch.playing=false;clearTimeout(watchTimer);}break;
     case 'rmine':UI.rMine=!UI.rMine;break;
     case 'rsort':UI.rSort=UI.rSort==='odds'?null:'odds';break;
+    case 'planoff':G.plan.off=id;break;
+    case 'planagg':G.plan.agg=id;break;
+    case 'scoutopp':{const g=G.games.find(x=>x.id===+id);if(g)actScoutOpp(g);break;}
     case 'callall':actCallAll();break;
     case 'scoutall':actScoutAll();break;
     case 'rstars':UI.rStars=+id;break;

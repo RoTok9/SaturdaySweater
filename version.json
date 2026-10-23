@@ -1,4 +1,4 @@
 {
-  "version": "1.4.0",
-  "notes": "Recruiting you can read: real commit odds on every recruit, a decision window, the reason whenever you lose one, playing-time promises that come due next season, and Call-my-board and Scout-my-board batch actions."
+  "version": "1.5.0",
+  "notes": "Game plans and scouting: pick your offense (ground, balanced, air) and tempo each week, scout the opponent for 2 hours to see where they are soft, and watch the plan edge move your win odds. Box scores show the plan you used; AI teams now lean pass or run by their rosters."
 }
