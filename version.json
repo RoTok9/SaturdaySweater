@@ -1,4 +1,4 @@
 {
-  "version": "1.20.1",
-  "notes": "Live sim drama: momentum lines when a team rips off 14 and 28 unanswered, late-game tension lines in the fourth quarter of close games (the feed slows down for them), and a last-possession final call. Team crests now appear on the Season tab schedule and the Top 25."
+  "version": "1.21.0",
+  "notes": "Share your season: the season recap now has a Share season card button that renders a 1080x1350 card in your team colors (record, final rank, postseason result, ranked wins, class rank, signature win, player of the year, class headliner, coach line) and shares it on phones or saves the PNG on PC."
 }
