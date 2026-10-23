@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.21.0">
+<meta name="app-version" content="1.22.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -48,7 +48,11 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid 
 .rec{text-align:right;flex:0 0 auto;min-width:max-content}
 .rec .big{font-family:var(--display);font-size:28px;font-weight:800;line-height:1}
 .rec .small{font-size:12px;opacity:.85}
-.top-bar{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.top-bar{display:flex;gap:8px;align-items:center;margin-top:10px}
+.top-bar .pills{display:flex;gap:8px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;padding:2px 0;mask-image:linear-gradient(90deg,#000 88%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)}
+.top-bar .pills::-webkit-scrollbar{display:none}
+.top-bar .pill{flex:none}
+.simbtn{flex:none}
 .pill{font-size:12px;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.18);white-space:nowrap;border:0;color:inherit;font:inherit;font-size:12px}
 .pill b{font-family:var(--display);font-size:14px;font-weight:700}
 .pill.alert{background:var(--team-fg);color:var(--team);font-weight:600}
@@ -662,7 +666,13 @@ function staffOffseason(){const u=userTeam();const st=G.staff;
 const XP_LEVELS=[0,15,40,90,170,300];
 function coachLevel(k){const xp=(G.coach.xp||{})[k]||0;let l=0;while(l<5&&xp>=XP_LEVELS[l+1])l++;return l;}
 function addXP(k,n){G.coach.xp=G.coach.xp||{rec:0,dev:0,big:0,media:0};const before=coachLevel(k);G.coach.xp[k]=(G.coach.xp[k]||0)+n;const after=coachLevel(k);if(after>before)news(`${G.coach.name} is now a level ${after} ${({rec:'Recruiter',dev:'Developer',big:'Big-game coach',media:'Media operator'})[k]}.`,true);}
-function contractTick(){const c=G.contract;if(!c)return;c.yrs--;const u=userTeam();if(c.yrs<=0){if(G.coach.seat<45){c.yrs=3;c.sal=Math.round(c.sal*1.2*10)/10;news(`The AD extends you three years at $${c.sal}M. Keep winning.`,true);}else{c.yrs=1;G.coach.seat=clamp(G.coach.seat+10,0,100);news(`No extension. You are coaching on the last year of your deal, and everyone knows it.`,true);}}}
+function contractTick(){const c=G.contract;if(!c)return;c.yrs--;const u=userTeam();if(c.yrs<=0){if(G.coach.seat<45){const yrs=G.coach.seat<20?4:3;const sal=Math.round(c.sal*(G.coach.seat<20?1.3:1.15)*10)/10;G.talks={yrs,sal,base:c.sal,asked:0};c.yrs=1;news(`Your contract is up. The AD has an extension on the table: ${yrs} years at $${sal}M. Answer it on the Program tab before camp.`,true);}else{c.yrs=1;G.coach.seat=clamp(G.coach.seat+10,0,100);news(`No extension. You are coaching on the last year of your deal, and everyone knows it.`,true);}}}
+function actTalks(kind){const t=G.talks;if(!t)return;const A=G.app;const c=G.contract;
+  if(kind==='accept'){c.yrs=t.yrs;c.sal=t.sal;G.talks=null;adj('admin',3);news(`Signed: ${t.yrs} years at $${t.sal}M. The AD is pleased to have it done.`,true);return;}
+  if(kind==='decline'){G.talks=null;c.yrs=1;G.coach.seat=clamp(G.coach.seat+8,0,100);adj('admin',-5);adj('fans',-2);news(`You turned the extension down. Lame-duck year; other programs will notice you are available.`,true);G.lameDuck=G.season;return;}
+  if(kind==='years'||kind==='money'){if(t.asked>=2)return;t.asked++;const lev=(A.admin-50)/50+(G.coach.rep-50)/100+(u=>u.po==='champ'?0.4:u.confChamp?0.2:0)(userTeam())-(t.asked-1)*0.5;const ok=Math.random()<clamp(0.35+lev*0.4,0.08,0.9);
+    if(ok){if(kind==='years')t.yrs+=1;else t.sal=Math.round(t.sal*1.15*10)/10;adj('admin',-2);news(`The AD came up: ${t.yrs} years at $${t.sal}M is the new offer.`);}
+    else{adj('admin',-5);if(Math.random()<0.35){G.talks=null;c.yrs=1;G.coach.seat=clamp(G.coach.seat+8,0,100);news(`The AD pulled the offer. "We will revisit after the season." Lame-duck year.`,true);}else news(`The AD said no. The ${t.yrs}-year, $${t.sal}M offer stands, but patience is thin.`);}}}
 function staffPreseason(){['oc','dc','rc'].forEach(role=>{const c=G.staff[role];if(!c||c.yrs<=0){if(c)news(`${c.n} walked. An interim ${ROLES[role].toLowerCase()} fills in.`);G.staff[role]=makeCoord(role,rint(46,54),{n:coachName(),yrs:1,tag:'Interim'});}});G.hoursMax=hoursFor();}
 const CPERS={recruiter:{n:'Recruiter',d:'Lives on the road. Closes late and flips commits.'},gambler:{n:'Riverboat gambler',d:'Goes for it on fourth down. Wild swings either way.'},oldschool:{n:'Old school',d:'Runs it, plays defense, keeps his roster together.'},players:{n:'Players\u2019 coach',d:'Guys stay, guys play loose. Rarely loses anyone to the portal.'},showman:{n:'Showman',d:'Talks before the game. Rivalries get hotter with him around.'},schemer:{n:'Schemer',d:'Wins the chess match. Dangerous in a close one.'}};
 function coachPersona(c){if(!c)return null;if(!c.pr)c.pr=pick(Object.keys(CPERS));return c.pr;}
@@ -747,6 +757,7 @@ function startSeason(){
   G.games=[];genSchedule();schedCommit();G.schedPicks=null;G.recruits=genRecruits();G.portal=[];G.playoff=null;G.bowls=[];G.fieldHist=[];G.week=1;G.phase='season';
   staffPreseason();G.hours=G.hoursMax;G.mediaLeft=3;G.adLobbied=false;G.boosterUsed=false;G.lastResult=null;G.summary=null;G.offers=[];G.fired=false;G.portalAdds=0;G.classRank=null;
   const u=userTeam();G.nil+=60+u.prestige*25;
+  if(G.talks){actTalks('accept');}
   updatePoll();makeGoals();
   news(`${G.season} preseason poll is out. ${T(G.poll[0]).name} opens at No. 1; ${u.name} starts the year ranked No. ${u.rank}.`,true);
   news(`Boosters kicked in ${fmtK(60+u.prestige*25)} to the NIL collective for the ${G.season} cycle.`);
@@ -1431,7 +1442,7 @@ function runOffseason(){
   G.offers=[];
   if(G.coach.years>=10)ach('decade');
   if(G.coach.seat>=85&&G.coach.years>=2){G.fired=true;ach('fired');let lower=G.teams.filter(t=>!isUser(t)&&t.prestige<=u.prestige-1);if(lower.length<3)lower=G.teams.filter(t=>!isUser(t)&&t.prestige<=u.prestige+0.5);G.offers=shuffle(lower).slice(0,3).map(t=>t.id);news(`The athletic director has relieved ${G.coach.name} of duties after a ${u.w}-${u.l} season. Three programs have reached out.`,true);}
-  else if((delta>=2||u.po==='champ')&&perception()>=45){const pc=clamp((perception()-40)/40,0.15,1);const higher=G.teams.filter(t=>!isUser(t)&&t.prestige>u.prestige&&Math.random()<0.4*pc);G.offers=shuffle(higher).slice(0,rint(1,3)).map(t=>t.id);if(G.offers.length)news(`Your phone is ringing: ${G.offers.map(id=>T(id).name).join(', ')} want to talk about their head coaching job.`,true);}
+  else if((delta>=2||u.po==='champ'||(G.lameDuck===G.season-1&&delta>=0))&&perception()>=45){const pc=clamp((perception()-40)/40,0.15,1)*(G.lameDuck===G.season-1?1.6:1);const higher=G.teams.filter(t=>!isUser(t)&&t.prestige>u.prestige&&Math.random()<0.4*pc);G.offers=shuffle(higher).slice(0,rint(1,3)).map(t=>t.id);if(G.offers.length)news(`Your phone is ringing: ${G.offers.map(id=>T(id).name).join(', ')} want to talk about their head coaching job.`,true);}
   else if(delta>=2&&perception()<45)news('Athletic directors around the country admire the wins but not the press conferences. No calls this winter.');
   // prestige drift
   coachingCarousel();rivDecay();staffOffseason();contractTick();
@@ -1545,12 +1556,12 @@ function renderGame(){
   const body=L?renderLive():UI.tab==='home'?renderHome():UI.tab==='schedule'?renderSchedule():UI.tab==='recruit'?renderRecruit():UI.tab==='roster'?renderRoster():UI.tab==='polls'?renderPolls():renderProgram();
   const over=u.roster.length-ROSTER_CAP;const badge={home:(!!G.presser||!!G.event||G.phase==='postseason')&&!liveOn,roster:over>0,program:G.offers.length>0||G.fired,recruit:G.phase==='season'&&G.week<=15&&G.hours===G.hoursMax};
   const sn=liveOn?L.snap:null;const rec=sn?{w:sn.w,l:sn.l,cw:sn.cw,cl:sn.cl,rank:sn.rank,confChamp:sn.confChamp}:u;const wkLabel=sn?weekLabel(sn.week)+' · LIVE':(G.phase==='season'?weekLabel(G.week):G.phase==='postseason'?'Season complete':'Offseason');
-  const alerts=[];if(G.presser&&!liveOn)alerts.push(['home','Presser waiting']);{const tw=textsWaiting();if(tw&&!liveOn)alerts.push(['recruit',`${tw} text${tw>1?'s':''} waiting`]);}if(G.event&&!liveOn)alerts.push(['home','Decision waiting']);if(over>0)alerts.push(['roster',`Roster +${over} over cap`]);if(G.offers.length)alerts.push(['program',G.fired?'Pick a job':`${G.offers.length} job offer${G.offers.length>1?'s':''}`]);
+  const alerts=[];if(G.presser&&!liveOn)alerts.push(['home','Presser waiting']);{const tw=textsWaiting();if(tw&&!liveOn)alerts.push(['recruit',`${tw} text${tw>1?'s':''} waiting`]);}if(G.event&&!liveOn)alerts.push(['home','Decision waiting']);if(over>0)alerts.push(['roster',`Roster +${over} over cap`]);if(G.offers.length)alerts.push(['program',G.fired?'Pick a job':`${G.offers.length} job offer${G.offers.length>1?'s':''}`]);if(G.talks)alerts.push(['program','Contract on the table']);
   return `<header class="top"><div class="top-wrap"><div class="top-in"><div class="crest ${abbr(u).length>=4?'l4':''}">${abbr(u)}</div><div class="grow"><div class="tname">${esc(u.name)} ${esc(u.nick)}</div><div class="tsub">${CONFS[u.conf].name} · ${G.season} · ${wkLabel}${rec.confChamp?' · Conf champs':''}</div><div class="tsub coach">HC ${esc(G.coach.name)} · Year ${G.coach.years} · ${G.coach.w}-${G.coach.l} career</div></div>
     <div class="rec"><div class="big">${rec.w}-${rec.l}</div><div class="small">${rec.cw}-${rec.cl} conf</div><div class="rk ${rec.rank<=25?'top':''}">${rec.rank<=25?'No. '+rec.rank:'No. '+rec.rank+' · unranked'}</div></div></div>
     ${renderTimeline(u,liveOn?L:null)}
     ${liveOn?renderLiveLine():renderNextLine(u)}
-    <div class="top-bar"><button class="pill ${G.phase==='season'&&G.hours===0?'dim':''}" data-act="tab" data-id="recruit"><b>${G.hours}</b>/${G.hoursMax}h</button><button class="pill" data-act="tab" data-id="program">NIL <b>${fmtK(G.nil)}</b></button><button class="pill ${G.coach.seat>=60?'alert':''}" data-act="tab" data-id="program">Seat <b>${G.coach.seat}</b></button>${alerts.map(([t,l])=>`<button class="pill alert" data-act="tab" data-id="${t}">${l}</button>`).join('')}${L?(liveOn?`<button class="simbtn" data-act="liveskip">Skip to final</button>`:`<button class="simbtn" data-act="livedone">Continue</button>`):`<button class="simbtn" data-act="sim" ${disabled?'disabled':''}>${simLabel()}</button>`}</div></div></header>
+    <div class="top-bar"><div class="pills">${alerts.map(([t,l])=>`<button class="pill alert" data-act="tab" data-id="${t}">${l}</button>`).join('')}<button class="pill ${G.phase==='season'&&G.hours===0?'dim':''}" data-act="tab" data-id="recruit"><b>${G.hours}</b>/${G.hoursMax}h</button><button class="pill" data-act="tab" data-id="program">NIL <b>${fmtK(G.nil)}</b></button><button class="pill ${G.coach.seat>=60?'alert':''}" data-act="tab" data-id="program">Seat <b>${G.coach.seat}</b></button></div>${L?(liveOn?`<button class="simbtn" data-act="liveskip">Skip to final</button>`:`<button class="simbtn" data-act="livedone">Continue</button>`):`<button class="simbtn" data-act="sim" ${disabled?'disabled':''}>${simLabel()}</button>`}</div></div></header>
   <main class="${!L&&UI.tab==='home'?'home':'single'}">${body}</main>
   <nav class="tabs"><div class="in">${tabs.map(([k,l])=>`<button class="${UI.tab===k?'on':''}" data-act="tab" data-id="${k}">${l}${badge[k]&&UI.tab!==k?'<span class="dot"></span>':''}</button>`).join('')}</div></nav>`;
 }
@@ -1874,6 +1885,7 @@ function renderProgram(){
     ${ret.length?`<div class="tiny muted" style="margin-top:6px">Retired Pro Bowlers: ${ret.map(a=>`${a.pos} ${esc(a.n)} (${a.pb})`).join(', ')}</div>`:''}</div>`;})();
   const hof=(G.hof||[]).filter(h=>h.team===u.name).length?`<div class="card sec"><h3>${esc(u.name)} Hall of Fame</h3><div class="list">${G.hof.filter(h=>h.team===u.name).reverse().map(h=>`<div class="item"><div class="grow"><div class="nm">${h.pos} ${esc(h.n)} <span class="tiny muted">${h.from}-${h.to}</span></div><div class="sub">${esc(h.line)} · ${h.honors.map(esc).join(', ')}</div></div></div>`).join('')}</div></div>`:'';
   const hist=G.history.length?`${rb}${recs}${hof}<div class="card sec"><h3>Dynasty history</h3><div class="tablewrap"><table><tr><th>Year</th><th>Team</th><th>Record</th><th class="r">Final</th><th>Postseason</th><th>Champion</th><th>Heisman</th><th class="r">Class</th></tr>${G.history.map(h=>`<tr><td>${h.season}</td><td>${esc(h.team)}</td><td>${h.record}${h.conf?' <span class="tag good">CC</span>':''}</td><td class="r">#${h.rank}</td><td>${esc(h.po)}</td><td>${esc(h.champ)}</td><td>${esc(h.heis||'')}</td><td class="r">${h.cls?'#'+h.cls:''}</td></tr>`).join('')}</table></div></div>`:'';
+  const talks=G.talks?`<div class="card sec presser" style="border-left-color:var(--gold)"><div class="eyebrow">Contract talks</div><div class="q" style="font-size:19px">The AD's offer: ${G.talks.yrs} years at $${G.talks.sal}M per year${G.talks.base?` (you make $${G.talks.base}M now)`:''}.</div><div class="small muted">Push for more years or more money up to twice. Each push costs goodwill, and a bad read can get the offer pulled. Admin approval ${G.app.admin}.</div><div class="btnrow"><button class="btn" data-act="talks" data-id="accept">Sign it</button><button class="btn ghost" data-act="talks" data-id="years" ${G.talks.asked>=2?'disabled':''}>Ask for another year</button><button class="btn ghost" data-act="talks" data-id="money" ${G.talks.asked>=2?'disabled':''}>Ask for 15% more</button><button class="btn ghost" data-act="talks" data-id="decline">Play it out</button></div></div>`:'';
   const coach=`<div class="card sec"><div class="eyebrow">Head coach</div><h2>${esc(c.name)}</h2><div class="grid2"><div class="stat"><div class="v">${c.w}-${c.l}</div><div class="k">Career record</div></div><div class="stat"><div class="v">${c.rep}</div><div class="k">Reputation</div></div><div class="stat"><div class="v">${c.titles}</div><div class="k">National titles</div></div><div class="stat"><div class="v">${c.playoffs}</div><div class="k">Playoff trips</div></div></div>
     <div class="meter"><span class="small" style="width:70px">Hot seat</span><div class="bar grow"><i class="${seatCls}" style="width:${c.seat}%"></i></div><span class="small num">${c.seat}</span></div><div class="tiny muted">Year ${c.years} at ${esc(u.name)}. The AD expects about ${Math.round(expectedWins(u))} wins; fall short and the seat heats up, exceed it and better jobs call. Prestige ${u.prestige}/10. Difficulty: ${G.diff||'normal'}.${G.losingRun?` <b class="no">${G.losingRun} losing season${G.losingRun>1?'s':''} in a row; three means you are out.</b>`:''}</div></div>`;
   const press=`<div class="card sec"><h3>Public standing</h3>${renderApproval(false)}<div class="tiny muted">League perception (media + athletic dept) is <b>${perception()}</b>. Below 45 and other programs stop calling, however many games you win. Fans and the AD feed the hot seat; the locker room drives development and who leaves for the portal.</div>
@@ -1885,7 +1897,7 @@ function renderProgram(){
     ${UI.updateMsg?`<div class="small ${UI.updateOk?'ok':'muted'}">${esc(UI.updateMsg)}</div>`:''}
     <div class="tiny muted">Version ${(document.querySelector('meta[name=app-version]')||{}).content||'?'}</div>
     <div class="tiny muted">Keys: Space or Enter sims the week, S skips a live game, 1-6 switch tabs, F11 fullscreen.</div>${UI.confirm==='reset'?`<div class="confirmbox"><b>Delete this dynasty?</b> Other saved dynasties are not affected.<div class="btnrow"><button class="btn sm danger" data-act="resetyes">Yes, delete it</button><button class="btn sm ghost" data-act="cancel">Keep playing</button></div></div>`:`<div class="btnrow"><button class="btn sm ghost" data-act="switch">Switch or start another dynasty</button><button class="btn sm ghost" data-act="reset">Delete this dynasty</button></div>`}</div>`;
-  return coach+offers+profile+staff+press+lobby+budget+ident+pros+hist+achs+league+danger;
+  return talks+coach+offers+profile+staff+press+lobby+budget+ident+pros+hist+achs+league+danger;
 }
 
 /* ===================== EVENTS ===================== */
@@ -1925,6 +1937,7 @@ function onAction(act,el){
     case 'pin':actPin(+id);break;
     case 'popen':UI.pOpen=UI.pOpen===+id?null:+id;break;
     case 'share':actShare();return;
+    case 'talks':actTalks(id);break;
     case 'talk':actTalk(+id,el.dataset.kind);break;
     case 'move':UI.confirm='move'+id+el.dataset.to;break;
     case 'moveyes':actMove(+id,el.dataset.to);UI.confirm=null;break;

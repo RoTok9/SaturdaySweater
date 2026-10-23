@@ -1,4 +1,4 @@
 {
-  "version": "1.21.0",
-  "notes": "Share your season: the season recap now has a Share season card button that renders a 1080x1350 card in your team colors (record, final rank, postseason result, ranked wins, class rank, signature win, player of the year, class headliner, coach line) and shares it on phones or saves the PNG on PC."
+  "version": "1.22.0",
+  "notes": "Contract talks: when your deal runs out and the AD wants you back, the extension lands on the Program tab as an offer you can sign, push for another year, push for 15 percent more (twice at most, each push costs goodwill and a bad read gets the offer pulled), or decline and play out a lame-duck year that makes bigger programs come calling. Header pills now scroll on one row with alerts first, so the Sim button always sits beside them."
 }
