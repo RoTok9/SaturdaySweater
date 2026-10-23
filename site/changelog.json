@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.125.0",
+  "notes": "Media days poll: the season preview tells you where the conference picked you to finish (and who they picked to win it), and the season story remembers if you blew past it or fell short."
+ },
+ {
   "version": "1.124.0",
   "notes": "Coordinator on the hot seat: when your defense is giving up 31 a game or the offense cannot reach 17, talk radio wants a head. Fire him (an interim takes the play sheet, fans cheer, the staff room goes quiet), take over the play-calling yourself (it works if you have big-game experience), or back him publicly."
  },
