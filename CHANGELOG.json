@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.104.0",
+  "notes": "Coach background on the start screen: Walk-on, Recruiter, Developer, Big-game or CEO. Each starts you at level 1 of that track, so your coach has an identity from day one."
+ },
+ {
   "version": "1.103.0",
   "notes": "Career splits on the coach profile: vs ranked, vs Top 10, one-score games, rivalry games, on the road, postseason, against the spread. Nemesis coaches: the game tracks your record against every opposing coach; a coach who owns you shows up in the game hero and a Nemesis storyline, and finally beating him is a moment."
  },
