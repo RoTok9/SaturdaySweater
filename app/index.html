@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.81.0">
+<meta name="app-version" content="1.82.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -1364,6 +1364,7 @@ function genTeamStats(t,score,oppScore,full,pre,ot,through){
   Object.values(rush).forEach(r=>{const s=st(r.p);s.ra+=r.a;s.ry+=r.y;s.rtd+=r.td;touched.add(r.p);if(r.p.pos==='RB')bumpForm(r.p,r.y>=110||r.td>=2?1:r.y<30?-0.4:0.1);});
   if(k){const s=st(k);s.fgm+=fgm;s.fga+=fga;touched.add(k);}
   touched.forEach(p=>st(p).gp++);
+  if(full&&isHuman(t.id)&&CUR_G){const g=CUR_G;const opp=T(g.home===t.id?g.away:g.home);const tag=`${weekLabel(g.week)} ${g.home===t.id?'vs':'at'} ${opp.name}`;const add=(p,line)=>{if(!p)return;p.log=p.log||[];p.log.push({s:G.season,w:g.week,t:tag,line});if(p.log.length>30)p.log.splice(0,p.log.length-30);};if(qb)add(qb,`${comp}/${att}, ${PY} yds, ${ptd} TD, ${ints} INT`);Object.values(rush).forEach(r=>{if(r.p.pos==='RB'||r.a>=4)add(r.p,`${r.a} car, ${r.y} yds, ${r.td} TD`);});Object.values(rec).forEach(r=>{if(r.rec>0&&r.p.pos!=='RB')add(r.p,`${r.rec} rec, ${r.y} yds, ${r.td} TD`);});}
   const lines={pass:qb?[{n:qb.n,c:comp,a:att,y:PY,td:ptd,i:ints}]:[],rush:Object.values(rush).sort((a,b)=>b.y-a.y).map(r=>({n:r.p.n,pos:r.p.pos,a:r.a,y:r.y,td:r.td})),rec:Object.values(rec).sort((a,b)=>b.y-a.y).map(r=>({n:r.p.n,pos:r.p.pos,rec:r.rec,y:r.y,td:r.td})),def:[],k:k?{n:k.n,fgm,fga,xp:plays.filter(p=>p.pts===7).length}:null};
   return {plays,lines,ints,PY,RY};
 }
@@ -1372,10 +1373,11 @@ function genDefense(t,oppInts,lines){
   groups.forEach(([pos,n,lo,hi])=>depth(t,pos).slice(0,n).forEach(p=>defs.push({p,tk:rint(lo,hi),sk:0,int:0})));
   for(let i=0;i<pois(2.6);i++){const c=defs.filter(x=>x.p.pos==='DL'||x.p.pos==='LB');if(c.length)weightedPick(c,x=>Math.pow(x.p.ovr+(x.p.form||0),4)).sk++;}
   for(let i=0;i<oppInts;i++){const c=defs.filter(x=>x.p.pos!=='DL');if(c.length)weightedPick(c,x=>Math.pow(x.p.ovr,3)*(x.p.pos==='CB'||x.p.pos==='S'?2:1)).int++;}
-  defs.forEach(x=>{const s=st(x.p);s.tk+=x.tk;s.sk+=x.sk;s.dint+=x.int;s.gp++;if(x.sk>=2||x.int>=1)bumpForm(x.p,1);});
+  defs.forEach(x=>{const s=st(x.p);s.tk+=x.tk;s.sk+=x.sk;s.dint+=x.int;s.gp++;if(x.sk>=2||x.int>=1)bumpForm(x.p,1);if(isHuman(t.id)&&CUR_G){const g=CUR_G;const opp=T(g.home===t.id?g.away:g.home);x.p.log=x.p.log||[];x.p.log.push({s:G.season,w:g.week,t:`${weekLabel(g.week)} ${g.home===t.id?'vs':'at'} ${opp.name}`,line:`${x.tk} tkl, ${x.sk} sack${x.sk===1?'':'s'}, ${x.int} INT`});if(x.p.log.length>30)x.p.log.splice(0,x.p.log.length-30);}});
   lines.def=defs.sort((a,b)=>b.tk+b.sk*2+b.int*3-(a.tk+a.sk*2+a.int*3)).map(x=>({n:x.p.n,pos:x.p.pos,tk:x.tk,sk:x.sk,int:x.int}));
 }
-function genGameStats(g,h,a){
+let CUR_G=null;
+function genGameStats(g,h,a){CUR_G=g;
   const full=isHuman(g.home)||isHuman(g.away);
   const thr=g._pre&&g._pre.through;const H=genTeamStats(h,g.hs,g.as,full,g._pre&&g._pre[h.id],g.ot,thr),A=genTeamStats(a,g.as,g.hs,full,g._pre&&g._pre[a.id],g.ot,thr);
   const close=Math.abs(g.hs-g.as)<=7;[h,a].forEach(t=>{const won=(t===h)===(g.hs>g.as);['QB','RB','WR','TE'].forEach(pos=>depth(t,pos).slice(0,STARTERS[pos]).forEach(p=>{if(hasT(p,'clutch')&&close&&won)bumpForm(p,0.8);if(hasT(p,'spotlight')&&(g.hrank<=25||g.arank<=25||g.type!=='reg'))bumpForm(p,0.4);}));});
@@ -1597,11 +1599,12 @@ function actTalk(pid,kind){const p=P(pid);if(!p||p.team!==G.user||p.talked===G.w
   else if(kind==='praise'){p.talkedBoost=(p.talkedBoost||0)+5;adj('locker',1);}}
 function actMove(pid,to){const p=P(pid);if(!p||p.team!==G.user||G.phase!=='offseason'||!(MOVES[p.pos]||[]).includes(to))return;const from=p.pos;p.pos=to;p.ovr=clamp(p.ovr-5,40,99);p.pot=Math.max(p.ovr,p.pot-2);delete p.pin;p.moved=G.season;news(`${p.n} moves from ${from} to ${to}. He takes a hit now and grows into it.`);}
 function careerRow(p){const c=p.car;if(!c||!c.gp)return '';return careerLine(p)+` over ${c.gp} games since ${c.from}`;}
+function renderGameLog(p){const L=(p.log||[]).filter(x=>x.s===G.season);if(!L.length)return '';return `<details style="margin-top:6px"><summary class="tiny muted">Game log (${L.length})</summary><div class="list">${L.slice().reverse().map(x=>`<div class="item" style="padding:5px 0"><div class="grow"><div class="tiny muted">${esc(x.t)}</div><div class="small">${esc(x.line)}</div></div></div>`).join('')}</div></details>`;}
 function renderPlayerCard(p){const u=userTeam();const M=playerMood(p);const s=p.st;const stats=s&&s.gp?(p.pos==='QB'?[['Comp/Att',`${s.pc}/${s.pa}`],['Pass yds',s.py],['TD/INT',`${s.ptd}/${s.int}`],['Rush yds',s.ry]]:p.pos==='RB'?[['Carries',s.ra],['Rush yds',s.ry],['TD',s.rtd],['Rec',`${s.rec} for ${s.recy}`]]:['WR','TE'].includes(p.pos)?[['Rec',s.rec],['Yds',s.recy],['TD',s.rectd],['Games',s.gp]]:p.pos==='K'?[['FG',`${s.fgm}/${s.fga}`],['Games',s.gp]]:[['Tackles',s.tk],['Sacks',s.sk],['INT',s.dint],['Games',s.gp]]):null;
   const hist=(p.oh||[]).map(([yr,o])=>`${yr}: ${o}`).join(' → ');const talk=G.phase==='season'&&p.talked!==G.week?talkOptions(p).map(o=>`<button class="answer" data-act="talk" data-id="${p.id}" data-kind="${o.k}" ${G.hours<2?'disabled':''}><b>${o.t}</b> <span class="muted">${o.d}</span></button>`).join(''):(p.talked===G.week?'<div class="tiny muted">You talked this week.</div>':'');
   const moves=G.phase==='offseason'&&MOVES[p.pos]?`<div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><span class="tiny muted">Position change (offseason only, costs 5 OVR now):</span>${MOVES[p.pos].map(to=>UI.confirm==='move'+p.id+to?`<button class="btn sm danger" data-act="moveyes" data-id="${p.id}" data-to="${to}">Confirm ${to}</button>`:`<button class="btn sm ghost" data-act="move" data-id="${p.id}" data-to="${to}">Move to ${to}</button>`).join('')}</div>`:'';
   return `<div class="detail"><div class="row between"><div class="small"><b>${YR[Math.min(p.yr,3)]}</b> · ${p.ovr} OVR · potential ${p.pot} (${potGrade(p)})${p.stars?' · '+starStr(p.stars)+' recruit':''}${p.transfer?' · transfer':''}${p.walkon?' · walk-on':''}</div><span class="tag ${M.m>=70?'good':M.m<40?'bad':''}">Mood ${M.m}</span></div>
-    ${M.why.length?`<div class="tiny muted">${M.why.join(' · ')}</div>`:''}
+    ${M.why.length?`<div class="tiny muted">${M.why.join(' · ')}</div>`:''}${renderGameLog(p)}
     ${stats?`<div class="grid2" style="margin-top:6px">${stats.map(([k,v])=>`<div class="stat" style="padding:6px 10px"><div class="v" style="font-size:18px">${typeof v==='number'?v.toLocaleString():v}</div><div class="k">${k}</div></div>`).join('')}</div>`:'<div class="tiny muted" style="margin-top:6px">No stats yet this season.</div>'}
     ${careerRow(p)?`<div class="small" style="margin-top:6px">Career: ${careerRow(p)}</div>`:''}${hist?`<div class="tiny muted">Rating by year: ${hist} → ${G.season}: ${p.ovr}</div>`:''}
     ${(p.aw||[]).length||p.heisman?`<div class="small">Honors: ${(p.aw||[]).map(a=>a.k+' '+a.s).concat(p.heisman?['Heisman '+p.heisman]:[]).join(', ')}</div>`:''}
@@ -2265,13 +2268,14 @@ function actHalftime(k){const L=UI.live;if(!L||!L.pre||!L.half||L.pre.decided)re
   clearTimeout(liveTimer);liveTimer=setTimeout(liveTick,900);}
 function actFourth(k){const L=UI.live;if(!L||!L.pre||!L.pre.decided||L.pre.decided4)return;const g=G.games.find(x=>x.id===L.gid);if(!g||g.played)return;const m=L.pre.m;const me=g.home===G.user;const h1=L.pre.h1,q3=L.pre.q3;const myS=(me?h1.hs+q3.hs:h1.as+q3.as),opS=(me?h1.as+q3.as:h1.hs+q3.hs);const lead=myS-opS;if((k==='clock'||k==='prevent')&&lead<=0)k='stay';if(k==='blitz'&&lead>=0)k='stay';L.pre.decided4=k;
   let a4={edge:L.pre.adj.edge,sdMul:L.pre.adj.sdMul};if(k==='go'){a4.edge+=(lead<0?3:0)*(me?1:-1);a4.sdMul*=1.6;}else if(k==='clock'){a4.edge+=3*(me?1:-1);a4.sdMul*=0.55;}else if(k==='prevent'){a4.edge+=-2*(me?1:-1);a4.sdMul*=0.7;}else if(k==='blitz'){const hit=Math.random()<0.45+coachLevel('big')*0.04;a4.edge+=(hit?9:-7)*(me?1:-1);a4.sdMul*=1.3;L.pre.blitzHit=hit;}
+  const oppT=T(me?g.away:g.home);let ai4='';if(oppT.coach&&!isHuman(oppT.id)){const pr=coachPersona(oppT.coach);const oLead=-lead;const sgn=me?-1:1;if(pr==='gambler'&&oLead<0){a4.edge+=3*sgn;a4.sdMul*=1.3;ai4=`${oppT.coach.n} is going for it on every fourth down from here.`;}else if(pr==='oldschool'&&oLead>0){a4.edge+=2*sgn;a4.sdMul*=0.7;ai4=`${oppT.coach.n} is going to run it and make you use your timeouts.`;}else if(pr==='schemer'&&Math.abs(oLead)<=7){a4.edge+=2*sgn;ai4=`${oppT.coach.n} has saved something for this quarter.`;}else if(pr==='players'&&oLead<0){a4.edge+=1*sgn;ai4=`${oppT.coach.n}'s sideline is still loose. They believe.`;}}
   const q4=quarterScore(m,a4);let hs=h1.hs+q3.hs+q4.hs,as=h1.as+q3.as+q4.as;let otf=null;let otH=0,otA=0;if(hs===as){const ot=overtime();if(ot.homeWins){otH=ot.w;otA=ot.l;}else{otA=ot.w;otH=ot.l;}hs+=otH;as+=otA;otf={w:ot.homeWins?g.home:g.away,wp:ot.w,lp:ot.l};}
   const h=T(g.home),a=T(g.away);const mkq=(t,sc,qq)=>{const c=evCtx(t);return decompose(sc).map(e=>({e,q:qq,time:qq===5?'OT':evTime(),ch:pickEvent(e,c)}));};L.pre.preH=L.pre.preH.concat(mkq(h,q4.hs,4),otH?mkq(h,otH,5):[]);L.pre.preA=L.pre.preA.concat(mkq(a,q4.as,4),otA?mkq(a,otA,5):[]);
   const mk=(evs,tid)=>evs.map(x=>({q:x.q,time:x.time,pts:evPts(x.e),desc:x.ch.desc,team:tid}));const tsec=t=>{const m2=String(t).match(/(\d+):(\d+)/);return m2?+m2[1]*60+ +m2[2]:0;};const plays=[...mk(L.pre.preH,g.home),...mk(L.pre.preA,g.away)].sort((x,y)=>x.q-y.q||(x.q===5?((x.team===(otf&&otf.w)?1:0)-(y.team===(otf&&otf.w)?1:0)):(tsec(y.time)-tsec(x.time))));
   g._pv={hs,as,ot:otf};const full=buildFeed(g,plays,0);delete g._pv;const cut=full.findIndex(it=>it.k==='q'&&/3rd quarter/.test(it.text));const rest=full.slice(cut+1);const preFeed=L.pre.feed.filter(it=>it.k!=='call4');const last=preFeed[preFeed.length-1];
   const line4={k:'f',call:true,q:4,time:'15:00',team:G.user,text:k==='stay'?'Fourth quarter. No tricks, just football.':k==='go'?'Fourth quarter. The punter can sit down; you are going for everything.':k==='clock'?'Fourth quarter. Three yards and a cloud of dust, and the clock keeps moving.':k==='prevent'?'Fourth quarter. Safeties are twenty yards deep. Bend, do not break.':(L.pre.blitzHit?'Fourth quarter. You send the house and the first blitz gets home for a strip-sack.':'Fourth quarter. You send the house and the first screen goes forty yards the other way.'),hs:last.hs,as:last.as,pos:rest[0]?rest[0].pos:null,yd:rest[0]?rest[0].yd:25};
   g._forced={hs,as,ot:otf};g.h1=h1;g._pre={[g.home]:L.pre.preH,[g.away]:L.pre.preA,through:4};g._call=L.pre.decided;g._call4=k;g._callBy=G.user;const snap=L.snap;
-  const feed=[...preFeed,line4,...rest];UI.live={gid:g.id,snap,feed,shown:preFeed.length,done:false,call:L.pre.decided,call4:k,coop:coopOn()||!!(G.online&&NET)};
+  const ai4Item=ai4?{k:'f',team:oppT.id,q:4,time:'15:00',text:ai4,hs:line4.hs,as:line4.as,pos:line4.pos,yd:line4.yd}:null;const feed=[...preFeed,line4,...(ai4Item?[ai4Item]:[]),...rest];UI.live={gid:g.id,snap,feed,shown:preFeed.length,done:false,call:L.pre.decided,call4:k,coop:coopOn()||!!(G.online&&NET)};
   {const myW=me?hs>as:as>hs;const bold=(k==='go'||k==='blitz'||L.pre.decided==='fire'||L.pre.decided==='open');const C=G.coach.calls=G.coach.calls||{n:0,w:0,bold:0,boldW:0};C.n++;if(myW)C.w++;if(bold){C.bold++;if(myW)C.boldW++;}if(myW&&bold)addXP('big',1);}
   if(!coopOn()&&!(G.online&&NET)){simWeek();delete G._restWk;
     // injuries from this week show up in the broadcast
