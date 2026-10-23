@@ -133,6 +133,15 @@ tr.me td{background:color-mix(in srgb,var(--team) 12%,transparent);font-weight:6
 .confirmbox{background:color-mix(in srgb,var(--bad) 10%,var(--surface));border:1px solid var(--bad);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px}
 .ok{color:var(--good)} .no{color:var(--bad)}
 .presser{border-left:5px solid var(--team)}
+.achgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ach{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--muted);opacity:.55;display:flex;flex-direction:column;gap:2px}
+.ach.on{opacity:1;color:var(--fg);border:1px solid var(--team)}
+.ach b{font-family:var(--display);font-size:15px}
+body.flash-good{animation:flashg .5s ease-out}
+body.flash-bad{animation:flashb .5s ease-out}
+@keyframes flashg{0%{box-shadow:inset 0 0 0 100vmax color-mix(in srgb,var(--good) 35%,transparent)}100%{box-shadow:inset 0 0 0 100vmax transparent}}
+@keyframes flashb{0%{box-shadow:inset 0 0 0 100vmax color-mix(in srgb,var(--bad) 30%,transparent)}100%{box-shadow:inset 0 0 0 100vmax transparent}}
+@media (prefers-reduced-motion:reduce){ body.flash-good,body.flash-bad{animation:none} }
 .rivban{background:linear-gradient(90deg,var(--team),color-mix(in srgb,var(--team) 55%,#000));color:var(--team-fg);border-radius:8px;padding:10px 12px}
 .rivban.feud{background:linear-gradient(90deg,#7a0d0d,#2a0404);color:#fff}
 .hero.rivhero{border-left-color:var(--bad);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad) 40%,transparent)}
@@ -462,6 +471,15 @@ function weightedPick(items,wf){let tot=0;const ws=items.map(i=>{const w=Math.ma
 /* ===================== STATE ===================== */
 let G=null;
 const UI={leagueConf:'ALL',leagueQ:'',leagueOpen:false,leagueIO:null,leagueMsg:'',tab:'home',rPos:'ALL',rStars:0,rMine:false,rOpen:null,pitchOpen:null,rosterPos:'QB',confSel:'SEC',confirm:null,pickTeam:null,showPortal:false,pollMode:'top25'};
+/* ===================== ACHIEVEMENTS ===================== */
+const ACH=[
+ ['firstwin','First Saturday','Win a game.'],['ranked','Giant slayer','Beat a ranked team.'],['top25','In the conversation','Enter the Top 25.'],['no1','Kings','Reach No. 1 in the poll.'],['confchamp','Banner year','Win a conference title.'],['playoff','Bracket','Make the 12-team playoff.'],['natty','Confetti','Win the national championship.'],['undefeated','Perfect','Finish a regular season unbeaten.'],
+ ['fivestar','Blue chip','Sign a five-star recruit.'],['top10class','Haul','Sign a top-10 class.'],['promise','Man of your word','Keep a playing-time promise.'],['heisman','Stiff arm','Coach a Heisman winner.'],['allamerican','First team','Coach an All-American.'],['hof','Immortal','Put a player in your Hall of Fame.'],
+ ['rivalry','Bad blood','Have a rivalry earn a name.'],['feud','Blood feud','Push a rivalry past 85 heat.'],['sweep','Own the series','Beat a rival three years running.'],['upsetno1','Shock the world','Beat the No. 1 team while unranked.'],
+ ['hotseat','Survivor','Cool a seat from 70+ back under 30.'],['fired','Pink slip','Get fired. It happens.'],['newjob','Movin\u2019 on up','Accept a job at a bigger program.'],['decade','Lifer','Coach ten seasons in one dynasty.'],['rebuild','From nothing','Win a title at a program with prestige 4 or lower when you took it.'],['brutal','Masochist','Win a title on Brutal.'],['staff85','Brain trust','Employ a coordinator rated 85 or better.'],['events','Fixer','Handle ten midweek situations.']];
+const ACH_KEY='gridiron-ach-v1';
+function achGet(){try{return JSON.parse(localStorage.getItem(ACH_KEY)||'{}');}catch(e){return {};}}
+function ach(id){const a=achGet();if(a[id])return;const def=ACH.find(x=>x[0]===id);if(!def)return;a[id]=G?G.season:true;try{localStorage.setItem(ACH_KEY,JSON.stringify(a));}catch(e){}if(G){news(`Achievement: ${def[1]}. ${def[2]}`,true);sfx('fg');}}
 /* ===================== SAVE SLOTS ===================== */
 const KEY_BASE='gridiron-dynasty-save-v1',SLOTS_KEY='gridiron-slots-v1',CUR_KEY='gridiron-current-slot';
 let SLOT=null;
@@ -548,8 +566,8 @@ function rivUpdate(g,r){ // called after a game between the two teams
   R.games.push({s:G.season,w:r.w.id,ws:r.ws,ls:r.ls,hr,ar,wk:g.week});if(R.games.length>12)R.games.shift();
   const tier=rivTier(R);
   const namedA=Object.values(G.riv).filter(x=>x.name&&(x.a===R.a||x.b===R.a)).length,namedB=Object.values(G.riv).filter(x=>x.name&&(x.a===R.b||x.b===R.b)).length;
-  if(!R.name&&R.heat>=60&&R.games.length>=3&&((namedA<2&&namedB<2)||R.heat>=90)){R.name=rivName(R.a,R.b);R.born=G.season;const mine=g.home===G.user||g.away===G.user;news(`${h.name} and ${a.name} have a rivalry now. After ${R.games.length} meetings that keep mattering, the series gets a name: ${R.name}.${mine?' Circle it every year.':''}`,mine);}
-  else if(tier!==wasTier&&tier==='Blood feud'){const mine=g.home===G.user||g.away===G.user;news(`${R.name||h.name+'-'+a.name} is a blood feud now. Nobody in either town talks about anything else that week.`,mine);}
+  if(!R.name&&R.heat>=60&&R.games.length>=3&&((namedA<2&&namedB<2)||R.heat>=90)){R.name=rivName(R.a,R.b);R.born=G.season;const mine=g.home===G.user||g.away===G.user;if(mine)ach('rivalry');news(`${h.name} and ${a.name} have a rivalry now. After ${R.games.length} meetings that keep mattering, the series gets a name: ${R.name}.${mine?' Circle it every year.':''}`,mine);}
+  else if(tier!==wasTier&&tier==='Blood feud'){const mine=g.home===G.user||g.away===G.user;if(mine)ach('feud');news(`${R.name||h.name+'-'+a.name} is a blood feud now. Nobody in either town talks about anything else that week.`,mine);}
   return R;}
 function seedRivalries(){G.teams.forEach(t=>{const same=G.teams.filter(x=>x.id!==t.id&&x.conf===t.conf&&x.region===t.region&&!G.riv[rkey(t.id,x.id)]);if(same.length&&Math.random()<0.6){const x=pick(same);const r=rivalry(t.id,x.id,true);r.heat=rint(12,38);}});}
 function rivDecay(){Object.keys(G.riv).forEach(k=>{const r=G.riv[k];r.heat=clamp(r.heat-(r.lastSeason<G.season?10:(r.name?7:3)),0,100);if(r.heat<=0&&!r.name)delete G.riv[k];if(r.name&&r.heat<35){const mine=r.a===G.user||r.b===G.user;news(`${r.name} has gone cold. ${T(r.a).name} and ${T(r.b).name} have not given it a reason to matter lately.`,mine);r.name='';r.born=null;}});}
@@ -565,7 +583,7 @@ function newDynasty(teamId,coachName,diff){newSlot();
   G.teams.forEach(t=>fillRoster(t,false));
   seedRivalries();
   const u=userTeam();
-  G.coach.rep=u.prestige*6;
+  G.coach.rep=u.prestige*6;G.startPrestige=u.prestige;
   G.staff={oc:makeCoord('oc',50+u.prestige*3+rnd(-4,4)),dc:makeCoord('dc',50+u.prestige*3+rnd(-4,4)),rc:makeCoord('rc',50+u.prestige*3+rnd(-4,4))};G.contract={yrs:4,sal:Math.round((1.5+u.prestige*0.6)*10)/10};G.coach.xp={rec:0,dev:0,big:0,media:0};
   G.nil=80+u.prestige*30;
   G.budget=Math.round(u.prestige*2);
@@ -674,6 +692,7 @@ function signingDay(){
   const pts={};G.teams.forEach(t=>pts[t.id]=isUser(t)?0:t.prestige*t.prestige*4+rnd(-20,20));G.recruits.forEach(r=>{if(r.committed!=null)pts[r.committed]+=r.stars*r.stars+r.ovr/20;});
   const order=G.teams.map(t=>t.id).sort((a,b)=>pts[b]-pts[a]);G.classRank={};order.forEach((id,i)=>G.classRank[id]=i+1);
   const u=userTeam();news(`Signing Day: ${u.name}'s class finishes ranked No. ${G.classRank[u.id]} nationally with ${userCommits()} signees. ${T(order[0]).name} lands the top class.`,true);
+  if(G.recruits.some(r=>r.committed===u.id&&r.stars===5))ach('fivestar');if(G.classRank[u.id]<=10)ach('top10class');
   addXP('rec',G.recruits.filter(r=>r.committed===u.id).reduce((a,r)=>a+(r.stars===5?6:r.stars===4?3:r.stars===3?1:0),0)+(G.classRank[u.id]<=10?5:0));
 }
 
@@ -785,6 +804,7 @@ function seasonAwards(){const season=G.season;const all=Object.values(G.players)
   const dp=all.filter(p=>['DL','LB','CB','S'].includes(p.pos)).sort((a,b)=>playerValue(b)+T(b.team).w*0.5-(playerValue(a)+T(a.team).w*0.5))[0];if(dp){A.dpoy=dp.id;(dp.aw=dp.aw||[]).push({s:season,k:'DPOY'});}
   G.awards=G.awards||[];G.awards.push(A);
   const u=userTeam();const mineAA=A.allAmerican.filter(id=>P(id).team===u.id).map(id=>P(id));const mineAC=(A.allConf[u.conf]||[]).filter(id=>P(id).team===u.id).length;
+  if(mineAA.length)ach('allamerican');
   if(mineAA.length)news(`All-Americans from ${u.name}: ${mineAA.map(p=>p.pos+' '+p.n).join(', ')}.`,true);
   if(mineAC)news(`${mineAC} ${u.name} player${mineAC>1?'s':''} named All-${CONFS[u.conf].name}.`);
   if(fr&&fr.team===u.id)news(`${fr.pos} ${fr.n} is the national Freshman of the Year.`,true);
@@ -794,13 +814,13 @@ function updateRecords(){G.records=G.records||{league:{},team:{}};const u=userTe
   const tr=G.records.team[u.name];tr.wins=tr.wins||{v:0};if(u.w>tr.wins.v)tr.wins={v:u.w,s:G.season};}
 function hofCheck(p,why){ // called when a user player leaves
   const aw=p.aw||[];const score=aw.reduce((a,x)=>a+(x.k==='AA'?3:x.k==='AC'?1:x.k==='OPOY'||x.k==='DPOY'?3:x.k==='FROY'?1:0),0)+(p.heisman?6:0)+(p.car?Math.min(3,p.car.gp/20):0);
-  if(score>=7){G.hof=G.hof||[];G.hof.push({n:p.n,pos:p.pos,team:userTeam().name,from:p.car?p.car.from:G.season,to:G.season,honors:aw.map(x=>x.k+' '+x.s).concat(p.heisman?['Heisman '+p.heisman]:[]),line:p.car?careerLine(p):statLine(p),why});news(`${p.pos} ${p.n} enters the ${userTeam().name} Hall of Fame.`,true);}}
+  if(score>=7){ach('hof');G.hof=G.hof||[];G.hof.push({n:p.n,pos:p.pos,team:userTeam().name,from:p.car?p.car.from:G.season,to:G.season,honors:aw.map(x=>x.k+' '+x.s).concat(p.heisman?['Heisman '+p.heisman]:[]),line:p.car?careerLine(p):statLine(p),why});news(`${p.pos} ${p.n} enters the ${userTeam().name} Hall of Fame.`,true);}}
 function careerLine(p){const c=p.car;if(!c)return '';if(p.pos==='QB')return `${c.py.toLocaleString()} pass yds, ${c.ptd} TD`;if(p.pos==='RB')return `${c.ry.toLocaleString()} rush yds, ${c.rtd} TD`;if(p.pos==='WR'||p.pos==='TE')return `${c.recy.toLocaleString()} rec yds, ${c.rectd} TD`;if(['DL','LB','CB','S'].includes(p.pos))return `${c.tk} tkl, ${c.sk} sacks, ${c.dint} INT`;return `${c.gp} games`;}
 function accrueCareers(){Object.values(G.players).forEach(p=>{if(!p.st)return;const c=p.car||(p.car={from:G.season,gp:0,py:0,ptd:0,ry:0,rtd:0,recy:0,rectd:0,tk:0,sk:0,dint:0});['gp','py','ptd','ry','rtd','recy','rectd','tk','sk','dint'].forEach(k=>c[k]+=p.st[k]||0);});}
-function awardHeisman(){const w=heismanWatch(1)[0];if(!w)return;const p=w.p;p.heisman=G.season;G.heisman={pid:p.id,n:p.n,pos:p.pos,team:T(p.team).name,line:statLine(p),season:G.season};news(`${p.n}, ${p.pos}, ${T(p.team).name}, wins the ${G.season} Heisman Trophy (${statLine(p)}).`,true);}
+function awardHeisman(){const w=heismanWatch(1)[0];if(!w)return;const p=w.p;if(p.team===G.user)ach('heisman');p.heisman=G.season;G.heisman={pid:p.id,n:p.n,pos:p.pos,team:T(p.team).name,line:statLine(p),season:G.season};news(`${p.n}, ${p.pos}, ${T(p.team).name}, wins the ${G.season} Heisman Trophy (${statLine(p)}).`,true);}
 function rollBreakouts(){G.teams.forEach(t=>{t.roster.forEach(id=>{const p=P(id);p.form=0;delete p.st;p.inj=0;delete p.injN;if(p.yr>=1&&p.pot-p.ovr>=7&&Math.random()<((isUser(t)?0.06+((OFFPOS.includes(p.pos)?staffBonus().oc:staffBonus().dc)-50)*0.0015:0.07)*(hasT(p,'bloomer')?2.2:1))){const g=rint(5,10);p.ovr=clamp(Math.min(p.pot+2,p.ovr+g),40,99);p.breakout=G.season;if(isUser(t))addXP('dev',3);if(isUser(t))news(`Camp buzz: ${p.pos} ${p.n} looks like a different player (${p.ovr-g} to ${p.ovr}). Breakout season incoming.`,true);}else if(p.breakout&&p.breakout!==G.season)delete p.breakout;});});}
 function promiseCheck(){const u=userTeam();u.roster.forEach(id=>{const p=P(id);if(!p.promise||p.promise.due!==G.season||p.promise.resolved)return;const d=depth(u,p.pos,true).filter(x=>!(x.inj>0));const starting=d.indexOf(p)>-1&&d.indexOf(p)<STARTERS[p.pos];p.promise.resolved=true;
-  if(starting||p.inj>0){p.promise.kept=true;G.app.locker=clamp(G.app.locker+2,0,100);G.coach.rep=clamp(G.coach.rep+1,0,100);news(`${p.pos} ${p.n} is starting, as promised. Word gets around to recruits.`);}
+  if(starting||p.inj>0){p.promise.kept=true;ach('promise');G.app.locker=clamp(G.app.locker+2,0,100);G.coach.rep=clamp(G.coach.rep+1,0,100);news(`${p.pos} ${p.n} is starting, as promised. Word gets around to recruits.`);}
   else{p.promise.kept=false;p.unhappy=true;G.app.locker=clamp(G.app.locker-5,0,100);G.coach.rep=clamp(G.coach.rep-2,0,100);news(`${p.pos} ${p.n} was promised playing time and is buried on the depth chart. His high school coach stopped taking your calls, and he is looking at the portal.`,true);}});}
 function injuryTick(){G.teams.forEach(t=>{t.roster.forEach(id=>{const p=P(id);if(p.inj>0){p.inj--;if(p.inj===0&&isUser(t))news(`${p.pos} ${p.n} is cleared to return.`);}});
   if(G.week>19)return;POS.forEach(pos=>{depth(t,pos).slice(0,STARTERS[pos]).forEach(p=>{let c=0.014;if(hasT(p,'fragile'))c*=3;if(hasT(p,'workhorse'))c*=0.5;if(pos==='K')c*=0.2;if(Math.random()<c){p.inj=rint(1,6);p.injN=pick(['hamstring','ankle','shoulder','knee','concussion protocol','wrist','back']);if(isUser(t))news(`${p.pos} ${p.n} (${p.ovr}) out ${p.inj} week${p.inj>1?'s':''} with a ${p.injN} injury.`,true);}});});});}
@@ -840,14 +860,14 @@ function postGame(g,r){
     if(theirs>=3){G.coach.seat=clamp(G.coach.seat+6,0,100);A.admin=clamp(A.admin-4,0,100);news(`Boosters are restless: that is ${theirs} straight losses to ${T(r.w.id).name}. The AD took calls all night.`,true);}
     if(mine>=3&&R.name)news(`${userTeam().name} owns ${R.name}: ${mine} in a row. Recruits in the ${REGION_NAMES[userTeam().region]} noticed.`);
     const reg=userTeam().region;G.recruits.forEach(rc=>{if(rc.committed==null&&rc.region===reg&&(u in rc.interest))rc.interest[u]+=won?3*f+1:-(2*f);});}
-  if(uIn){const won=r.w.id===u;G.lastResult={won,opp:r.w.id===u?r.l.id:r.w.id,ws:r.ws,ls:r.ls,week:g.week};G.coach[won?'w':'l']++;if(won){const orank=T(r.l.id).rank;let xp=0;if(orank<=25)xp+=2;if(orank<=10)xp+=2;if(rivHot)xp+=3;if(g.type==='po')xp+=5;if(g.type==='ccg')xp+=3;if(xp)addXP('big',xp);}
+  if(uIn){const won=r.w.id===u;G.lastResult={won,opp:r.w.id===u?r.l.id:r.w.id,ws:r.ws,ls:r.ls,week:g.week};G.coach[won?'w':'l']++;if(won){ach('firstwin');if(T(r.l.id).rank<=25)ach('ranked');if(T(r.l.id).rank===1&&T(u).rank>25)ach('upsetno1');if(rivHot&&R.streak&&R.streak.team===u&&R.streak.n>=3)ach('sweep');}if(won){const orank=T(r.l.id).rank;let xp=0;if(orank<=25)xp+=2;if(orank<=10)xp+=2;if(rivHot)xp+=3;if(g.type==='po')xp+=5;if(g.type==='ccg')xp+=3;if(xp)addXP('big',xp);}
     const opp=T(won?r.l.id:r.w.id);const orank=opp.rank;news(`${won?'W':'L'} ${r.ws}-${r.ls} ${won?'over':'to'} ${orank<=25?'No. '+orank+' ':''}${opp.name}${g.type==='ccg'?' in the '+CONFS[g.confName].name+' title game':g.type==='po'?' in the playoff':g.type==='bowl'?' in the '+g.name+' Bowl':''}.`,true);
     const margin=r.ws-r.ls;const me=T(u);const A=G.app;A.fans=clamp(A.fans+(won?2+(orank<=25?2:0):-(margin>=21?5:3)),0,100);A.locker=clamp(A.locker+(won?1:-1),0,100);
     makePresser(g,{won,margin,opp:opp.name,oppRank:orank,myRank:me.rank,type:g.type,riv:rivHot?R:null,close:margin<=4,blowout:margin>=21,upset:won&&orank<=25&&(me.rank>orank+8||orank<=10&&me.rank>10),upsetLoss:!won&&(orank>me.rank+15||(me.rank<=10&&orank>25))});}
   else if(g.type==='reg'&&r.l.rank<=10&&(r.w.rank>r.l.rank+10)){news(`Upset: ${r.w.name} knocks off No. ${r.l.rank} ${r.l.name} ${r.ws}-${r.ls}.`);}
-  if(g.type==='ccg'){r.w.confChamp=true;if(r.w.id===u)G.coach.confTitles++;}
+  if(g.type==='ccg'){r.w.confChamp=true;if(r.w.id===u){G.coach.confTitles++;ach('confchamp');}}
   if(g.type==='bowl'){r.w.bowl='W';r.l.bowl='L';}
-  if(g.type==='po'){r.l.po='out-'+g.round;if(g.round==='f'){r.w.po='champ';G.playoff.champion=r.w.id;r.w.titles++;if(r.w.id===u){G.coach.titles++;addXP('big',10);}news(`${r.w.name} wins the ${G.season} national championship, ${r.ws}-${r.ls} over ${r.l.name}.`,true);}}
+  if(g.type==='po'){r.l.po='out-'+g.round;if(g.round==='f'){r.w.po='champ';G.playoff.champion=r.w.id;r.w.titles++;if(r.w.id===u){G.coach.titles++;addXP('big',10);ach('natty');if(G.diff==='brutal')ach('brutal');if((G.startPrestige||10)<=4)ach('rebuild');}news(`${r.w.name} wins the ${G.season} national championship, ${r.ws}-${r.ls} over ${r.l.name}.`,true);}}
 }
 /* ===================== MIDWEEK SITUATIONS ===================== */
 const A_=()=>G.app;const adj=(k,v)=>{G.app[k]=clamp(G.app[k]+v,0,100);};
@@ -913,7 +933,7 @@ function selectPlayoff(){
   const s=G.playoff.seeds;[[4,11],[5,10],[6,9],[7,8]].forEach(([h,a])=>{const g={id:G.gid++,week:16,home:s[h],away:s[a],conf:false,type:'po',round:'r1',played:false,neutral:false,hs:0,as:0};G.games.push(g);G.playoff.r1.push(g.id);});
   const inField=new Set(s);const elig=ranked.filter(t=>!inField.has(t.id)&&t.w>=6);const names=shuffle([...BOWL_NAMES]);
   for(let i=0;i+1<elig.length;i+=2){const g={id:G.gid++,week:16,home:elig[i].id,away:elig[i+1].id,conf:false,type:'bowl',name:names[i/2]||'Harvest',played:false,neutral:true,hs:0,as:0};G.games.push(g);G.bowls.push(g.id);}
-  field.forEach(t=>{t.po='in';if(t.id===G.user)G.coach.playoffs++;});
+  field.forEach(t=>{t.po='in';if(t.id===G.user){G.coach.playoffs++;ach('playoff');}});
   const u=userTeam();news(u.po==='in'?`${u.name} is in the College Football Playoff as the No. ${s.indexOf(u.id)+1} seed.`:`Playoff field set. ${u.name} misses the 12-team bracket${u.w>=6?' and heads to a bowl':''}.`,true);
 }
 const gameWinner=g=>g.hs>g.as?g.home:g.away;
@@ -944,7 +964,8 @@ function simWeek(){
   approvalTick();
   G.teams.forEach(t=>t.mediaBump=(t.mediaBump||0)*0.8);
   updatePoll();
-  const u=userTeam();if(w<=15&&prevRank[u.id]>25&&u.rank<=25)news(`${u.name} enters the Top 25 at No. ${u.rank}.`,true);
+  const u=userTeam();if(u.rank<=25)ach('top25');if(u.rank===1)ach('no1');if(w===14&&u.l===0&&u.w>=11)ach('undefeated');if(G.coach.seat<30&&G.seatHigh)ach('hotseat');if(G.coach.seat>=70)G.seatHigh=true;if(['oc','dc','rc'].some(k=>G.staff[k]&&G.staff[k].rt>=85))ach('staff85');if((G.eventLog||[]).length>=10)ach('events');
+  if(w<=15&&prevRank[u.id]>25&&u.rank<=25)news(`${u.name} enters the Top 25 at No. ${u.rank}.`,true);
   if(w<=15&&u.rank===1&&prevRank[u.id]!==1)news(`${u.name} is the new No. 1 team in the country.`,true);
   G.hours=G.hoursMax;G.boosterUsed=false;UI.rOpen=null;UI.pitchOpen=null;UI.watch=null;
   if(w===19){G.phase='postseason';finishSeason();}else G.week=w+1;
@@ -1002,7 +1023,8 @@ function runOffseason(){
   const A=G.app;G.coach.seat=clamp(Math.round(G.coach.seat-delta*9+(50-A.fans)/6+(50-A.admin)/6),0,100);
   G.coach.rep=clamp(Math.round(G.coach.rep+delta*3+(u.confChamp?3:0)+(u.po==='champ'?10:0)),0,100);
   G.offers=[];
-  if(G.coach.seat>=85&&G.coach.years>=2){G.fired=true;let lower=G.teams.filter(t=>!isUser(t)&&t.prestige<=u.prestige-1);if(lower.length<3)lower=G.teams.filter(t=>!isUser(t)&&t.prestige<=u.prestige+0.5);G.offers=shuffle(lower).slice(0,3).map(t=>t.id);news(`The athletic director has relieved ${G.coach.name} of duties after a ${u.w}-${u.l} season. Three programs have reached out.`,true);}
+  if(G.coach.years>=10)ach('decade');
+  if(G.coach.seat>=85&&G.coach.years>=2){G.fired=true;ach('fired');let lower=G.teams.filter(t=>!isUser(t)&&t.prestige<=u.prestige-1);if(lower.length<3)lower=G.teams.filter(t=>!isUser(t)&&t.prestige<=u.prestige+0.5);G.offers=shuffle(lower).slice(0,3).map(t=>t.id);news(`The athletic director has relieved ${G.coach.name} of duties after a ${u.w}-${u.l} season. Three programs have reached out.`,true);}
   else if((delta>=2||u.po==='champ')&&perception()>=45){const pc=clamp((perception()-40)/40,0.15,1);const higher=G.teams.filter(t=>!isUser(t)&&t.prestige>u.prestige&&Math.random()<0.4*pc);G.offers=shuffle(higher).slice(0,rint(1,3)).map(t=>t.id);if(G.offers.length)news(`Your phone is ringing: ${G.offers.map(id=>T(id).name).join(', ')} want to talk about their head coaching job.`,true);}
   else if(delta>=2&&perception()<45)news('Athletic directors around the country admire the wins but not the press conferences. No calls this winter.');
   // prestige drift
@@ -1035,7 +1057,7 @@ function startNextSeason(){
   G.season++;G.coach.years++;startSeason();save();
 }
 function acceptOffer(tid){
-  const old=userTeam();const t=T(tid);old.coach={n:coachName(),rep:clamp(Math.round(old.prestige*6+rnd(0,15)),10,80),yrs:0,seat:20};G.user=tid;G.coach.seat=25;G.offers=[];G.fired=false;G.pendingTeam=null;
+  const old=userTeam();const t=T(tid);if(t.prestige>old.prestige)ach('newjob');old.coach={n:coachName(),rep:clamp(Math.round(old.prestige*6+rnd(0,15)),10,80),yrs:0,seat:20};G.user=tid;G.coach.seat=25;G.offers=[];G.fired=false;G.pendingTeam=null;
   G.nil=80+t.prestige*30;G.budget=Math.round(t.prestige*2);G.portalAdds=0;G.contract={yrs:5,sal:Math.round((1.5+t.prestige*0.7)*10)/10};G.staff={oc:makeCoord('oc',50+t.prestige*3),dc:makeCoord('dc',50+t.prestige*3),rc:makeCoord('rc',50+t.prestige*3)};G.market=genMarket();G.app={fans:62,locker:55,admin:65,media:G.app?Math.round((G.app.media+55)/2):55};
   news(`${G.coach.name} leaves ${old.name} to take over at ${t.name}.`,true);save();
 }
@@ -1133,6 +1155,24 @@ function renderTimeline(u,live){
 }
 /* ===================== LIVE GAME ===================== */
 let liveTimer=null;
+/* ===================== SOUND & EFFECTS ===================== */
+let AC=null;const FX_KEY='gridiron-fx';
+function fxOn(){try{return localStorage.getItem(FX_KEY)!=='off';}catch(e){return true;}}
+function fxToggle(){try{localStorage.setItem(FX_KEY,fxOn()?'off':'on');}catch(e){}}
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume().catch(()=>{});return AC;}
+function tone(f,t0,dur,type,gain){const c=ac();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,c.currentTime+t0);g.gain.setValueAtTime(0.0001,c.currentTime+t0);g.gain.exponentialRampToValueAtTime(gain||0.25,c.currentTime+t0+0.02);g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+t0+dur);o.connect(g).connect(c.destination);o.start(c.currentTime+t0);o.stop(c.currentTime+t0+dur+0.05);}
+function noise(t0,dur,gain){const c=ac();if(!c)return;const n=c.sampleRate*dur,b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);const src=c.createBufferSource();src.buffer=b;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=900;f.Q.value=0.6;const g=c.createGain();g.gain.setValueAtTime(gain||0.3,c.currentTime+t0);g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+t0+dur);src.connect(f).connect(g).connect(c.destination);src.start(c.currentTime+t0);}
+function sfx(kind){if(!fxOn())return;
+  if(kind==='score'){noise(0,1.6,0.35);tone(523,0,0.18,'square',0.12);tone(659,0.15,0.18,'square',0.12);tone(784,0.3,0.4,'square',0.14);}
+  else if(kind==='oppscore'){tone(110,0,0.35,'sawtooth',0.18);tone(82,0.1,0.5,'sawtooth',0.14);noise(0,0.6,0.12);}
+  else if(kind==='fg'){tone(880,0,0.12,'triangle',0.15);tone(1174,0.12,0.25,'triangle',0.15);}
+  else if(kind==='whistle'){tone(2200,0,0.25,'sine',0.12);tone(2200,0.3,0.25,'sine',0.12);tone(2200,0.6,0.5,'sine',0.12);}
+  else if(kind==='win'){noise(0,2.5,0.4);[523,659,784,1047].forEach((f,i)=>tone(f,i*0.12,0.5,'square',0.1));}
+  else if(kind==='lose'){[392,349,311,262].forEach((f,i)=>tone(f,i*0.18,0.45,'triangle',0.14));}
+  else if(kind==='tick'){tone(1500,0,0.03,'square',0.04);}}
+function rumble(ms,strong){try{const pads=navigator.getGamepads?navigator.getGamepads():[];for(const p of pads){if(p&&p.vibrationActuator)p.vibrationActuator.playEffect('dual-rumble',{duration:ms,strongMagnitude:strong?0.9:0.3,weakMagnitude:strong?0.6:0.2}).catch(()=>{});}}catch(e){}}
+function flash(kind){if(!fxOn())return;const b=document.body;b.classList.remove('flash-good','flash-bad');void b.offsetWidth;b.classList.add(kind==='good'?'flash-good':'flash-bad');setTimeout(()=>b.classList.remove('flash-good','flash-bad'),500);}
+function feedback(item){if(item.k==='s'){const mine=item.team===G.user;if(mine){sfx(item.pts===3?'fg':'score');flash('good');rumble(item.pts===3?150:400,true);}else{sfx('oppscore');flash('bad');rumble(200,false);}}else if(item.k==='end'){const g=G.games.find(x=>x.id===UI.live.gid);const won=g&&gameWinner(g)===G.user;sfx('whistle');setTimeout(()=>sfx(won?'win':'lose'),900);rumble(600,won);}else if(item.k==='f')sfx('tick');}
 const FILLER=['{t} drive stalls at midfield, punt','{t} goes three-and-out','{t} converts a fourth-and-short','{d} drops the quarterback for a loss','{t} marches inside the 30 but turns it over on downs','{d} breaks up a pass in the end zone','{t} misses a {y}-yard field goal','{t} fumbles the handoff, {d} recovers','{t} picks up a big first down on a {y}-yard catch','{d} sniffs out the screen','Penalty backs {t} up ten yards','{t} chews four minutes off the clock','{d} intercepts a tipped pass'];
 function buildFeed(g){
   const h=T(g.home),a=T(g.away);const b=g.box;const defs=t=>(t===g.home?b.home:b.away).def.slice(0,5).map(x=>x.n);
@@ -1146,7 +1186,7 @@ function buildFeed(g){
   feed.push({k:'end',text:'Final',hs:g.hs,as:g.as});return feed;
 }
 function startLive(g,snap){UI.live={gid:g.id,snap,feed:buildFeed(g),shown:1,done:false};UI.tab='home';clearTimeout(liveTimer);liveTimer=setTimeout(liveTick,900);}
-function liveTick(){const L=UI.live;if(!L||L.done)return;if(L.shown<L.feed.length){L.shown++;const item=L.feed[L.shown-1];render();if(item.k==='end'){L.done=true;render();return;}liveTimer=setTimeout(liveTick,item.k==='s'?1700:item.k==='q'?1100:950);}}
+function liveTick(){const L=UI.live;if(!L||L.done)return;if(L.shown<L.feed.length){L.shown++;const item=L.feed[L.shown-1];feedback(item);render();if(item.k==='end'){L.done=true;render();return;}liveTimer=setTimeout(liveTick,item.k==='s'?1700:item.k==='q'?1100:950);}}
 function endLive(){const L=UI.live;if(!L)return;clearTimeout(liveTimer);UI.live=null;}
 function liveState(){const L=UI.live;const g=G.games.find(x=>x.id===L.gid);const item=L.feed[L.shown-1];const me=G.user===g.home;const ms=me?item.hs:item.as,os=me?item.as:item.hs;const idx=L.shown/L.feed.length;const rem=Math.max(0,1-idx);const h=T(g.home),a=T(g.away);const edge=((me?1:-1)*(h.elo+(g.neutral?0:60)-a.elo))/17;const p=1/(1+Math.exp(-((ms-os)+edge*rem)/(3+12*rem)));return {g,item,me,ms,os,p,rem,opp:T(me?g.away:g.home)};}
 function renderLiveLine(){const s=liveState();return `<div class="nextline"><span class="nx">LIVE · ${s.me||s.g.neutral?'vs':'at'} ${esc(s.opp.name)}</span><span class="od">${s.ms}-${s.os}</span></div>`;}
@@ -1185,6 +1225,7 @@ function renderHome(){
     <div class="small">Schedule: ${(G.schedPicks||[]).length}/${nonConfSlots()} non-conference slots chosen (Season tab)</div>
     <div class="small">Budget: $${G.budget}M for facilities, coordinators or NIL (Program tab)${['oc','dc','rc'].some(r=>!G.staff[r]||G.staff[r].yrs<=0)?' · <b class="no">a coordinator job is open or expiring</b>':''}</div>
     <div class="btnrow"><button class="btn" data-act="sim" ${over>0||G.fired?'disabled':''}>Start ${G.season+1} season</button></div></div>`);}
+  if(G.phase==='season'&&!G.guideOff&&G.coach.years===1&&G.week<=3){const steps=[['Recruit','Spend your hours on the Recruit tab: offer, text, pitch what each kid wants. Odds are real.'],['Plan','Scout this week\u2019s opponent and set a game plan below.'],['Lobby','Program tab: raise NIL money, work the media, lobby the AD.'],['Sim','Hit Sim. Watch the game. Face the press. Repeat.']];parts.push(`<div class="card sec" style="border-left:5px solid var(--gold)"><div class="row between"><div class="eyebrow">Your week, coach</div><button class="btn sm ghost" data-act="guideoff">Got it</button></div><div class="grid2">${steps.map(([t,d],i)=>`<div class="stat" style="padding:8px 10px"><div class="k">${i+1}. ${t}</div><div class="small">${d}</div></div>`).join('')}</div><div class="tiny muted">The AD expects about ${Math.round(expectedWins(u))} wins. Three losing seasons in a row and you are gone.</div></div>`);}
   if(G.phase==='season'){
     const g=G.games.find(x=>x.week===G.week&&!x.played&&(x.home===u.id||x.away===u.id));
     if(g){const gl=gameLine(g,u.id);const isHome=g.home===u.id;const p=isHome?winProb(u,T(g.away),g.neutral,g):1-winProb(T(g.home),u,g.neutral,g);const opp=T(isHome?g.away:g.home);const RR=gameRiv(g);
@@ -1371,8 +1412,10 @@ function renderProgram(){
   const press=`<div class="card sec"><h3>Public standing</h3>${renderApproval(false)}<div class="tiny muted">League perception (media + athletic dept) is <b>${perception()}</b>. Below 45 and other programs stop calling, however many games you win. Fans and the AD feed the hot seat; the locker room drives development and who leaves for the portal.</div>
     ${(G.pressLog||[]).length?`<div class="eyebrow">Recent pressers</div><div class="list">${G.pressLog.slice(0,6).map(x=>`<div class="item" style="flex-direction:column;align-items:flex-start;gap:3px"><div class="tiny muted">${x.s} ${x.w<=14?'Wk '+x.w:'Post'} · “${esc(x.q)}”</div><div class="small"><b>You:</b> ${esc(x.a)}</div><div class="tiny muted">${esc(x.r)} ${Object.entries(x.fx).filter(([k,v])=>v).map(([k,v])=>`<span class="${v>0?'ok':'no'}">${({fans:'Fans',locker:'Locker',admin:'AD',media:'Media'})[k]} ${v>0?'+':''}${v}</span>`).join(' ')}</div></div>`).join('')}</div>`:''}</div>`;
   const league=`<div class="card sec"><div class="row between"><h3>League editor</h3><button class="btn sm ghost" data-act="leaguetoggle">${UI.leagueOpen?'Hide':'Open'}</button></div><div class="tiny muted">Rename schools, nicknames and colors mid-dynasty. Changes carry into future dynasties too.</div>${UI.leagueOpen?renderLeagueEditor():''}</div>`;
-  const danger=`<div class="card sec"><h3>Save</h3><div class="tiny muted">Progress saves automatically in this browser.</div>${UI.confirm==='reset'?`<div class="confirmbox"><b>Delete this dynasty?</b> Other saved dynasties are not affected.<div class="btnrow"><button class="btn sm danger" data-act="resetyes">Yes, delete it</button><button class="btn sm ghost" data-act="cancel">Keep playing</button></div></div>`:`<div class="btnrow"><button class="btn sm ghost" data-act="switch">Switch or start another dynasty</button><button class="btn sm ghost" data-act="reset">Delete this dynasty</button></div>`}</div>`;
-  return coach+offers+profile+staff+press+lobby+budget+hist+league+danger;
+  const achs=(()=>{const a=achGet();const n=Object.keys(a).filter(k=>ACH.some(x=>x[0]===k)).length;return `<div class="card sec"><div class="row between"><h3>Achievements</h3><span class="tag">${n}/${ACH.length}</span></div><div class="tiny muted">Earned across every dynasty on this device.</div><div class="achgrid">${ACH.map(([id,t,d])=>`<div class="ach ${a[id]?'on':''}" title="${esc(d)}"><b>${esc(t)}</b><span>${a[id]?esc(d)+(a[id]!==true?' · '+a[id]:''):'Locked'}</span></div>`).join('')}</div></div>`;})();
+  const danger=`<div class="card sec"><h3>Save &amp; settings</h3><div class="tiny muted">Progress saves automatically on this device.</div>
+    <div class="btnrow"><button class="btn sm ghost" data-act="fxtoggle">Sound &amp; effects: ${fxOn()?'on':'off'}</button></div>${UI.confirm==='reset'?`<div class="confirmbox"><b>Delete this dynasty?</b> Other saved dynasties are not affected.<div class="btnrow"><button class="btn sm danger" data-act="resetyes">Yes, delete it</button><button class="btn sm ghost" data-act="cancel">Keep playing</button></div></div>`:`<div class="btnrow"><button class="btn sm ghost" data-act="switch">Switch or start another dynasty</button><button class="btn sm ghost" data-act="reset">Delete this dynasty</button></div>`}</div>`;
+  return coach+offers+profile+staff+press+lobby+budget+hist+achs+league+danger;
 }
 
 /* ===================== EVENTS ===================== */
@@ -1383,7 +1426,7 @@ function onAction(act,el){
     case 'diff':UI.diff=id;break;
     case 'start':{const inp=document.getElementById('coachName');const nm=(inp&&inp.value.trim())||'Coach';if(UI.pickTeam==null)return;newDynasty(UI.pickTeam,nm,UI.diff||'normal');UI.tab='home';save();break;}
     case 'tab':if(UI.live)endLive();UI.tab=id;UI.confirm=null;window.scrollTo(0,0);break;
-    case 'sim':if(UI.live)endLive();if(G.phase==='season'){const u0=userTeam();const snap={w:u0.w,l:u0.l,cw:u0.cw,cl:u0.cl,rank:u0.rank,rw:u0.rw||0,rl:u0.rl||0,confChamp:u0.confChamp,week:G.week};const hasGame=G.games.some(x=>x.week===G.week&&!x.played&&(x.home===G.user||x.away===G.user));simWeek();const lg=hasGame?G.games.find(x=>x.week===snap.week&&x.played&&x.box&&(x.home===G.user||x.away===G.user)):null;if(lg)startLive(lg,snap);}else if(G.phase==='postseason'){runOffseason();UI.tab='home';}else startNextSeason();break;
+    case 'sim':if(fxOn())ac();if(UI.live)endLive();if(G.phase==='season'){const u0=userTeam();const snap={w:u0.w,l:u0.l,cw:u0.cw,cl:u0.cl,rank:u0.rank,rw:u0.rw||0,rl:u0.rl||0,confChamp:u0.confChamp,week:G.week};const hasGame=G.games.some(x=>x.week===G.week&&!x.played&&(x.home===G.user||x.away===G.user));simWeek();const lg=hasGame?G.games.find(x=>x.week===snap.week&&x.played&&x.box&&(x.home===G.user||x.away===G.user)):null;if(lg)startLive(lg,snap);}else if(G.phase==='postseason'){runOffseason();UI.tab='home';}else startNextSeason();break;
     case 'liveskip':if(UI.live){UI.live.shown=UI.live.feed.length;UI.live.done=true;clearTimeout(liveTimer);}break;
     case 'livedone':endLive();UI.tab='home';window.scrollTo(0,0);break;
     case 'livebox':endLive();UI.tab='home';startWatch(+id);if(UI.watch){UI.watch.shown=9999;UI.watch.playing=false;clearTimeout(watchTimer);}break;
@@ -1434,6 +1477,8 @@ function onAction(act,el){
     case 'delslot':UI.confirm='del'+id;break;
     case 'delslotyes':deleteSlot(id);UI.confirm=null;break;
     case 'cancel':UI.confirm=null;break;
+    case 'fxtoggle':fxToggle();ac();break;
+    case 'guideoff':G.guideOff=true;break;
     case 'leaguetoggle':UI.leagueOpen=!UI.leagueOpen;UI.leagueIO=null;break;
     case 'leaguepreset':applyLeaguePreset(id);break;
     case 'leagueio':UI.leagueIO=id||null;UI.leagueMsg='';break;
