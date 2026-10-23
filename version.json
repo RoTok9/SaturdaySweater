@@ -1,5 +1,5 @@
 {
-  "version": "1.159.1",
-  "notes": "Desktop updater hardened: updates now install to your app-data folder (works in installed builds), are checked for the right version, completeness and a checksum before they replace anything, retry on flaky connections, and fall back to the bundled game if a download ever fails to load.",
-  "sha256": "fc9b10d19bfcb936776564555cf2ab81193a9fedd317e9a36671980d65f0df06"
+  "version": "1.159.2",
+  "notes": "Online leagues: the commissioner can remove a coach who has gone quiet so the league can move on, and the coach bar shows how long someone has been idle.",
+  "sha256": "51b3d4fcc853553e7fc3ce497c9665f728ea9f7787d1fc57b87ff4e42b5380d3"
 }

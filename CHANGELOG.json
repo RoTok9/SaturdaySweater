@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.159.2",
+  "notes": "Online leagues: the commissioner can remove a coach who has gone quiet so the league can move on, and the coach bar shows how long someone has been idle."
+ },
+ {
   "version": "1.159.1",
   "notes": "Desktop updater hardened: updates now install to your app-data folder (works in installed builds), are checked for the right version, completeness and a checksum before they replace anything, retry on flaky connections, and fall back to the bundled game if a download ever fails to load."
  },
