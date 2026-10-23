@@ -1,4 +1,4 @@
 {
-  "version": "1.109.2",
-  "notes": "Website: scorebug layout on phones."
+  "version": "1.109.3",
+  "notes": "New app icon and social preview image in the game's look (the old ones rendered blank on some systems)."
 }
