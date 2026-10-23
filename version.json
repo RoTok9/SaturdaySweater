@@ -1,4 +1,4 @@
 {
-  "version": "1.69.0",
-  "notes": "Visiting recruits show up on the broadcast sideline. Bold calls that win (going for it, sending the house, lighting into them, opening it up) earn big-game XP. Website screenshots and copy refreshed for the live calls."
+  "version": "1.70.0",
+  "notes": "Online leagues get the live game too: each coach plays their own game with the halftime and fourth-quarter calls before hitting Ready, the result travels with their delta, and the week resolves with everyone's calls honored. The fictional league (web build) seeds its own set of historic named rivalries."
 }
