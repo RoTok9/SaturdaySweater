@@ -1,0 +1,19 @@
+{
+  "name": "saturday-sweater-mobile",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Capacitor wrapper that ships Saturday Sweater to iOS and Android.",
+  "scripts": {
+    "web": "node scripts/copy-web.js",
+    "sync": "npm run web && npx cap sync",
+    "assets": "npx @capacitor/assets generate --iconBackgroundColor '#0d1014' --splashBackgroundColor '#0d1014'"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/ios": "8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3"
+  }
+}
