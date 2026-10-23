@@ -1,4 +1,4 @@
 {
-  "version": "1.60.0",
-  "notes": "Broadcast feed: every scoring play carries a drive summary (plays, yards, time) and repeat scorers get a 2nd TD tag. Scoring plays are ordered by the real clock, and drive summaries track the actual starting spot."
+  "version": "1.61.0",
+  "notes": "Record book gets a seasons chart: wins per year as bars, gold for a national title, team color for a conference title, final rank above each. Last result on Home now lists your top performers and your halftime call."
 }
