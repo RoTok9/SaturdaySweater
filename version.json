@@ -1,4 +1,4 @@
 {
-  "version": "1.22.0",
-  "notes": "Contract talks: when your deal runs out and the AD wants you back, the extension lands on the Program tab as an offer you can sign, push for another year, push for 15 percent more (twice at most, each push costs goodwill and a bad read gets the offer pulled), or decline and play out a lame-duck year that makes bigger programs come calling. Header pills now scroll on one row with alerts first, so the Sim button always sits beside them."
+  "version": "1.23.0",
+  "notes": "Quieter masthead: darker, shorter, and it shrinks to a slim bar when you scroll on phones; on desktop the tab bar is now sticky with the Sim button in it and no longer slides under the header (that overlap glitch is fixed). Ripples: every move now shows what it changed the moment you make it (a recruit's interest and your odds, who leads now, fans, locker room, admin, media, seat, NIL, budget, XP, hours spent). Fallout: after each week a card on Home lists what the week did to you, from approval and seat swings to poll movement, recruits who warmed or cooled and why, rivalry heat, commits and losses, injuries."
 }
