@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.25.0">
+<meta name="app-version" content="1.26.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -419,6 +419,90 @@ body.scrolled .top .bug{min-height:44px} body.scrolled .bug .tname{font-size:20p
 .bug2.sm .bs{font-size:24px} .bug2.sm .ab{font-size:13px;min-width:44px}
 @media (max-width:430px){ .bug2 .bn{display:none} .bug2 .bt{gap:6px;padding-right:6px} .bug .st{display:none} }
 @media (min-width:900px){ .bug .tname{font-size:28px} .bug .tb .crest{width:46px;height:46px} .vt .vn{font-size:24px} }
+
+.olbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--team-accent,var(--team));border-radius:var(--radius);padding:8px 12px;font-size:13px}
+.col-span{grid-column:1/-1}
+.olbar .chips{gap:4px}.olbar .chip{padding:3px 8px;font-size:12px}
+input[type=text],select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--fg);min-width:0}
+
+/* ===== Stadium Night: glow, glass, depth, motion ===== */
+:root{--radius:16px;--glow:0 0 28px color-mix(in srgb,var(--team) 55%,transparent);--ease:cubic-bezier(.2,.8,.2,1)}
+:root[data-theme="dark"],:root:not([data-theme="light"]){--bg:#070a10;--surface:rgba(22,27,36,.66);--soft:rgba(255,255,255,.06);--line:rgba(255,255,255,.09);--fg:#f3f5f9;--muted:#93a0b4;--good:#4ade80;--warn:#f0b35a;--bad:#ff6b6b;--gold:#f5c451}
+:root[data-theme="light"]{--surface:rgba(255,255,255,.85);--soft:rgba(10,20,40,.05);--line:rgba(10,20,40,.1)}
+body{background:var(--bg);background-image:radial-gradient(900px 420px at 8% -6%,color-mix(in srgb,var(--team) 38%,transparent),transparent 70%),radial-gradient(700px 500px at 100% 100%,color-mix(in srgb,var(--team) 16%,transparent),transparent 70%),radial-gradient(500px 300px at 60% 30%,rgba(255,255,255,.03),transparent 70%);background-attachment:fixed;background-repeat:no-repeat}
+:root[data-theme="light"] body{background-image:radial-gradient(900px 420px at 8% -6%,color-mix(in srgb,var(--team) 22%,transparent),transparent 70%)}
+.card,.hero,.olbar{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 14px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2)}
+:root[data-theme="light"] .card,:root[data-theme="light"] .hero,:root[data-theme="light"] .olbar{box-shadow:0 10px 30px rgba(20,30,60,.08)}
+.hero{border-left:1px solid var(--line)}
+.hero.mu{border-left:1px solid var(--line);box-shadow:0 14px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px color-mix(in srgb,var(--team) 25%,transparent)}
+.hero.mu.rivhero{box-shadow:0 14px 40px rgba(0,0,0,.35),0 0 40px color-mix(in srgb,var(--bad) 30%,transparent)}
+.stat,.tile,.detail,.matchup,.pvm,.imsg,.confirmbox{border-radius:12px}
+.stat,.tile{background:var(--soft);border:1px solid rgba(255,255,255,.04)}
+.tile .gauge i,.bar i.me,.splitbar i,.meter .bar i{box-shadow:0 0 12px currentColor}
+.bar i.me{box-shadow:0 0 12px color-mix(in srgb,var(--team) 70%,transparent)}
+.tile .gauge i{box-shadow:0 0 10px color-mix(in srgb,var(--team) 70%,transparent)}
+.tile .v{text-shadow:0 0 18px color-mix(in srgb,var(--team) 35%,transparent)}
+.btn{border-radius:10px;background:linear-gradient(180deg,color-mix(in srgb,var(--team) 85%,#fff),var(--team));box-shadow:0 6px 18px color-mix(in srgb,var(--team) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .15s var(--ease),box-shadow .2s var(--ease),filter .2s}
+.btn:hover{filter:brightness(1.08);box-shadow:0 8px 24px color-mix(in srgb,var(--team) 55%,transparent),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn:active{transform:translateY(1px) scale(.98)}
+.btn.ghost{background:var(--soft);box-shadow:none;border:1px solid var(--line)}
+.btn.ghost:hover{background:color-mix(in srgb,var(--fg) 10%,transparent)}
+.btn.danger{background:linear-gradient(180deg,#ff7a7a,#d93b3b);box-shadow:0 6px 18px rgba(217,59,59,.35)}
+.chip{border-radius:999px;transition:background .15s,border-color .15s,transform .15s}
+.chip.on{box-shadow:0 0 14px color-mix(in srgb,var(--team) 55%,transparent)}
+.chip:active{transform:scale(.97)}
+.quick button{border-radius:999px;background:var(--surface);backdrop-filter:blur(12px);transition:transform .15s var(--ease),border-color .15s}
+.quick button:hover{border-color:var(--team-accent,var(--team))}
+.quick button.hot{box-shadow:0 0 16px color-mix(in srgb,var(--team) 40%,transparent)}
+.item{transition:background .15s}
+.item.clickable:hover{background:color-mix(in srgb,var(--fg) 4%,transparent)}
+/* masthead */
+.top{background:linear-gradient(180deg,rgba(8,10,16,.92),rgba(8,10,16,.72));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.top::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(520px 200px at 12% 0%,color-mix(in srgb,var(--team) 40%,transparent),transparent 70%)}
+.bug .tb{clip-path:none;border-radius:14px;margin-left:0;padding:8px 14px 8px 10px;box-shadow:0 0 34px color-mix(in srgb,var(--c) 55%,transparent),inset 0 1px 0 rgba(255,255,255,.25);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 85%,#fff),var(--c) 55%,color-mix(in srgb,var(--c) 70%,#000))}
+.bug .tb .crest{box-shadow:0 0 18px rgba(255,255,255,.25);background:rgba(255,255,255,.2)}
+.bug .st{padding-left:14px}
+.rec .big{text-shadow:0 0 22px color-mix(in srgb,var(--team) 60%,transparent)}
+.top .simbtn{border-radius:10px;background:linear-gradient(180deg,color-mix(in srgb,var(--team) 85%,#fff),var(--team));box-shadow:0 0 26px color-mix(in srgb,var(--team) 60%,transparent),inset 0 1px 0 rgba(255,255,255,.3);transition:transform .15s var(--ease),box-shadow .2s}
+.top .simbtn:hover{box-shadow:0 0 34px color-mix(in srgb,var(--team) 80%,transparent),inset 0 1px 0 rgba(255,255,255,.3)}
+.top .simbtn:active{transform:scale(.97)}
+.top .pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px)}
+.tl .wk.W{background:#39c46b;box-shadow:0 0 8px rgba(57,196,107,.6)} .tl .wk.L{background:#ff6b5c;box-shadow:0 0 8px rgba(255,107,92,.6)} .tl .wk.now{box-shadow:0 0 10px #fff}
+/* tabs */
+.tabs{background:rgba(10,12,18,.8);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.08)}
+:root[data-theme="light"] .tabs{background:rgba(255,255,255,.85)}
+.tabs button{transition:color .15s;position:relative}
+.tabs button.on{color:var(--team-accent,var(--team));border-top-color:transparent;border-bottom-color:transparent}
+.tabs button.on::after{content:"";position:absolute;left:22%;right:22%;bottom:6px;height:3px;border-radius:2px;background:var(--team-accent,var(--team));box-shadow:0 0 12px var(--team-accent,var(--team))}
+@media (min-width:900px){ .tabs{border-top:0;border-bottom:1px solid rgba(255,255,255,.08)} .tabs button.on::after{bottom:0} .tabs .tbar .simbtn{border-radius:10px;box-shadow:0 0 22px color-mix(in srgb,var(--team) 55%,transparent)} }
+.subtabs{background:var(--soft)} .subtabs button.on{background:color-mix(in srgb,var(--team) 22%,transparent);box-shadow:0 0 14px color-mix(in srgb,var(--team) 35%,transparent)}
+/* versus panel glow */
+.vt{border-radius:14px;clip-path:none!important;padding:14px 10px;background:radial-gradient(120% 100% at 50% 0%,color-mix(in srgb,var(--c) 90%,#fff) 0%,var(--c) 45%,color-mix(in srgb,var(--c) 65%,#000) 100%);box-shadow:0 10px 30px color-mix(in srgb,var(--c) 45%,transparent),inset 0 1px 0 rgba(255,255,255,.25)}
+.vt.me{border-radius:14px} .vt:not(.me){border-radius:14px}
+.vsp{gap:10px}
+.vmid{margin:0;background:transparent}
+.vmid .vs{text-shadow:0 0 16px color-mix(in srgb,var(--fg) 40%,transparent)}
+.vt .crest{box-shadow:0 0 22px rgba(255,255,255,.3)}
+.splitbar{height:12px;border-radius:6px;gap:3px} .splitbar i{border-radius:6px;box-shadow:0 0 14px currentColor}
+.pv-champ{box-shadow:0 0 40px rgba(245,196,81,.35)}
+.bug2{background:rgba(0,0,0,.35);border-radius:14px} .bug2 .ab{box-shadow:0 0 16px color-mix(in srgb,var(--c) 60%,transparent)}
+.rip{backdrop-filter:blur(12px);background:rgba(255,255,255,.92);color:#111;box-shadow:0 10px 30px rgba(0,0,0,.4),0 0 20px color-mix(in srgb,var(--team) 35%,transparent)}
+:root:not([data-theme="light"]) .rip{background:rgba(20,24,32,.9);color:#f3f5f9;border:1px solid rgba(255,255,255,.12)}
+.news div.hot{box-shadow:inset 3px 0 0 var(--team-accent,var(--team)),0 0 18px color-mix(in srgb,var(--team) 12%,transparent)}
+.pvt.win{box-shadow:0 0 12px rgba(74,222,128,.25)}
+.imsg{box-shadow:0 10px 30px rgba(0,0,0,.4)}
+/* motion */
+@media (prefers-reduced-motion:no-preference){
+  #app[data-anim="1"] main>*,#app[data-anim="1"] .col-main>*,#app[data-anim="1"] .col-side>*{animation:rise .45s var(--ease) both}
+  #app[data-anim="1"] main>*:nth-child(2),#app[data-anim="1"] .col-main>*:nth-child(2){animation-delay:.05s}
+  #app[data-anim="1"] main>*:nth-child(3),#app[data-anim="1"] .col-main>*:nth-child(3){animation-delay:.1s}
+  #app[data-anim="1"] main>*:nth-child(4),#app[data-anim="1"] .col-main>*:nth-child(4){animation-delay:.15s}
+  #app[data-anim="1"] .col-side>*:nth-child(1){animation-delay:.08s} #app[data-anim="1"] .col-side>*:nth-child(2){animation-delay:.14s} #app[data-anim="1"] .col-side>*:nth-child(3){animation-delay:.2s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .top .simbtn{animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 22px color-mix(in srgb,var(--team) 50%,transparent),inset 0 1px 0 rgba(255,255,255,.3)}50%{box-shadow:0 0 38px color-mix(in srgb,var(--team) 85%,transparent),inset 0 1px 0 rgba(255,255,255,.3)}}
+  .card.live{animation:none}
+}
 </style>
 
 </head>
@@ -729,16 +813,16 @@ function deserialize(str){const g=JSON.parse(str);if(g._pp){g.players={};g._pp.f
   return g;}
 function loadSlots(){try{const s=lsGet(SLOTS_KEY);return s?JSON.parse(s):[];}catch(e){return [];}}
 function saveSlots(list){lsSet(SLOTS_KEY,JSON.stringify(list));}
-function slotMeta(g,id){const u=g.teams[g.user];return {id,team:u.name,nick:u.nick,color:u.color,coach:g.coach.name,season:g.season,record:`${u.w}-${u.l}`,rank:u.rank,phase:g.phase,years:g.coach.years,titles:g.coach.titles,diff:g.diff||'normal',updated:Date.now()};}
+function slotMeta(g,id){const u=g.teams[g.user];return {id,online:g.online?g.online.id:null,coop:(g.h&&Object.keys(g.h).length>1)?Object.keys(g.h).length:0,team:u.name,nick:u.nick,color:u.color,coach:g.coach.name,season:g.season,record:`${u.w}-${u.l}`,rank:u.rank,phase:g.phase,years:g.coach.years,titles:g.coach.titles,diff:g.diff||'normal',updated:Date.now()};}
 function newSlot(){SLOT='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 let gzBusy=false,gzNext=null;
 function runGz(){if(gzBusy||!gzNext)return;const j=gzNext;gzNext=null;gzBusy=true;gzipStr(j.str).then(gz=>{if(gz&&j.seq===saveSeq&&(gz.length<j.str.length||!j.okPlain))lsSet(j.key,gz);}).finally(()=>{gzBusy=false;runGz();});}
 function save(){if(!G)return;if(!SLOT)newSlot();const str=serialize(G);const key=slotKey(SLOT);const seq=++saveSeq;const okPlain=lsSet(key,str);gzNext={key,str,okPlain,seq};runGz();const list=loadSlots();const i=list.findIndex(x=>x.id===SLOT);const m=slotMeta(G,SLOT);if(i>=0)list[i]=m;else list.push(m);saveSlots(list);lsSet(CUR_KEY,SLOT);}
 async function migrateLegacy(){const s0=lsGet(KEY_BASE);if(!s0)return;try{const s=await gunzipStr(s0);const g=deserialize(s);const id='d'+Date.now().toString(36);lsSet(slotKey(id),s);const list=loadSlots();list.push(slotMeta(g,id));saveSlots(list);lsSet(CUR_KEY,id);lsDel(KEY_BASE);}catch(e){}}
 async function openSlot(id){const s0=lsGet(slotKey(id));if(!s0)return false;try{const s=await gunzipStr(s0);G=deserialize(s);}catch(e){return false;}SLOT=id;migrate();lsSet(CUR_KEY,id);return true;}
-function deleteSlot(id){lsDel(slotKey(id));saveSlots(loadSlots().filter(x=>x.id!==id));if(SLOT===id){SLOT=null;G=null;lsDel(CUR_KEY);}}
-function closeDynasty(){if(G)save();G=null;SLOT=null;lsDel(CUR_KEY);}
-async function load(){await migrateLegacy();const cur=lsGet(CUR_KEY);if(cur&&await openSlot(cur))return true;return false;}
+function deleteSlot(id){onlineSave(id,null);lsDel(slotKey(id));saveSlots(loadSlots().filter(x=>x.id!==id));if(SLOT===id){SLOT=null;G=null;lsDel(CUR_KEY);}}
+function closeDynasty(){if(G)save();stopPoll();NET=null;G=null;SLOT=null;lsDel(CUR_KEY);}
+async function load(){await migrateLegacy();const cur=lsGet(CUR_KEY);if(cur&&onlineInfo(cur)){if(await onlineOpen(cur)){lsSet(CUR_KEY,cur);return true;}}if(cur&&await openSlot(cur))return true;return false;}
 function migrate(){if(!G)return;if(!G.app)G.app={fans:60,locker:60,admin:60,media:55};if(!G.pressLog)G.pressLog=[];if(G.presser===undefined)G.presser=null;if(G.heisman===undefined)G.heisman=null;G.teams.forEach(t=>{if(!t.coach)t.coach=makeCoach(t.prestige);});Object.values(G.players).forEach(p=>{if(!p.tr)p.tr=rollTraits();});G.portal.forEach(p=>{if(!p.tr)p.tr=rollTraits();});if(!G.lh)G.lh=[];if(!G.carousel)G.carousel=[];G.recruits.forEach(r=>{if(!r.persona){r.persona=pick(Object.keys(PERSONAS));r.tr=rollTraits();r.texted=0;r.convo=null;}});if(!G.riv){G.riv={};seedRivalries();}if(!G.diff)G.diff='normal';if(G.losingRun==null)G.losingRun=0;if(!G.plan)G.plan={off:'balanced',agg:'standard'};if(!G.staff||G.staff.oc===undefined){const old=G.staff||{coach:1,recruit:1};const u=G.teams[G.user];G.staff={oc:makeCoord('oc',50+(old.coach||1)*6),dc:makeCoord('dc',50+(old.coach||1)*6),rc:makeCoord('rc',50+(old.recruit||1)*6)};G.market=G.market||[];if(!G.contract)G.contract={yrs:3,sal:Math.round((1.5+u.prestige*0.6)*10)/10};}if(!G.coach.xp)G.coach.xp={rec:0,dev:0,big:0,media:0};if(G.phase==='offseason'&&!G.schedOffers)G.schedOffers=genSchedOffers();if(!G.alumni||G.teams.some(t=>!t.drafted))seedDraftHistory();}
 function news(text,hot){G.news.unshift({w:G.week,s:G.season,text,hot:!!hot});if(G.news.length>60)G.news.length=60;}
 
@@ -859,6 +943,81 @@ function addCoach(tid,name){if(!G||isHuman(tid))return false;const t=T(tid);if(!
 function removeCoach(tid){if(!G||!G.h||!G.h[tid]||tid===G.user)return;delete G.h[tid];const t=T(tid);if(t)t.coach=makeCoach(t.prestige);G.recruits.forEach(r=>{if(r.h)delete r.h[tid];});}
 function allReady(){return humanIds().every(tid=>!!bagOf(tid).ready);}
 function clearReady(){humanIds().forEach(tid=>{bagOf(tid).ready=false;});}
+/* ===================== ONLINE LEAGUES (ready-up, shared save) ===================== */
+const ONLINE_URL_DEFAULT='';
+const ONLINE_KEY='gridiron-online-v1';
+let NET=null; // {url,id,tid,token,name,version,coaches,meta,pollT,busy,err}
+function serverUrl(){return (lsGet('gridiron-server')||ONLINE_URL_DEFAULT).replace(/\/+$/,'');}
+function onlineInfo(id){try{const m=JSON.parse(lsGet(ONLINE_KEY)||'{}');return id?m[id]:m;}catch(e){return id?null:{};}}
+function onlineSave(id,info){const m=onlineInfo()||{};if(info)m[id]=info;else delete m[id];lsSet(ONLINE_KEY,JSON.stringify(m));}
+async function api(path,body,method){const url=(NET&&NET.url||serverUrl())+'/leagues'+path;const r=await fetch(url,{method:method||(body?'POST':'GET'),headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined});let j=null;try{j=await r.json();}catch(e){}if(!r.ok){const err=new Error((j&&j.error)||('HTTP '+r.status));err.status=r.status;err.body=j;throw err;}return j;}
+function leagueMeta(){const u=userTeam();return {season:G.season,week:G.week,phase:G.phase,label:G.phase==='season'?weekLabel(G.week):G.phase==='postseason'?'Season complete':'Offseason'};}
+async function baseString(){stashCoach();const str=serialize(G);const gz=await gzipStr(str);return gz||str;}
+async function fromBase(str){const plain=await gunzipStr(str);return deserialize(plain);}
+// ---- the coach's week as a portable delta
+function coachDelta(){stashCoach();const tid=G.user;const bag={};COACH_KEYS.forEach(k=>{if(k!=='ready')bag[k]=G[k];});const recs={};G.recruits.forEach(r=>{const o={};REC_KEYS.forEach(k=>{if(r[k]!==undefined)o[k]=r[k];});recs[r.id]={f:o,i:r.interest[tid]||0};});
+  const u=userTeam();const players={};u.roster.forEach(id=>{const p=P(id);if(!p)return;players[id]={pin:p.pin,unhappy:p.unhappy,talked:p.talked,talkedBoost:p.talkedBoost,promise:p.promise,pos:p.pos,ovr:p.ovr,pot:p.pot,moved:p.moved,inj:p.inj,injN:p.injN,injW:p.injW};});
+  const taken=u.roster.map(P).filter(p=>p&&p.transfer&&p.tSeason===G.season).map(p=>Object.assign({},p));
+  return {v:1,tid,tidNow:G.user,bag,recs,team:{facilities:u.facilities,roster:u.roster.slice(),players,conf:u.conf},taken,cuts:G._cuts||[],realigned:G._realigned||null,week:G.week,season:G.season,phase:G.phase};}
+function applyDelta(tid,d){if(!d)return;const cur=G.user;const origTid=tid;if(!isHuman(tid))return;switchCoach(tid);
+  if(d.tidNow!=null&&d.tidNow!==tid&&!isHuman(d.tidNow)){acceptOffer(d.tidNow);tid=d.tidNow;}
+  Object.keys(d.bag||{}).forEach(k=>{if(COACH_KEYS.includes(k)&&k!=='ready')G[k]=d.bag[k];});
+  const u=userTeam();
+  (d.taken||[]).forEach(p=>{const inPortal=G.portal.find(x=>x.id===p.id);if(inPortal){G.portal=G.portal.filter(x=>x.id!==p.id);const c=G.players[p.id]||inPortal;Object.assign(c,p);c.team=u.id;delete c.from;delete c.ask;G.players[c.id]=c;if(!u.roster.includes(c.id))u.roster.push(c.id);}else if(!G.players[p.id]||G.players[p.id].team!==u.id){G.nil+=p.tAsk||0;G.portalAdds=Math.max(0,(G.portalAdds||0)-1);news(`${p.pos} ${p.n} signed somewhere else before your portal add went through. NIL refunded.`,true);}});
+  (d.cuts||[]).forEach(pid=>{if(G.players[pid]&&G.players[pid].team===u.id)cutPlayer(u,pid);});
+  if(d.team){if(d.team.facilities!=null)u.facilities=d.team.facilities;Object.keys(d.team.players||{}).forEach(pid=>{const p=G.players[pid];if(!p||p.team!==u.id)return;const f=d.team.players[pid];['pin','unhappy','talked','talkedBoost','promise','pos','ovr','pot','moved','inj','injN','injW'].forEach(k=>{if(f[k]===undefined)delete p[k];else p[k]=f[k];});});}
+  Object.keys(d.recs||{}).forEach(rid=>{const r=G.recruits.find(x=>x.id===+rid);if(!r)return;const o=d.recs[rid];REC_KEYS.forEach(k=>{delete r[k];});Object.assign(r,o.f||{});recDefaults(r);r.interest[u.id]=o.i||0;});
+  if(d.realigned&&G.realign&&G.realign.team===u.id){actRealign(d.realigned==='yes');}
+  G._cuts=[];G._realigned=null;switchCoach(cur);}
+function advanceStep(){if(G.phase==='season')simWeek();else if(G.phase==='postseason')runOffseason();else startNextSeason();}
+function ensureReadyFlags(c){NET.coaches=c||NET.coaches;}
+async function onlineCreate(name,tid,coachName){const url=serverUrl();if(!url)throw new Error('No server set. Program tab, Online leagues.');
+  newDynasty(tid,coachName,'normal');G.online={name:String(name||'League').slice(0,40)};const base=await baseString();
+  NET={url,busy:false};const r=await api('',{name,coach:{tid,name:coachName},base,meta:leagueMeta()});
+  NET=Object.assign(NET,{id:r.id,tid,token:r.token,name:r.name,version:r.version,coaches:[{tid,name:coachName,ready:false}],meta:r.meta});G.online.id=r.id;onlineSave(SLOT,{url,id:r.id,tid,token:r.token});save();startPoll();return r.id;}
+async function onlineLookup(id){const url=serverUrl();if(!url)throw new Error('No server set.');NET=NET&&NET.url===url?NET:{url};return await api('/'+id.toUpperCase());}
+async function onlineJoin(id,tid,coachName){const url=serverUrl();id=id.toUpperCase();const r=await api('/'+id+'/join',{tid,name:coachName});
+  const full=await api('/'+id+'?base=1');G=await fromBase(full.base);newSlot();migrate();
+  if(!isHuman(tid))addCoach(tid,coachName);switchCoach(tid);G.online={id,name:full.name};
+  NET={url,id,tid,token:r.token,name:full.name,version:full.version,coaches:full.coaches,meta:full.meta,busy:false};onlineSave(SLOT,{url,id,tid,token:r.token});
+  // register the new coach in the shared save right away so everyone's next merge includes them
+  const base=await baseString();try{await api('/'+id+'/advance',{tid,token:r.token,version:full.version,base,meta:leagueMeta(),force:true});NET.version=full.version+1;}catch(e){}
+  save();startPoll();return true;}
+async function onlineOpen(slot){const info=onlineInfo(slot);if(!info)return false;NET={url:info.url,id:info.id,tid:info.tid,token:info.token,busy:false};
+  try{const st=await api('/'+info.id+'?deltas=1&base=1');NET.version=st.version;NET.coaches=st.coaches;NET.meta=st.meta;NET.name=st.name;
+    G=await fromBase(st.base);SLOT=slot;migrate();if(!isHuman(info.tid)){NET.err='Your team is no longer in this league.';return true;}switchCoach(info.tid);G.online={id:info.id,name:st.name};
+    const mine=st.deltas&&st.deltas[info.tid];if(mine)applyDelta(info.tid,mine);const me=st.coaches.find(c=>c.tid===info.tid);G.ready=!!(me&&me.ready);save();startPoll();return true;}
+  catch(e){NET.err=String(e.message||e);const ok=await openSlot(slot);if(ok&&G)G.online=G.online||{id:info.id};return ok;}}
+function startPoll(){if(!NET||typeof setInterval!=='function')return;clearInterval(NET.pollT);NET.pollT=setInterval(()=>{onlinePoll().catch(()=>{});},20000);}
+function stopPoll(){if(NET&&NET.pollT)clearInterval(NET.pollT);}
+async function onlinePoll(){if(!NET||!NET.id||NET.busy)return;const st=await api('/'+NET.id);NET.coaches=st.coaches;NET.meta=st.meta;NET.err=null;
+  if(st.version!==NET.version){await onlineRefresh();return;}
+  if(st.coaches.length&&st.coaches.every(c=>c.ready)&&Date.now()-(st.updated||0)>45000){await onlineAdvance();return;}
+  render();}
+async function onlineRefresh(){if(!NET||NET.busy)return;NET.busy=true;try{const u0=userTeam();const prev={w:u0.w,l:u0.l,cw:u0.cw,cl:u0.cl,rank:u0.rank,rw:u0.rw||0,rl:u0.rl||0,confChamp:u0.confChamp,week:G.week,season:G.season,phase:G.phase};
+    const st=await api('/'+NET.id+'?deltas=1&base=1');G=await fromBase(st.base);migrate();NET.version=st.version;NET.coaches=st.coaches;NET.meta=st.meta;
+    if(!isHuman(NET.tid)){NET.err='Your team is no longer in this league.';render();return;}switchCoach(NET.tid);G.online={id:NET.id,name:st.name};
+    const mine=st.deltas&&st.deltas[NET.tid];if(mine)applyDelta(NET.tid,mine);const me=st.coaches.find(c=>c.tid===NET.tid);G.ready=!!(me&&me.ready);
+    if(prev.phase==='season'&&G.phase!=='offseason'&&(G.week>prev.week||G.season>prev.season||G.phase==='postseason')){const lg=G.games.find(x=>x.week===prev.week&&x.played&&x.box&&(x.home===G.user||x.away===G.user)&&(prev.season===G.season));if(lg)UI.pendingLive={gid:lg.id,snap:prev};}
+    UI.confirm=null;save();}finally{NET.busy=false;render();}}
+async function onlineReady(flag){if(!NET||NET.busy)return;NET.busy=true;try{const body={tid:NET.tid,token:NET.token,version:NET.version,ready:flag!==false};if(body.ready)body.delta=coachDelta();
+    const r=await api('/'+NET.id+'/ready',body);NET.coaches=r.coaches;G.ready=body.ready;NET.err=null;save();
+    if(r.allReady){NET.busy=false;await onlineAdvance();return;}}
+  catch(e){if(e.status===409){NET.busy=false;await onlineRefresh();return;}NET.err=String(e.message||e);}finally{NET.busy=false;render();}}
+async function onlineAdvance(){if(!NET||NET.busy)return;NET.busy=true;try{const st=await api('/'+NET.id+'?deltas=1&base=1');if(!st.coaches.every(c=>c.ready)){NET.coaches=st.coaches;return;}
+    const u0=userTeam();const prev={w:u0.w,l:u0.l,cw:u0.cw,cl:u0.cl,rank:u0.rank,rw:u0.rw||0,rl:u0.rl||0,confChamp:u0.confChamp,week:G.week,season:G.season,phase:G.phase};
+    G=await fromBase(st.base);migrate();switchCoach(NET.tid);Object.keys(st.deltas||{}).forEach(k=>{if(isHuman(+k))applyDelta(+k,st.deltas[k]);});
+    forEachCoach(()=>{G.ready=false;});advanceStep();switchCoach(NET.tid);
+    const base=await baseString();const r=await api('/'+NET.id+'/advance',{tid:NET.tid,token:NET.token,version:st.version,base,meta:leagueMeta()});NET.version=r.version;NET.coaches=st.coaches.map(c=>Object.assign({},c,{ready:false}));G.online={id:NET.id,name:st.name};G.ready=false;
+    if(prev.phase==='season'){const lg=G.games.find(x=>x.week===prev.week&&x.played&&x.box&&(x.home===G.user||x.away===G.user));if(lg){UI.pendingLive=null;startLive(lg,prev);}}
+    save();}
+  catch(e){if(e.status===409){NET.busy=false;await onlineRefresh();return;}NET.err=String(e.message||e);}finally{NET.busy=false;render();}}
+function onlineLeave(){stopPoll();if(SLOT)onlineSave(SLOT,null);NET=null;if(G)delete G.online;}
+function renderCoachBar(){const ids=humanIds();return `<div class="olbar"><div class="grow"><b>Pass and play</b> · ${ids.length} coaches · ${ids.filter(h=>bagOf(h).ready).length}/${ids.length} ready</div><div class="chips">${ids.map(h=>`<button class="chip ${h===G.user?'on':''} ${bagOf(h).ready?'good':''}" data-act="coachswitch" data-id="${h}">${esc(T(h).name)} · ${esc(bagOf(h).coach.name)}${bagOf(h).ready?' ✓':''}</button>`).join('')}</div></div>`;}
+function renderOnlineBar(){if(!NET||!G||!G.online)return '';const cs=NET.coaches||[];const waiting=cs.filter(c=>!c.ready);const me=cs.find(c=>c.tid===NET.tid);return `<div class="olbar"><div class="grow"><b>League ${esc(NET.id||'')}</b>${NET.name?' · '+esc(NET.name):''} · ${cs.length} coach${cs.length===1?'':'es'} · ${cs.length-waiting.length}/${cs.length} ready${NET.err?` · <span class="no">${esc(NET.err)}</span>`:''}</div>
+  <div class="chips">${cs.map(c=>`<span class="chip ${c.ready?'good':''} ${c.tid===NET.tid?'on':''}" title="${esc(c.name)}">${esc(T(c.tid)?T(c.tid).name:'?')}${c.ready?' ✓':''}</span>`).join('')}</div>
+  <div class="btnrow">${UI.pendingLive?`<button class="btn sm" data-act="olwatch">Watch your game</button>`:''}<button class="btn sm ghost" data-act="olrefresh" ${NET.busy?'disabled':''}>Refresh</button>${me&&me.ready?`<button class="btn sm ghost" data-act="olunready" ${NET.busy?'disabled':''}>Not ready</button>`:''}</div></div>`;}
+function onlineSimLabel(){const cs=(NET&&NET.coaches)||[];const me=cs.find(c=>c.tid===NET.tid);const n=cs.filter(c=>!c.ready).length;if(me&&me.ready)return n?`Waiting on ${n}`:'Advancing...';return G.phase==='season'?'Ready to advance':G.phase==='postseason'?'Ready for offseason':'Ready for camp';}
 /* ===================== NEW DYNASTY ===================== */
 function newDynasty(teamId,coachName,diff){newSlot();
   G={season:2026,week:1,phase:'season',pid:1,gid:1,rid:1,user:teamId,teams:[],players:{},games:[],recruits:[],portal:[],news:[],history:[],poll:[],playoff:null,bowls:[],offers:[],fired:false,
@@ -890,7 +1049,7 @@ function startSeason(){
   news(`${G.season} preseason poll is out. ${T(G.poll[0]).name} opens at No. 1; ${u.name} starts the year ranked No. ${u.rank}.`,true);
   news(`Boosters kicked in ${fmtK(60+u.prestige*25)} to the NIL collective for the ${G.season} cycle.`);});
 }
-function cutPlayer(team,pid){team.roster=team.roster.filter(id=>id!==pid);delete G.players[pid];}
+function cutPlayer(team,pid){team.roster=team.roster.filter(id=>id!==pid);delete G.players[pid];if(G.online&&isUser(team)){(G._cuts=G._cuts||[]).push(pid);}}
 function genSchedule(){
   let best=null;const gid0=G.gid;
   for(let i=0;i<8;i++){G.gid=gid0;const g=genScheduleOnce();if(!best||g.length>best.length)best=g;if(best.length>=816)break;}
@@ -993,7 +1152,7 @@ function simGame(g){
   diff+=targetEdge(g);
   const hp=isUser(h)?null:coachPersona(h.coach),ap=isUser(a)?null:coachPersona(a.coach);if(hp==='schemer')diff+=10;if(ap==='schemer')diff-=10;const wild=(hp==='gambler'?4:0)+(ap==='gambler'?4:0);
   if(R)diff*=1-rivF*0.3; // rivalry games tighten
-  const PE=planEdge(g);diff+=(g.home===G.user?1:-1)*PE.edge;g.planUsed=(g.home===G.user||g.away===G.user)?Object.assign({},G.plan||{off:'balanced',agg:'standard'},{edge:Math.round(PE.edge)}):null;
+  const hh=isHuman(g.home),ha=isHuman(g.away);const PEh=hh?planEdge(g,g.home):{edge:0,varAdj:0},PEa=ha?planEdge(g,g.away):{edge:0,varAdj:0};diff+=PEh.edge-PEa.edge;const PE={edge:(g.home===G.user?PEh.edge:g.away===G.user?PEa.edge:0),varAdj:PEh.varAdj+PEa.varAdj};g.planUsed=(g.home===G.user||g.away===G.user)?Object.assign({},G.plan||{off:'balanced',agg:'standard'},{edge:Math.round(PE.edge)}):null;
   const margin=diff/17+gauss()*(15+rivF*6+PE.varAdj+wild);let total=clamp(Math.round(50+gauss()*12),17,95);
   let hs=Math.round((total+margin)/2),as=total-hs;if(hs<0){as-=hs;hs=0;}if(as<0){hs-=as;as=0;}
   const snap=s=>s===1||s===2?3:s===4?6:s;hs=snap(hs);as=snap(as);if(hs===as){if(Math.random()<0.5)hs+=3;else as+=3;}
@@ -1063,7 +1222,7 @@ function genDefense(t,oppInts,lines){
   lines.def=defs.sort((a,b)=>b.tk+b.sk*2+b.int*3-(a.tk+a.sk*2+a.int*3)).map(x=>({n:x.p.n,pos:x.p.pos,tk:x.tk,sk:x.sk,int:x.int}));
 }
 function genGameStats(g,h,a){
-  const full=g.home===G.user||g.away===G.user;
+  const full=isHuman(g.home)||isHuman(g.away);
   const H=genTeamStats(h,g.hs,g.as,full),A=genTeamStats(a,g.as,g.hs,full);
   const close=Math.abs(g.hs-g.as)<=7;[h,a].forEach(t=>{const won=(t===h)===(g.hs>g.as);['QB','RB','WR','TE'].forEach(pos=>depth(t,pos).slice(0,STARTERS[pos]).forEach(p=>{if(hasT(p,'clutch')&&close&&won)bumpForm(p,0.8);if(hasT(p,'spotlight')&&(g.hrank<=25||g.arank<=25||g.type!=='reg'))bumpForm(p,0.4);}));});
   if(full){genDefense(h,A.ints,H.lines);genDefense(a,H.ints,A.lines);
@@ -1368,14 +1527,14 @@ function injuryTick(){G.teams.forEach(t=>{const body=()=>{t.roster.forEach(id=>{
   if(G.week>19)return;POS.forEach(pos=>{depth(t,pos).slice(0,STARTERS[pos]).forEach(p=>{let c=0.014;if(hasT(p,'fragile'))c*=3;if(hasT(p,'workhorse'))c*=0.5;if(pos==='K')c*=0.2;if(Math.random()<c){p.inj=rint(1,6);p.injW=G.week;p.injN=pick(['hamstring','ankle','shoulder','knee','concussion protocol','wrist','back']);if(isUser(t))news(`${p.pos} ${p.n} (${p.ovr}) out ${p.inj} week${p.inj>1?'s':''} with a ${p.injN} injury.`,true);}});});};if(isHuman(t.id))withCoach(t.id,body);else body();});}
 function diffMult(){const d=G?G.diff:(UI.diff||'normal');return d==='brutal'?2:d==='hard'?1:0;}
 function targetEdge(g){ // everyone plays up against the user when the user is ranked; harder difficulties stack more
-  const u=G.user;if(g.home!==u&&g.away!==u)return 0;const me=T(u);const rank=me.rank||99;let e=rank===1?40:rank<=5?26:rank<=10?14:rank<=25?6:0;e+=diffMult()*22;return g.home===u?-e:e;}
+  if(isHuman(g.home)&&isHuman(g.away))return 0;const u=isHuman(g.home)?g.home:isHuman(g.away)?g.away:null;if(u==null)return 0;const me=T(u);const rank=me.rank||99;let e=rank===1?40:rank<=5?26:rank<=10?14:rank<=25?6:0;e+=diffMult()*22;return g.home===u?-e:e;}
 /* ===================== GAME PLANS ===================== */
 function unitAvg(t,pos,n){const d=depth(t,pos).slice(0,n||STARTERS[pos]);return d.length?d.reduce((a,p)=>a+p.ovr+(p.form||0),0)/d.length:45;}
 function units(t){return {air:(unitAvg(t,'QB')*2+unitAvg(t,'WR')+unitAvg(t,'TE')*0.5)/3.5,ground:(unitAvg(t,'RB')+unitAvg(t,'OL'))/2,passD:(unitAvg(t,'CB')+unitAvg(t,'S'))/2,runD:(unitAvg(t,'DL')+unitAvg(t,'LB'))/2};}
 function scheme(t){if(isUser(t))return G.plan&&G.plan.off||'balanced';const u=units(t);return u.air-u.ground>4?'air':u.ground-u.air>4?'ground':'balanced';}
 function passLean(t){const sc=scheme(t);return sc==='air'?0.62:sc==='ground'?0.42:0.52;}
-function planEdge(g){ // elo-equivalent edge for the user's plan; positive favors the user
-  const u=G.user;if(g.home!==u&&g.away!==u)return {edge:0,varAdj:0,notes:[]};const me=T(u),opp=T(g.home===u?g.away:g.home);const plan=G.plan||{off:'balanced',agg:'standard'};const mu=units(me),ou=units(opp);const notes=[];
+function planEdge(g,uid){ // elo-equivalent edge for a human coach's plan; positive favors that coach
+  const u=uid!=null?uid:(g.home===G.user||g.away===G.user?G.user:[g.home,g.away].find(isHuman));if(u==null||(g.home!==u&&g.away!==u))return {edge:0,varAdj:0,notes:[]};const me=T(u),opp=T(g.home===u?g.away:g.home);const plan=bagOf(u).plan||{off:'balanced',agg:'standard'};const mu=units(me),ou=units(opp);const notes=[];
   let edge=0;
   if(plan.off==='air'){edge+=(mu.air-ou.passD)*1.2-(mu.air-mu.ground<0?4:0);notes.push(`Air attack ${mu.air.toFixed(0)} vs their pass defense ${ou.passD.toFixed(0)}`);}
   else if(plan.off==='ground'){edge+=(mu.ground-ou.runD)*1.2-(mu.ground-mu.air<0?4:0);notes.push(`Ground game ${mu.ground.toFixed(0)} vs their run defense ${ou.runD.toFixed(0)}`);}
@@ -1569,7 +1728,7 @@ function doRealign(t,to,kind){const from=t.conf;t.conf=to;if(LEAGUE[t.id])LEAGUE
   news(kind==='invite'?`Realignment: ${t.name} accepts an invitation to the ${CONFS[to].name}, leaving the ${CONFS[from].name}. ${sizeNote}`:kind==='poach'?`Realignment: ${t.name} is leaving the ${CONFS[from].name} for the ${CONFS[to].name}. ${sizeNote}`:`${t.name} gives up independence and joins the ${CONFS[to].name}.`,isUser(t)||from===userTeam().conf||to===userTeam().conf);
   if(isUser(t)){t.prestige=clamp(Math.round((t.prestige+0.8)*10)/10,1,10);G.app.fans=clamp(G.app.fans+8,0,100);G.app.admin=clamp(G.app.admin+6,0,100);}
   if(G.lh)G.lh[G.lh.length-1].realign=(G.lh[G.lh.length-1].realign||[]).concat(`${t.name}: ${CONFS[from].name} to ${CONFS[to].name}`);}
-function actRealign(accept){const r=G.realign;if(!r)return;const t=T(r.team);if(accept){doRealign(t,r.to,'invite');G.hhDue=[];G.schedPicks=null;G.schedOffers=genSchedOffers();}else{news(`${t.name} turns down the ${CONFS[r.to].name}. The boosters are split on it.`,true);G.app.admin=clamp(G.app.admin-3,0,100);}G.realign=null;}
+function actRealign(accept){if(G.online&&G.realign&&G.realign.team===G.user)G._realigned=accept?'yes':'no';const r=G.realign;if(!r)return;const t=T(r.team);if(accept){doRealign(t,r.to,'invite');G.hhDue=[];G.schedPicks=null;G.schedOffers=genSchedOffers();}else{news(`${t.name} turns down the ${CONFS[r.to].name}. The boosters are split on it.`,true);G.app.admin=clamp(G.app.admin-3,0,100);}G.realign=null;}
 function coachingCarousel(){
   const moves=[];const fired=[];
   G.teams.forEach(t=>{if(isHuman(t.id))return;const c=t.coach;c.yrs++;const delta=t.w-expectedWins(t)+(t.po?1.5:0)+(t.po==='champ'?3:0);
@@ -1631,7 +1790,7 @@ function startNextSeason(){
   G.season++;forEachCoach(()=>{G.coach.years++;});startSeason();save();
 }
 function acceptOffer(tid){
-  const old=userTeam();const t=T(tid);if(t.prestige>old.prestige)ach('newjob');old.coach={n:coachName(),rep:clamp(Math.round(old.prestige*6+rnd(0,15)),10,80),yrs:0,seat:20};if(G.h){delete G.h[old.id];G.recruits.forEach(r=>{if(r.h)delete r.h[old.id];});}if(G.h){delete G.h[old.id];G.recruits.forEach(r=>{if(r.h)delete r.h[old.id];});}G.user=tid;G.coach.seat=25;G.offers=[];G.fired=false;G.pendingTeam=null;
+  const old=userTeam();const t=T(tid);if(t.prestige>old.prestige)ach('newjob');old.coach={n:coachName(),rep:clamp(Math.round(old.prestige*6+rnd(0,15)),10,80),yrs:0,seat:20};if(G.h){delete G.h[old.id];G.recruits.forEach(r=>{if(r.h)delete r.h[old.id];});}if(G.h){delete G.h[old.id];G.recruits.forEach(r=>{if(r.h)delete r.h[old.id];});}if(G.h){delete G.h[old.id];G.recruits.forEach(r=>{if(r.h)delete r.h[old.id];});}G.user=tid;G.coach.seat=25;G.offers=[];G.fired=false;G.pendingTeam=null;
   G.nil=80+t.prestige*30;G.budget=Math.round(t.prestige*2);G.portalAdds=0;G.contract={yrs:5,sal:Math.round((1.5+t.prestige*0.7)*10)/10};G.staff={oc:makeCoord('oc',50+t.prestige*3),dc:makeCoord('dc',50+t.prestige*3),rc:makeCoord('rc',50+t.prestige*3)};G.market=genMarket();G.app={fans:62,locker:55,admin:65,media:G.app?Math.round((G.app.media+55)/2):55};ensurePros(t);
   news(`${G.coach.name} leaves ${old.name} to take over at ${t.name}.`,true);save();
 }
@@ -1662,15 +1821,16 @@ function actNILInvest(){if(G.budget<5)return;G.budget-=5;G.nil+=750;}
 function actPin(pid){const p=P(pid);if(!p||p.team!==G.user)return;if(p.pin){delete p.pin;return;}depth(userTeam(),p.pos,true).forEach(x=>delete x.pin);p.pin=true;}
 function actCut(pid){const u=userTeam();if(!u.roster.includes(pid))return;const p=P(pid);news(`${p.pos} ${p.n} was released from the roster.`);cutPlayer(u,pid);}
 function actAutoTrim(){const u=userTeam();while(u.roster.length>ROSTER_CAP){const extra=[];POS.forEach(pos=>{const d=depth(u,pos);d.slice(STARTERS[pos]).forEach(p=>extra.push(p));});if(!extra.length)break;extra.sort((a,b)=>a.ovr-b.ovr);cutPlayer(u,extra[0].id);}}
-function actPortalAdd(pid){const u=userTeam();const p=G.portal.find(x=>x.id===pid);if(!p||G.portalAdds>=PORTAL_CAP||G.nil<p.ask||u.roster.length>=ROSTER_CAP)return;G.nil-=p.ask;G.portalAdds++;G.portal=G.portal.filter(x=>x.id!==pid);const c=G.players[p.id]||p;G.players[p.id]=c;Object.assign(c,{team:u.id,transfer:true});delete c.ask;u.roster.push(c.id);news(`${c.pos} ${c.n} (${c.ovr}) transfers in from ${p.from}.`);delete c.from;}
+function actPortalAdd(pid){const u=userTeam();const p=G.portal.find(x=>x.id===pid);if(!p||G.portalAdds>=PORTAL_CAP||G.nil<p.ask||u.roster.length>=ROSTER_CAP)return;G.nil-=p.ask;G.portalAdds++;G.portal=G.portal.filter(x=>x.id!==pid);const c=G.players[p.id]||p;G.players[p.id]=c;Object.assign(c,{team:u.id,transfer:true,tSeason:G.season,tAsk:p.ask});delete c.ask;u.roster.push(c.id);news(`${c.pos} ${c.n} (${c.ovr}) transfers in from ${p.from}.`);delete c.from;}
 
 /* ===================== RENDER ===================== */
 const app=typeof document!=='undefined'?document.getElementById('app'):null;
 function shade(hex,f){const c=(hex||'#1f3a5f').replace('#','');const n=[0,2,4].map(i=>parseInt(c.substr(i,2),16)||0);return '#'+n.map(x=>clamp(Math.round(f<0?x*(1+f):x+(255-x)*f),0,255).toString(16).padStart(2,'0')).join('');}
 function abbr(t){const w=t.name.replace(/[^A-Za-z ]/g,'').trim().split(/\s+/);if(w.length===1)return w[0].length<=4?w[0].toUpperCase():w[0].slice(0,3).toUpperCase();return w.map(x=>x[0]).join('').slice(0,3).toUpperCase();}
 function crest(t,extra){const col=t.color||'#1f3a5f';const ab=abbr(t);return `<div class="crest team ${extra||''} ${ab.length>=4?'l4':''}" style="--c:${col};--cf:${luminance(col)>0.4?'#111':'#fff'}">${abbr(t)}</div>`;}
-function applyTheme(){if(!app)return;const t=G?userTeam():null;const col=t?t.color:'#1f3a5f';const r=document.documentElement.style;r.setProperty('--team',col);r.setProperty('--team-dark',shade(col,-0.38));r.setProperty('--team-light',shade(col,0.3));const de=document.documentElement;const th=de.getAttribute?de.getAttribute('data-theme'):null;const dark=th==='dark'||(th!=='light'&&typeof matchMedia==='function'&&matchMedia('(prefers-color-scheme: dark)').matches);const lum=luminance(col);r.setProperty('--team-accent',dark?(lum<0.18?shade(col,0.45):lum<0.3?shade(col,0.25):col):(lum>0.5?shade(col,-0.45):col));r.setProperty('--team-fg',luminance(col)>0.4?'#111111':'#ffffff');}
-function render(){if(!app)return;applyTheme();app.innerHTML=G?renderGame():renderPicker();}
+function themePref(){return lsGet('gridiron-theme')||'dark';}
+function applyTheme(){if(!app)return;{const de=document.documentElement;if(de.setAttribute){const pref=themePref();if(pref==='auto')de.removeAttribute('data-theme');else de.setAttribute('data-theme',pref);}}const t=G?userTeam():null;const col=t?t.color:'#1f3a5f';const r=document.documentElement.style;r.setProperty('--team',col);r.setProperty('--team-dark',shade(col,-0.38));r.setProperty('--team-light',shade(col,0.3));const de=document.documentElement;const th=de.getAttribute?de.getAttribute('data-theme'):null;const dark=th==='dark'||(th!=='light'&&typeof matchMedia==='function'&&matchMedia('(prefers-color-scheme: dark)').matches);const lum=luminance(col);r.setProperty('--team-accent',dark?(lum<0.18?shade(col,0.45):lum<0.3?shade(col,0.25):col):(lum>0.5?shade(col,-0.45):col));r.setProperty('--team-fg',luminance(col)>0.4?'#111111':'#ffffff');}
+function render(){if(!app)return;applyTheme();const key=(G?('g'+UI.tab+(UI.live?'L':'')):'picker')+(G?G.phase+G.week:'');if(app.dataset)app.dataset.anim=key!==UI._lastKey?'1':'0';UI._lastKey=key;app.innerHTML=G?renderGame():renderPicker();}
 function renderLeagueRows(){
   const canConf=!G||G.phase==='offseason';const q=(UI.leagueQ||'').toLowerCase();
   const rows=TEAMS.map((t,i)=>({i,L:LEAGUE[i],orig:t})).filter(x=>(UI.leagueConf==='ALL'||x.L.conf===UI.leagueConf)&&(!q||x.L.name.toLowerCase().includes(q)||x.L.nick.toLowerCase().includes(q)||x.orig[0].toLowerCase().includes(q)));
@@ -1687,7 +1847,15 @@ function renderLeagueEditor(){
     <div id="leagueList">${renderLeagueRows()}</div></div>`;
 }
 function renderSlots(){const list=loadSlots().sort((a,b)=>b.updated-a.updated);if(!list.length)return '';
-  return `<div class="card sec"><h2>Your dynasties</h2><div class="list">${list.map(m=>`<div class="item"><span class="sw" style="width:6px;height:36px;border-radius:3px;background:${m.color||'#888'};flex:none"></span><div class="grow"><div class="nm">${esc(m.team)} <span class="muted">· ${esc(m.coach)}</span></div><div class="sub">${m.season} · ${m.phase==='season'?m.record+(m.rank<=25?' · No. '+m.rank:''):m.phase==='postseason'?'Season complete, '+m.record:'Offseason'} · year ${m.years}${m.titles?' · '+m.titles+' title'+(m.titles>1?'s':''):''}${m.diff&&m.diff!=='normal'?' · '+m.diff:''}</div></div>${UI.confirm==='del'+m.id?`<button class="btn sm danger" data-act="delslotyes" data-id="${m.id}">Delete</button><button class="btn sm ghost" data-act="cancel">Keep</button>`:`<button class="btn sm" data-act="open" data-id="${m.id}">Continue</button><button class="btn sm ghost" data-act="delslot" data-id="${m.id}">Delete</button>`}</div>`).join('')}</div></div>`;}
+  return `<div class="card sec"><h2>Your dynasties</h2><div class="list">${list.map(m=>`<div class="item"><span class="sw" style="width:6px;height:36px;border-radius:3px;background:${m.color||'#888'};flex:none"></span><div class="grow"><div class="nm">${esc(m.team)} <span class="muted">· ${esc(m.coach)}</span>${m.online?` <span class="tag team">Online · ${esc(m.online)}</span>`:m.coop?` <span class="tag">Pass and play · ${m.coop} coaches</span>`:''}</div><div class="sub">${m.season} · ${m.phase==='season'?m.record+(m.rank<=25?' · No. '+m.rank:''):m.phase==='postseason'?'Season complete, '+m.record:'Offseason'} · year ${m.years}${m.titles?' · '+m.titles+' title'+(m.titles>1?'s':''):''}${m.diff&&m.diff!=='normal'?' · '+m.diff:''}</div></div>${UI.confirm==='del'+m.id?`<button class="btn sm danger" data-act="delslotyes" data-id="${m.id}">Delete</button><button class="btn sm ghost" data-act="cancel">Keep</button>`:`<button class="btn sm" data-act="open" data-id="${m.id}">Continue</button><button class="btn sm ghost" data-act="delslot" data-id="${m.id}">Delete</button>`}</div>`).join('')}</div></div>`;}
+function renderOnlinePanel(){const url=serverUrl();const L=UI.olLeague;const sel=UI.pickTeam;
+  return `<div class="card sec"><div class="row between"><h3>Online league with friends</h3>${UI.olOpen?'':'<button class="btn sm ghost" data-act="oltoggle">Open</button>'}</div><div class="tiny muted">Everyone runs their own program in one league from their own device. The week advances when every coach has hit Ready. ${url?'':'Needs a league server: paste the URL below.'}</div>
+  ${UI.olOpen?`${!url||UI.olServerEdit?`<div class="row"><input type="text" id="serverUrl" placeholder="https://saturday-sweater-league.yourname.workers.dev" value="${esc(url)}" style="flex:1"><button class="btn sm" data-act="olserver">Save</button></div>`:`<div class="tiny muted">Server: ${esc(url)} <button class="btn sm ghost" data-act="olserveredit">Change</button></div>`}
+    ${UI.olErr?`<div class="confirmbox">${esc(UI.olErr)}</div>`:''}
+    <div class="grid2"><div class="stat" style="padding:10px"><div class="k">Start a league</div><div class="small">Pick your school above, enter your coach name, give the league a name. You get a six-letter code to share.</div><input type="text" id="leagueName" placeholder="League name" maxlength="40" style="margin-top:6px"><div class="btnrow" style="margin-top:6px"><button class="btn sm" data-act="olcreate" ${sel==null||UI.olBusy||!url?'disabled':''}>${UI.olBusy?'Working...':'Create league'}</button></div></div>
+    <div class="stat" style="padding:10px"><div class="k">Join a league</div><div class="small">Enter the code a friend sent you, then pick an open school.</div><div class="row" style="margin-top:6px"><input type="text" id="joinCode" placeholder="CODE" maxlength="6" style="flex:1;text-transform:uppercase" value="${esc(L?L.id:'')}"><button class="btn sm" data-act="ollookup" ${UI.olBusy||!url?'disabled':''}>Look up</button></div>
+    ${L?`<div class="small" style="margin-top:8px"><b>${esc(L.name)}</b> · ${L.coaches.length} coach${L.coaches.length===1?'':'es'}: ${L.coaches.map(c=>esc(c.name)+' ('+esc(T0(c.tid))+')').join(', ')} · ${L.meta&&L.meta.label?esc(L.meta.season+' '+L.meta.label):''}</div><div class="tiny muted">Pick your school:</div><div class="chips" style="margin-top:4px">${TEAMS.map((t,i)=>L.coaches.some(c=>c.tid===i)?'':`<button class="chip" data-act="oljoin" data-id="${i}" ${UI.olBusy?'disabled':''}>${esc(LEAGUE[i].name)} <span class="tiny">${t[3]}</span></button>`).join('')}</div>`:''}</div></div>`:''}</div>`;}
+function T0(i){return LEAGUE[i]?LEAGUE[i].name:'?';}
 function renderPicker(){
   const confs=Object.keys(CONFS);const sel=UI.pickTeam!=null?Object.assign({},TEAMS[UI.pickTeam],{0:LEAGUE[UI.pickTeam].name,1:LEAGUE[UI.pickTeam].nick,2:LEAGUE[UI.pickTeam].conf}):null;
   return `<header class="top"><div class="top-in"><div><div class="tname">Saturday Sweater</div><div class="tsub">CFB Dynasty · Choose your program</div></div></div></header>
@@ -1699,11 +1867,12 @@ function renderPicker(){
       <div class="tiny muted">${({normal:'Normal: recruiting and expectations as they come.',hard:'Hard: recruits are harder to win, the AD wants one more win a year, opponents play up against you.',brutal:'Brutal: everyone treats your game as their Super Bowl. Boosters expect titles.'})[UI.diff||'normal']} Three losing seasons in a row gets any coach fired.</div>
       ${sel?`<div class="hero"><div class="eyebrow">Selected</div><div class="vs">${esc(sel[0])} ${esc(sel[1])}</div><div class="small muted">${CONFS[sel[2]].name} · Prestige ${sel[3]}/10 · ${REGION_NAMES[sel[5]]}</div><div class="small">AD expects about ${Math.round(expectedWins({prestige:sel[3]}))} wins a year.</div><div class="btnrow" style="margin-top:8px"><button class="btn" data-act="start">Start dynasty</button></div></div>`:'<div class="muted small">Tap a school below.</div>'}
     </div>
+    ${renderOnlinePanel()}
     <div class="card sec"><div class="row between"><h3>League editor</h3><button class="btn sm ghost" data-act="leaguetoggle">${UI.leagueOpen?'Hide':'Customize schools'}</button></div><div class="tiny muted">Rename any school, change its nickname or colors, or paste in a league a friend shared. Your league is remembered for every new dynasty.</div>${UI.leagueOpen?renderLeagueEditor():''}</div>
     ${confs.map(c=>`<div class="sec"><div class="eyebrow">${CONFS[c].name}</div><div class="teamgrid">${TEAMS.map((t,i)=>LEAGUE[i].conf===c?`<button class="tbtn ${UI.pickTeam===i?'on':''}" data-act="pick" data-id="${i}"><span class="sw" style="background:${LEAGUE[i].color}"></span><b>${esc(LEAGUE[i].name)}</b><span>${esc(LEAGUE[i].nick)} · ${t[3]}/10</span></button>`:'').join('')}</div></div>`).join('')}
   </main>`;
 }
-function simLabel(){if(G.phase==='season')return (G.week<=14?'Sim Week '+G.week:G.week===15?'Sim Champ. Week':G.week===16?'Sim First Round':G.week===17?'Sim Quarters':G.week===18?'Sim Semis':'Sim Title Game');if(G.phase==='postseason')return 'Go to offseason';return 'Start '+(G.season+1);}
+function simLabel(){if(G.online&&NET)return onlineSimLabel();if(coopOn()&&!allReady()){const n=humanIds().filter(h=>!bagOf(h).ready&&h!==G.user).length;return n?`Ready · pass to next (${n} left)`:'Ready · advance';}if(G.phase==='season')return (G.week<=14?'Sim Week '+G.week:G.week===15?'Sim Champ. Week':G.week===16?'Sim First Round':G.week===17?'Sim Quarters':G.week===18?'Sim Semis':'Sim Title Game');if(G.phase==='postseason')return 'Go to offseason';return 'Start '+(G.season+1);}
 function renderGame(){
   const u=userTeam();const tabs=[['home','Home'],['schedule','Season'],['recruit','Recruit'],['roster','Roster'],['polls','Polls'],['program','Program']];
   const disabled=G.phase==='offseason'&&(u.roster.length>ROSTER_CAP||G.fired);
@@ -1717,7 +1886,7 @@ function renderGame(){
     ${renderTimeline(u,liveOn?L:null)}
     ${liveOn?renderLiveLine():renderNextLine(u)}
     <div class="top-bar"><div class="pills">${alerts.map(([t,l])=>`<button class="pill alert" data-act="tab" data-id="${t}">${l}</button>`).join('')}<button class="pill ${G.phase==='season'&&G.hours===0?'dim':''}" data-act="tab" data-id="recruit"><b>${G.hours}</b>/${G.hoursMax}h</button><button class="pill" data-act="tab" data-id="program">NIL <b>${fmtK(G.nil)}</b></button><button class="pill ${G.coach.seat>=60?'alert':''}" data-act="tab" data-id="program">Seat <b>${G.coach.seat}</b></button></div>${L?(liveOn?`<button class="simbtn" data-act="liveskip">Skip to final</button>`:`<button class="simbtn" data-act="livedone">Continue</button>`):`<button class="simbtn" data-act="sim" ${disabled?'disabled':''}>${simLabel()}</button>`}</div></div></header>
-  <main class="${!L&&UI.tab==='home'?'home':'single'}">${body}</main>
+  <main class="${!L&&UI.tab==='home'?'home':'single'}">${G.online&&NET?`<div class="col-span">${renderOnlineBar()}</div>`:coopOn()?`<div class="col-span">${renderCoachBar()}</div>`:''}${body}</main>
   <nav class="tabs"><div class="in">${tabs.map(([k,l])=>`<button class="${UI.tab===k?'on':''}" data-act="tab" data-id="${k}">${l}${badge[k]&&UI.tab!==k?'<span class="dot"></span>':''}</button>`).join('')}<div class="tbar"><span>${esc(u.name)} <b>${rec.w}-${rec.l}</b> · ${wkLabel}</span>${L?(liveOn?`<button class="simbtn" data-act="liveskip">Skip to final</button>`:`<button class="simbtn" data-act="livedone">Continue</button>`):`<button class="simbtn" data-act="sim" ${disabled?'disabled':''}>${simLabel()}</button>`}</div></div></nav>`;
 }
 function renderTimeline(u,live){
@@ -2050,12 +2219,14 @@ function renderProgram(){
     ${(G.pressLog||[]).length?`<div class="eyebrow">Recent pressers</div><div class="list">${G.pressLog.slice(0,6).map(x=>`<div class="item" style="flex-direction:column;align-items:flex-start;gap:3px"><div class="tiny muted">${x.s} ${x.w<=14?'Wk '+x.w:'Post'} · “${esc(x.q)}”</div><div class="small"><b>You:</b> ${esc(x.a)}</div><div class="tiny muted">${esc(x.r)} ${Object.entries(x.fx).filter(([k,v])=>v).map(([k,v])=>`<span class="${v>0?'ok':'no'}">${({fans:'Fans',locker:'Locker',admin:'AD',media:'Media'})[k]} ${v>0?'+':''}${v}</span>`).join(' ')}</div></div>`).join('')}</div>`:''}</div>`;
   const league=`<div class="card sec"><div class="row between"><h3>League editor</h3><button class="btn sm ghost" data-act="leaguetoggle">${UI.leagueOpen?'Hide':'Open'}</button></div><div class="tiny muted">Rename schools, nicknames and colors mid-dynasty. Changes carry into future dynasties too.</div>${UI.leagueOpen?renderLeagueEditor():''}</div>`;
   const achs=(()=>{const a=achGet();const n=Object.keys(a).filter(k=>ACH.some(x=>x[0]===k)).length;return `<div class="card sec"><div class="row between"><h3>Achievements</h3><span class="tag">${n}/${ACH.length}</span></div><div class="tiny muted">Earned across every dynasty on this device.</div><div class="achgrid">${ACH.map(([id,t,d])=>`<div class="ach ${a[id]?'on':''}" title="${esc(d)}"><b>${esc(t)}</b><span>${a[id]?esc(d)+(a[id]!==true?' · '+a[id]:''):'Locked'}</span></div>`).join('')}</div></div>`;})();
+  const coop=G.online&&NET?`<div class="card sec"><h3>Online league</h3><div class="small">Code <b>${esc(NET.id||'')}</b>${NET.name?' · '+esc(NET.name):''}. Share the code; friends join from the start screen. The week advances when everyone is ready.</div><div class="btnrow"><button class="btn sm ghost" data-act="olcopy">Copy code</button>${UI.confirm==='olleave'?`<button class="btn sm danger" data-act="olleaveyes">Yes, leave</button><button class="btn sm ghost" data-act="cancel">Stay</button>`:`<button class="btn sm ghost" data-act="olleave">Leave this league on this device</button>`}</div></div>`
+    :`<div class="card sec"><h3>Pass and play</h3><div class="tiny muted">Add a second coach on this device. Each coach runs their own program; the week advances when everyone has hit Ready.</div>${coopOn()?`<div class="list">${humanIds().map(h=>`<div class="item"><div class="grow"><div class="nm">${esc(T(h).name)}</div><div class="sub">${esc(bagOf(h).coach.name)}</div></div>${h!==G.user&&h!==humanIds()[0]?`<button class="btn sm ghost" data-act="coachremove" data-id="${h}">Remove</button>`:''}</div>`).join('')}</div>`:''}<div class="row" style="flex-wrap:wrap"><input type="text" id="newCoachName" placeholder="Coach name" maxlength="28" style="flex:1;min-width:120px"><select id="newCoachTeam" style="flex:1;min-width:140px"><option value="">Pick a school</option>${G.teams.filter(t=>!isHuman(t.id)).sort((a,b)=>a.name.localeCompare(b.name)).map(t=>`<option value="${t.id}">${esc(t.name)} (${t.prestige})</option>`).join('')}</select><button class="btn sm" data-act="coachadd">Add coach</button></div></div>`;
   const danger=`<div class="card sec"><h3>Save &amp; settings</h3><div class="tiny muted">Progress saves automatically on this device.</div>
-    <div class="btnrow"><button class="btn sm ghost" data-act="fxtoggle">Sound &amp; effects: ${fxOn()?'on':'off'}</button>${window.desktop?`<button class="btn sm ghost" data-act="exportsave">Export save</button><button class="btn sm ghost" data-act="importsave">Import save</button>`:''}${window.desktop&&window.desktop.checkUpdate?`<button class="btn sm" data-act="checkupdate" ${UI.updating?'disabled':''}>${UI.updating?'Checking...':'Check for updates'}</button>`:''}</div>
+    <div class="btnrow"><button class="btn sm ghost" data-act="fxtoggle">Sound &amp; effects: ${fxOn()?'on':'off'}</button><button class="btn sm ghost" data-act="theme">Theme: ${({dark:'Stadium night',light:'Daylight',auto:'Match device'})[themePref()]||'Stadium night'}</button>${window.desktop?`<button class="btn sm ghost" data-act="exportsave">Export save</button><button class="btn sm ghost" data-act="importsave">Import save</button>`:''}${window.desktop&&window.desktop.checkUpdate?`<button class="btn sm" data-act="checkupdate" ${UI.updating?'disabled':''}>${UI.updating?'Checking...':'Check for updates'}</button>`:''}</div>
     ${UI.updateMsg?`<div class="small ${UI.updateOk?'ok':'muted'}">${esc(UI.updateMsg)}</div>`:''}
     <div class="tiny muted">Version ${(document.querySelector('meta[name=app-version]')||{}).content||'?'}</div>
     <div class="tiny muted">Keys: Space or Enter sims the week, S skips a live game, 1-6 switch tabs, F11 fullscreen.</div>${UI.confirm==='reset'?`<div class="confirmbox"><b>Delete this dynasty?</b> Other saved dynasties are not affected.<div class="btnrow"><button class="btn sm danger" data-act="resetyes">Yes, delete it</button><button class="btn sm ghost" data-act="cancel">Keep playing</button></div></div>`:`<div class="btnrow"><button class="btn sm ghost" data-act="switch">Switch or start another dynasty</button><button class="btn sm ghost" data-act="reset">Delete this dynasty</button></div>`}</div>`;
-  return talks+coach+offers+profile+staff+press+lobby+budget+ident+pros+hist+achs+league+danger;
+  return talks+coach+offers+profile+staff+press+lobby+budget+ident+pros+hist+achs+league+coop+danger;
 }
 
 /* ===================== EVENTS ===================== */
@@ -2067,7 +2238,7 @@ function onAction(act,el){
     case 'diff':UI.diff=id;break;
     case 'start':{const inp=document.getElementById('coachName');const nm=(inp&&inp.value.trim())||'Coach';if(UI.pickTeam==null)return;newDynasty(UI.pickTeam,nm,UI.diff||'normal');UI.tab='home';save();break;}
     case 'tab':if(UI.live)endLive();UI.tab=id;UI.confirm=null;window.scrollTo(0,0);break;
-    case 'sim':if(fxOn())ac();if(UI.live)endLive();if(G.phase==='season'){const u0=userTeam();const snap={w:u0.w,l:u0.l,cw:u0.cw,cl:u0.cl,rank:u0.rank,rw:u0.rw||0,rl:u0.rl||0,confChamp:u0.confChamp,week:G.week};const hasGame=G.games.some(x=>x.week===G.week&&!x.played&&(x.home===G.user||x.away===G.user));simWeek();const lg=hasGame?G.games.find(x=>x.week===snap.week&&x.played&&x.box&&(x.home===G.user||x.away===G.user)):null;if(lg)startLive(lg,snap);}else if(G.phase==='postseason'){runOffseason();UI.tab='home';}else startNextSeason();break;
+    case 'sim':if(fxOn())ac();if(UI.live)endLive();if(G.online&&NET){if(G.ready)return;onlineReady(true);return;}if(coopOn()){G.ready=true;const next=humanIds().find(h=>!bagOf(h).ready);if(next!=null){switchCoach(next);UI.tab='home';break;}clearReady();}if(G.phase==='season'){const u0=userTeam();const snap={w:u0.w,l:u0.l,cw:u0.cw,cl:u0.cl,rank:u0.rank,rw:u0.rw||0,rl:u0.rl||0,confChamp:u0.confChamp,week:G.week};const hasGame=G.games.some(x=>x.week===G.week&&!x.played&&(x.home===G.user||x.away===G.user));simWeek();const lg=hasGame?G.games.find(x=>x.week===snap.week&&x.played&&x.box&&(x.home===G.user||x.away===G.user)):null;if(lg)startLive(lg,snap);}else if(G.phase==='postseason'){runOffseason();UI.tab='home';}else startNextSeason();break;
     case 'liveskip':if(UI.live){UI.live.shown=UI.live.feed.length;UI.live.done=true;clearTimeout(liveTimer);}break;
     case 'livedone':endLive();UI.tab='home';window.scrollTo(0,0);break;
     case 'livebox':endLive();UI.tab='home';startWatch(+id);if(UI.watch){UI.watch.shown=9999;UI.watch.playing=false;clearTimeout(watchTimer);}break;
@@ -2096,6 +2267,22 @@ function onAction(act,el){
     case 'pin':actPin(+id);break;
     case 'popen':UI.pOpen=UI.pOpen===+id?null:+id;break;
     case 'share':actShare();return;
+    case 'theme':{const o=['dark','light','auto'];lsSet('gridiron-theme',o[(o.indexOf(themePref())+1)%3]);break;}
+    case 'olunready':onlineReady(false);return;
+    case 'olrefresh':onlineRefresh().catch(()=>{});return;
+    case 'olwatch':if(UI.pendingLive){const g=G.games.find(x=>x.id===UI.pendingLive.gid);if(g)startLive(g,UI.pendingLive.snap);UI.pendingLive=null;}break;
+    case 'olcreate':{const inp=document.getElementById('coachName');const nm=(inp&&inp.value.trim())||'Coach';const ln=document.getElementById('leagueName');if(UI.pickTeam==null)return;UI.olBusy=true;render();onlineCreate((ln&&ln.value.trim())||'Our league',UI.pickTeam,nm).then(()=>{UI.tab='home';UI.olBusy=false;render();}).catch(e=>{UI.olErr=String(e.message||e);UI.olBusy=false;render();});return;}
+    case 'ollookup':{{const cn=document.getElementById('coachName');if(cn)UI.coachName=cn.value;}const inp=document.getElementById('joinCode');const code=(inp&&inp.value.trim().toUpperCase())||'';if(!code)return;UI.olBusy=true;render();onlineLookup(code).then(st=>{UI.olLeague=st;UI.olBusy=false;UI.olErr=null;render();}).catch(e=>{UI.olErr=String(e.message||e);UI.olBusy=false;render();});return;}
+    case 'oljoin':{const inp=document.getElementById('coachName');const nm=(inp&&inp.value.trim())||UI.coachName||'Coach';if(!UI.olLeague)return;UI.olBusy=true;render();onlineJoin(UI.olLeague.id,+id,nm).then(()=>{UI.olLeague=null;UI.tab='home';UI.olBusy=false;render();}).catch(e=>{UI.olErr=String(e.message||e);UI.olBusy=false;render();});return;}
+    case 'oltoggle':{const cn=document.getElementById('coachName');if(cn)UI.coachName=cn.value;UI.olOpen=true;break;}
+    case 'olserveredit':UI.olServerEdit=true;break;
+    case 'olserver':{const inp=document.getElementById('serverUrl');if(inp){lsSet('gridiron-server',inp.value.trim());UI.olErr=null;UI.olServerEdit=false;}break;}
+    case 'olleave':UI.confirm='olleave';break;
+    case 'olleaveyes':onlineLeave();closeDynasty();UI.confirm=null;UI.pickTeam=null;break;
+    case 'olcopy':try{navigator.clipboard&&navigator.clipboard.writeText(NET?NET.id:'');}catch(e){}break;
+    case 'coachswitch':switchCoach(+id);UI.tab='home';break;
+    case 'coachadd':{const nm=document.getElementById('newCoachName');const tm=document.getElementById('newCoachTeam');if(!tm||tm.value==='')return;addCoach(+tm.value,(nm&&nm.value.trim())||'Coach 2');break;}
+    case 'coachremove':removeCoach(+id);break;
     case 'talks':actTalks(id);break;
     case 'talk':actTalk(+id,el.dataset.kind);break;
     case 'move':UI.confirm='move'+id+el.dataset.to;break;
@@ -2123,7 +2310,7 @@ function onAction(act,el){
     case 'reset':UI.confirm='reset';break;
     case 'resetyes':deleteSlot(SLOT);UI.confirm=null;UI.pickTeam=null;break;
     case 'switch':closeDynasty();UI.confirm=null;UI.pickTeam=null;UI.tab='home';break;
-    case 'open':openSlot(id).then(ok=>{if(ok){UI.tab='home';UI.confirm=null;}render();});return;
+    case 'open':(onlineInfo(id)?onlineOpen(id).then(ok=>{if(ok)lsSet(CUR_KEY,id);return ok;}):openSlot(id)).then(ok=>{if(ok){UI.tab='home';UI.confirm=null;}render();});return;
     case 'delslot':UI.confirm='del'+id;break;
     case 'delslotyes':deleteSlot(id);UI.confirm=null;break;
     case 'cancel':UI.confirm=null;break;
@@ -2164,7 +2351,7 @@ async function boot(data){loadLeague();
   app.addEventListener('change',e=>{const el=e.target.closest('[data-act]');if(el)onAction(el.dataset.act,el);});
   render();
 }
-if(typeof window!=='undefined'&&app){boot({});if(window.desktop&&window.desktop.onMenu)window.desktop.onMenu(cmd=>onAction(cmd,{dataset:{}}));}
+if(typeof window!=='undefined'&&app){boot({});if(window.desktop&&window.desktop.onMenu)window.desktop.onMenu(cmd=>onAction(cmd,{dataset:{}}));if(window.desktop&&window.desktop.checkUpdate)setTimeout(()=>{window.desktop.checkUpdate().then(r=>{if(r&&r.status==='updated'){ripple('Updated to '+r.version+'. Reloading...');renderRipples();setTimeout(()=>location.reload(),1800);}}).catch(()=>{});},2500);}
 if(typeof module!=='undefined'){module.exports={newDynasty,simWeek,runOffseason,startNextSeason,get:()=>G,T,userTeam,actOffer,actCall,actVisitStart,actVisitAnswer,actText,actReply,actPitch,actNIL,actAutoTrim,teamOvr,userCommits};}
 </script>
 
