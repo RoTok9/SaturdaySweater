@@ -1,4 +1,4 @@
 {
-  "version": "1.32.0",
-  "notes": "Coach traits: at levels 2 and 4 of each track (Recruiter, Developer, Big-game, Media) you choose one of two permanent traits. Closer or Road warrior; Living room legend or Pipeline; Position coach (pick a group to develop faster) or Camp culture; Iron man program or Next level; Rivalry fuel or Road dog; Fourth-quarter closer or Primetime; Spin doctor or Fan favorite; Insider or Booster whisperer. The choice shows up on Home when you earn it and your traits live on the Program tab."
+  "version": "1.33.0",
+  "notes": "Stadiums and practice weeks. Every program has a stadium capacity; home crowds now come from demand (prestige, ranking, opponent, rivalry heat, homecoming, fan approval, your record) capped by your seats, sellouts are real, and the gate is now a big part of the offseason budget (the newswire shows it). Expand the stadium by 8,000 seats for 0M on the Program tab. Practice focus on the game-plan card: Red zone, Pass rush, Conditioning (half the injury risk) or Young guys (freshmen get the reps), each with a trade-off on Saturday."
 }
