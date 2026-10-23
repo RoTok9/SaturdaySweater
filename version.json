@@ -1,4 +1,4 @@
 {
-  "version": "1.86.0",
-  "notes": "Conference title race: standings now mark who has clinched a title-game spot, who controls their own destiny and who is eliminated, with a legend. A Conference race card on Home from Week 6 on tells you exactly where you stand (clinched, in control, alive but need help, out), and the feed fires when you clinch, when you are eliminated, and on win-and-in weeks."
+  "version": "1.87.0",
+  "notes": "Crunch time: when a game is within one score at the two-minute mark, the broadcast stops and you make the last call. With the ball: air it out, work the sideline, or set up the kick. On defense: prevent, bring pressure, or base. Outcomes depend on your quarterback, your coaching, the matchup and the opposing coach's habits. Two-point tries, onside kicks, walk-off field goals and overtime all flow from it, and the box score matches the broadcast. Works in pass-and-play and online leagues."
 }
