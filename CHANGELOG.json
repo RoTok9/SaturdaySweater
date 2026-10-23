@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.129.0",
+  "notes": "Broadcast variety: punt returns, kickoff returns and blocked punts for touchdowns, plus the occasional flea flicker, trick play or fourth-down strike."
+ },
+ {
   "version": "1.128.0",
   "notes": "Season tab shows your strength of schedule rank nationally and how many ranked opponents are left."
  },
