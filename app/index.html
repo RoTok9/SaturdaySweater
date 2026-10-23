@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.49.0">
+<meta name="app-version" content="1.50.0">
 <title>Saturday Sweater</title>
 <style>
 @font-face{font-family:"Barlow";font-weight:400;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
@@ -1197,11 +1197,11 @@ function genScheduleOnce(){
 }
 
 /* ===================== RECRUITS ===================== */
-function genRecruits(){
+function genRecruits(n,late){
   const out=[];const posPool=[];POS.forEach(p=>{for(let i=0;i<SHAPE[p];i++)posPool.push(p);});
   const regions=['SE','SE','SE','SW','SW','MW','MW','W','W','MA','NE'];
-  for(let i=0;i<260;i++){
-    const r=Math.random();const stars=r<0.03?5:r<0.18?4:r<0.63?3:2;
+  for(let i=0;i<(n||260);i++){
+    const r=Math.random();const stars=late?(r<0.06?4:r<0.5?3:2):(r<0.03?5:r<0.18?4:r<0.63?3:2);
     const base={5:[74,80],4:[68,74],3:[61,67],2:[54,60]}[stars];const ovr=clamp(Math.round(rnd(base[0],base[1])+gauss()*1.5),48,84);
     const pot=clamp(ovr+(stars>=4?rint(8,22):stars===3?rint(5,18):rint(3,14)),ovr,99);
     const keys=Object.keys(PITCHES);const wants=[];
@@ -1209,7 +1209,7 @@ function genRecruits(){
     while(wants.length<3){const k=weightedPick(keys.filter(k=>!wants.includes(k)),wf);wants.push(k);}
     const region=pick(regions);
     const persona=pick(Object.keys(PERSONAS));const tr=rollTraits();if(persona==='family'&&!wants.includes('home')){wants[2]='home';}if(persona==='business'&&!wants.includes('nil')){wants[2]='nil';}if(persona==='competitor'&&!wants.includes('contend')){wants[2]='contend';}if(hasT({tr},'student')&&!wants.includes('academics')){wants[1]='academics';}
-    const rec={id:G.rid++,n:name(),pos:pick(posPool),stars,region,wants,ovr,pot,persona,tr,texted:0,convo:null,interest:{},offer:false,scouted:false,committed:null,ask:stars===5?rint(250,500):stars===4?rint(80,200):stars===3?rint(20,60):rint(5,20),visited:false,pitched:{},nilGiven:0,week:0};
+    const rec={id:G.rid++,n:name(),pos:pick(posPool),stars,region,wants,ovr,pot,persona,tr,texted:0,convo:null,interest:{},offer:false,scouted:false,committed:null,late:!!late,ask:stars===5?rint(250,500):stars===4?rint(80,200):stars===3?rint(20,60):rint(5,20),visited:false,pitched:{},nilGiven:0,week:0};
     const n=rint(3,6);const cands=G.teams.filter(t=>!isHuman(t.id));
     for(let j=0;j<n;j++){const t=weightedPick(cands.filter(t=>!(t.id in rec.interest)),t=>{const rg=regionGrade(region,t.region);const rm=rg===10?3:rg===5?1.5:1;return rm*(stars>=4?Math.pow(t.prestige,2.2):stars===3?Math.pow(t.prestige,1.2):Math.max(1,12-t.prestige));});rec.interest[t.id]=10+t.prestige*2+rnd(0,10);}
     out.push(rec);
@@ -1816,6 +1816,10 @@ function rollEvent(){if(G.event||G.phase!=='season'||G.week>14)return;G.eventsTh
 function answerEvent(idx){const ev=G.event;if(!ev)return;const fx=(G._eventFx||[])[idx];if(!fx){ // rehydrated save: rebuild handlers
     const e=EVENTS.find(x=>x.id===ev.id);if(e){const made=e.make();const f=made.opts[idx]&&made.opts[idx].fx;if(f)f();}}else fx();
   G.eventLog=G.eventLog||[];G.eventLog.unshift({s:G.season,w:G.week,text:ev.text,a:ev.opts[idx]?ev.opts[idx].t:'(ignored)'});if(G.eventLog.length>10)G.eventLog.length=10;G.event=null;G._eventFx=null;}
+function latePool(){return G.recruits.filter(r=>r.committed==null&&r.late).sort((a,b)=>b.stars-a.stars||b.ovr-a.ovr);}
+function lateAsk(r){return Math.round((r.stars*r.stars*12+Math.max(0,r.ovr-60)*3)/5)*5;}
+function actLateSign(rid){const r=G.recruits.find(x=>x.id===rid);const u=userTeam();if(!r||r.committed!=null||!r.late||G.phase!=='offseason')return;const ask=lateAsk(r);if(G.nil<ask||commitsOf(G.user)>=CLASS_CAP||u.roster.length>=ROSTER_CAP)return;G.nil-=ask;r.committed=G.user;r.week='late';r.offer=true;const p={id:G.pid++,n:r.n,pos:r.pos,yr:0,ovr:r.ovr,pot:r.pot,team:u.id,stars:r.stars,tr:r.tr||rollTraits(),persona:r.persona,late:true};G.players[p.id]=p;u.roster.push(p.id);news(`Late signing period: ${starStr(r.stars)} ${r.pos} ${r.n} signs with ${u.name}.`);ripple(`${r.n} signed`,'good');}
+function renderLatePeriod(){if(G.phase!=='offseason')return '';const u=userTeam();const L=latePool();const n=commitsOf(G.user);return `<div class="card sec"><div class="row between"><h3>Late signing period</h3><span class="tiny muted">${n}/${CLASS_CAP} signed · NIL ${fmtK(G.nil)}</span></div><div class="tiny muted">Late qualifiers, decommits and prep-school kids who surfaced after December. First come, first served; NIL money closes it. They arrive with the class at camp.</div>${L.length?`<div class="list">${L.slice(0,40).map(r=>{const ask=lateAsk(r);const can=G.nil>=ask&&n<CLASS_CAP&&u.roster.length<ROSTER_CAP;return `<div class="item"><div style="min-width:64px"><span class="stars">${starStr(r.stars)}</span><div class="posb">${r.pos}</div></div><div class="grow"><div class="nm">${esc(r.n)}</div><div class="sub">${REGION_NAMES[r.region]} · ${r.ovr} now, potential ${potGrade(r)}${identFits(u,r.pos)?' · <span class="ok">fits your identity</span>':''}</div></div><button class="btn sm" data-act="latesign" data-id="${r.id}" ${can?'':'disabled'}>Sign · ${fmtK(ask)}</button></div>`;}).join('')}</div>${L.length>40?`<div class="tiny muted">${L.length-40} more not shown.</div>`:''}`:'<div class="item muted">Nobody left on the board. Everyone signed in December.</div>'}</div>`;}
 function portalChance(t,p,leaders,cpp){return (isUser(t)?0.05*(1+(50-G.app.locker)/50):0.07*(cpp==='players'?0.55:cpp==='oldschool'?0.75:cpp==='gambler'?1.25:1))*(hasT(p,'flight')?2.5:1)*(hasT(p,'homebody')?0.3:1)*Math.max(0.5,1-leaders*0.12)*(p.unhappy?5:1)*(p.nilDeal&&p.nilDeal>=G.season?0.15:1);}
 function portalIntentions(){const u=userTeam();const leaders=u.roster.filter(id=>hasT(P(id),'leader')).length;const out=[];POS.forEach(pos=>{depth(u,pos).slice(STARTERS[pos]).forEach(p=>{if(p.ovr>=62&&Math.random()<portalChance(u,p,leaders,null)*0.8){p.portalIntent=G.season;out.push(p);}});});if(out.length)news(`Portal window opens next month. ${out.length===1?out[0].pos+' '+out[0].n+' plans':out.length+' of your backups plan'} to enter. Talk to them before they do.`,true);}
 function portalList(){const u=userTeam();return u.roster.map(P).filter(p=>p&&p.portalIntent);}
@@ -1965,6 +1969,7 @@ function coachEval(){
   else if(delta>=2&&perception()<45)news('Athletic directors around the country admire the wins but not the press conferences. No calls this winter.');
 }
 function runOffseason(){
+  {const extra=genRecruits(rint(22,30),true);extra.forEach(r=>{r.interest={};r.week=0;});G.recruits.push(...extra);}
   forEachCoach(coachEval);TREE_POOL=[];forEachCoach(staffDepartures);
   coachingCarousel();treeSync();rivDecay();forEachCoach(()=>{staffOffseason();contractTick();});
   G.teams.forEach(t=>{const p4=!!CONFS[t.conf].p4||t.conf==='IND';let perf=clamp(11-t.rank/8+(t.po==='champ'?1:0)+(!isHuman(t.id)&&t.coach?(t.coach.rep-50)/100:0),1,10);if(!p4)perf=Math.min(7,perf*0.75);t.prestige=clamp(Math.round((t.prestige+(perf-t.prestige)*0.3)*10)/10,1,10);t.lastElo=t.elo;});
@@ -2225,7 +2230,7 @@ function renderHome(){
   if(G.phase==='postseason'&&G.summary){const s=G.summary;parts.push(`<div class="card sec"><div class="eyebrow">${s.season} season recap</div><h2>${s.record} · Final No. ${s.rank}</h2><div class="grid2"><div class="stat"><div class="v">${esc(s.poRes)}</div><div class="k">Postseason</div></div><div class="stat"><div class="v">${s.confChamp?'Champs':'No'}</div><div class="k">Conference title</div></div><div class="stat"><div class="v">${s.classRank?'No. '+s.classRank:'n/a'}</div><div class="k">Recruiting class</div></div><div class="stat"><div class="v">${s.E}</div><div class="k">AD expected wins</div></div></div><div class="small">National champion: <b>${esc(s.champion)}</b><br>Heisman Trophy: ${esc(s.poy)}<br>Ranked wins: ${s.rw||0}<br>Coach of the Year: ${esc(s.coy)}</div>${G.earlyPoll?`<div class="eyebrow" style="margin-top:8px">Way-too-early Top 25 for ${s.season+1}</div><div class="small">${(()=>{const i=G.earlyPoll.indexOf(u.id);return i>=0?`You start next year at <b>No. ${i+1}</b>. `:`You are outside the way-too-early 25. `;})()}${G.earlyPoll.slice(0,5).map((id,i)=>`${i+1}. ${esc(T(id).name)}`).join(' · ')}</div>`:''}<div class="btnrow"><button class="btn" data-act="sim">Go to offseason</button><button class="btn ghost" data-act="share">Share season card</button></div></div>`);}
   if(G.phase==='offseason'){const over=u.roster.length-ROSTER_CAP;const staffOpen=['oc','dc','rc'].some(r=>!G.staff[r]||G.staff[r].yrs<=0);const slots=nonConfSlots(),picked=(G.schedPicks||[]).length;
     const sp=G.spring&&G.spring.s===G.season?G.spring:null;
-    const step=(n,t,st,where,d)=>`<div class="ostep ${st}"><div class="n">${n}</div><div class="grow"><div class="nm">${t} <span class="tiny muted">${where}</span></div><div class="sub">${d}</div></div><button class="btn sm ghost" data-act="tab" data-id="${where==='Program'?'program':where==='Roster'?'roster':where==='Season'?'schedule':'home'}">Open</button></div>`;
+    const step=(n,t,st,where,d)=>`<div class="ostep ${st}"><div class="n">${n}</div><div class="grow"><div class="nm">${t} <span class="tiny muted">${where}</span></div><div class="sub">${d}</div></div><button class="btn sm ghost" data-act="tab" data-id="${where==='Program'?'program':where==='Roster'?'roster':where==='Season'?'schedule':where==='Recruit'?'recruit':'home'}">Open</button></div>`;
     if(G.realign)parts.push(`<div class="card sec presser" style="border-left-color:var(--gold)"><div class="eyebrow">Realignment</div><div class="q" style="font-size:19px">The ${CONFS[G.realign.to].name} wants ${esc(u.name)}. Bigger games, bigger checks, a harder road to the playoff. The ${CONFS[G.realign.from].name} wants an answer too.</div><div class="btnrow"><button class="btn" data-act="realign" data-id="yes">Accept the invitation</button><button class="btn ghost" data-act="realign" data-id="no">Stay put</button></div></div>`);
     if(G.draft&&G.draft.s===G.season){const d=G.draft;const tn=x=>esc(T(x.team).name);parts.push(`<div class="card sec"><div class="eyebrow">Draft night ${d.s}</div><h2>${d.mine.length?`${d.mine.length} ${esc(u.name)} player${d.mine.length>1?'s':''} drafted`:'No picks this year'}</h2>
       ${d.mine.length?`<div class="list">${d.mine.map(x=>`<div class="item"><div class="pk ${x.rd===1?'r1':''}">${x.pk}</div><div class="grow"><div class="nm">${x.pos} ${esc(x.n)}</div><div class="sub">Round ${x.rd}, pick ${x.pk} overall · ${x.ovr} OVR · ${x.why==='graduated'?'senior':'early entry'}</div></div></div>`).join('')}</div>`:`<div class="sub">Recruits who want a path to the pros grade you on the last four drafts. Develop them and it shows up here.</div>`}
@@ -2237,6 +2242,7 @@ function renderHome(){
     ${step('Jan','Departures and the draft','done','Home',G.draft&&G.draft.s===G.season?`${G.draft.mine.length} drafted, ${G.draft.mine.filter(x=>x.rd===1).length} in round one. Pros card above.`:'Seniors gone, early entries declared. See the newswire.')}
     ${step('Feb','Coaching staff',staffOpen?'todo':'done','Program',staffOpen?'A coordinator job is open or expiring. Hire or extend.':'Staff set. Payroll paid.')}
     ${step('Feb','NIL retention',(G.nilAsks||[]).some(a=>a.st==='open')?'todo':'done','Home',(G.nilAsks||[]).length?`${(G.nilAsks||[]).filter(a=>a.st==='open').length} of ${(G.nilAsks||[]).length} asks still open.`:'Nobody is holding out.')}
+    ${step('Feb','Late signing period',latePool().length&&commitsOf(G.user)<CLASS_CAP?'todo':'done','Recruit',`${latePool().length} unsigned prospects, ${commitsOf(G.user)}/${CLASS_CAP} in your class.`)}
     ${step('Mar','Transfer portal',G.portalAdds>0?'done':'todo','Roster',`${G.portalAdds}/${PORTAL_CAP} adds used, ${G.portal.length} in the portal.`)}
     ${step('Apr','Spring game',sp?'done':'todo','Home',sp?`Offense ${sp.os}, defense ${sp.ds}. ${sp.battles.length} position battle${sp.battles.length===1?'':'s'} heading to camp.`:'Play it to see who flashed, who rose, and which jobs are open.')}
     ${step('May','Schedule',picked>=slots?'done':'todo','Season',`${picked}/${slots} non-conference slots chosen. Open slots get filled at random.`)}
@@ -2382,7 +2388,7 @@ function renderRecruit(){
   const rows=list.slice(0,80).map(r=>{const L=leader(r);const mine=r.interest[u.id]||0;const lead=L?T(L.id):null;const od=Math.round(myOdds(r)*100);const status=r.committed!=null?`<span class="tag ${r.committed===u.id?'team':''}">${r.committed===u.id?'Committed to you':'To '+esc(T(r.committed).name)}</span>`:r.offer?`<span class="tag ${L&&L.id===u.id?'good':'warn'}">${L&&L.id===u.id?'You lead':'Trailing '+esc(lead.name)}</span>`:`<span class="tag">${lead?esc(lead.name)+' leads':'Open'}</span>`;
     const ovrTxt=r.scouted?`${r.ovr} / ${r.pot} pot`:`${r.ovr-3}-${r.ovr+3} est`;
     return `<div class="item clickable ${r.committed===u.id?'me':''}" data-act="ropen" data-id="${r.id}"><div style="min-width:64px"><span class="stars">${starStr(r.stars)}</span><div class="posb">${r.pos}</div></div><div class="grow"><div class="nm">${esc(r.n)}</div><div class="sub">${REGION_NAMES[r.region]} · ${PERSONAS[r.persona]?PERSONAS[r.persona].n:''}${identFits(u,r.pos)?' · <span class="ok">fits your identity</span>':''}${(()=>{const o=humanIds().filter(h=>h!==G.user&&recFlag(r,h,'offer'));return o.length?' · <span class="warn">vs '+o.map(h=>esc(bagOf(h).coach.name)).join(', ')+'</span>':'';})()}${r.movedWk&&G.phase==='season'&&G.week-r.movedWk<=4?(r.moved>0?' · <span class="ok">Riser</span>':' · <span class="no">Faller</span>'):''} · ${ovrTxt}${(()=>{const tg=recruitTag(r);return tg?' · '+tg.t:'';})()} · wants ${r.wants.map(k=>PITCHES[k].toLowerCase()).join(', ')}</div></div><div style="text-align:right">${status}${r.offer&&r.committed==null?`<div class="tiny ${od>=50?'ok':od>=25?'':'muted'}"><b>${od}%</b> · decides ~Wk ${decideWeek(r)}</div><div class="odbar"><i style="width:${od}%"></i></div>`:r.committed!=null&&r.committed!==u.id&&r.lostWhy?`<div class="tiny muted">${esc(r.lostWhy)}</div>`:''}${r.promise&&r.committed==null?'<div class="tiny warn">Promised playing time</div>':''}${r.waver&&r.committed===u.id?`<div class="tiny warn">Wavering: ${esc(T(r.waver.tid).name)} is in</div>`:''}${r.convo&&r.convo.inbound&&!r.convo.done?'<div class="tiny ok">Texted you</div>':''}</div></div>${UI.rOpen===r.id?renderRecruitDetail(r,open):''}`;}).join('');
-  return head+`<div class="card sec"><div class="list rgrid">${rows||'<div class="item muted">No recruits match.</div>'}</div>${list.length>80?`<div class="tiny muted">Showing 80 of ${list.length}. Narrow the filters.</div>`:''}</div>`;
+  return (G.phase==='offseason'?renderLatePeriod():'')+head+`<div class="card sec"><div class="list rgrid">${rows||'<div class="item muted">No recruits match.</div>'}</div>${list.length>80?`<div class="tiny muted">Showing 80 of ${list.length}. Narrow the filters.</div>`:''}</div>`;
 }
 function renderConvo(r){const c=r.convo;if(!c)return '';const ini=r.n.split(' ').map(x=>x[0]).join('').slice(0,2);const first=r.n.split(' ')[0];
   const stamp=c.stamp||'';
@@ -2548,6 +2554,7 @@ function onAction(act,el){
     case 'call':actCall(rec);break;
     case 'scout':actScout(rec);break;
     case 'flip':actFlip(rec);break;
+    case 'latesign':actLateSign(+id);break;
     case 'text':actText(rec);break;
     case 'reply':actReply(rec,+el.dataset.i);break;
     case 'dinner':actVisitAnswer(rec,+el.dataset.i);break;
