@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.126.1",
+  "notes": "Website feature copy updated for the latest additions."
+ },
+ {
   "version": "1.126.0",
   "notes": "Sellout streaks: big programs start with a long one, every home sellout extends it (milestones make the news), the game hero shows it, and the day it ends the AD notices the empty seats in the upper deck."
  },
