@@ -1,4 +1,4 @@
 {
-  "version": "1.45.0",
-  "notes": "Midseason mock draft on the Program tab: from week 6, where the scouts have your draft-eligible players (round and pick), moving week to week with production, awards and your ranking. Keyboard navigation on desktop: 1 through 6 jump to tabs, left and right arrows move between them, Escape closes an open player or recruit."
+  "version": "1.46.0",
+  "notes": "Confetti in your colors when you win a rivalry game, a conference title, a playoff game, a bowl, knock off a top-five team, or land a five-star commit. A national title gets the big one."
 }
