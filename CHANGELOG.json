@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.151.0",
+  "notes": "Satellite camps: once per offseason, spend M to take the staff on the road to any region for a summer camp and build your pipeline there."
+ },
+ {
   "version": "1.150.0",
   "notes": "Recruiting pipelines: every recruit you sign from a region builds your pipeline there (your home region starts warm). Strong pipelines make that region's recruits warm to you faster every week, they fade if you stop signing there, and the Recruit tab shows your top three. Hit three dots and the newswire says you own it."
  },
