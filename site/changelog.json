@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.155.0",
+  "notes": "Side bets in pass-and-play: when two of you meet, put something on it before kickoff. NIL money, the recruiting trail, or the loser wears the winner's colors at the Monday presser. The other coach has to shake on it on their turn. Also: play-by-play now says an 18-yard run, not a 18-yard run."
+ },
+ {
   "version": "1.154.3",
   "notes": "New coaches no longer get a wall of 70 old release notes after their first save; the What's new card only shows changes since you started. Its buttons also wrap on small phones."
  },
