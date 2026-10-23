@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.154.3",
+  "notes": "New coaches no longer get a wall of 70 old release notes after their first save; the What's new card only shows changes since you started. Its buttons also wrap on small phones."
+ },
+ {
   "version": "1.154.2",
   "notes": "Fix: players following you to a new job can no longer push the roster over the limit and stall the next season in pass-and-play."
  },
