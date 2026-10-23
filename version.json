@@ -1,4 +1,4 @@
 {
-  "version": "1.33.0",
-  "notes": "Stadiums and practice weeks. Every program has a stadium capacity; home crowds now come from demand (prestige, ranking, opponent, rivalry heat, homecoming, fan approval, your record) capped by your seats, sellouts are real, and the gate is now a big part of the offseason budget (the newswire shows it). Expand the stadium by 8,000 seats for 0M on the Program tab. Practice focus on the game-plan card: Red zone, Pass rush, Conditioning (half the injury risk) or Young guys (freshmen get the reps), each with a trade-off on Saturday."
+  "version": "1.34.0",
+  "notes": "Desktop layouts: Program, Polls and Season now flow into two columns on wide screens. Position badges on recruit and roster rows, a glowing odds bar under every offer on the Recruit tab, roomier list rows."
 }
