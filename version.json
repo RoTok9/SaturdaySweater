@@ -1,5 +1,5 @@
 {
-  "version": "1.165.2",
-  "notes": "League files and links can now rename the conferences and the player of the year award too, so a custom league can carry every name you want.",
-  "sha256": "164753c62403ab12d2335114b1b1d4fa17454bda930d4b158dc726f99822f602"
+  "version": "1.166.0",
+  "notes": "Quick start: brand-new coaches can tap one button and be coaching a solid program in seconds. Your first week: a short checklist on Home walks new coaches through offers, media days, captains and the first Saturday.",
+  "sha256": "a8c68f0674f0c3f5f2dbb036496879fb6c1837dccd14ebe70ae5761af253c4a5"
 }
