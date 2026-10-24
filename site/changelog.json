@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.164.0",
+  "notes": "Upset alert: game day flags it when you are a big underdog, with your real odds. A national coach of the week every Saturday for the biggest upset (win it yourself and the fans and your reputation notice). The weekly gauntlet setup now shows your recent gauntlet scores."
+ },
+ {
   "version": "1.163.0",
   "notes": "Season tab shows the Vegas line for this week and next, plus your career record against the spread. The game preview lists your own injured starters and when they are due back. Trap games get their own line in your career splits, and the season archive remembers each year's Vegas win total and whether you cashed it."
  },
