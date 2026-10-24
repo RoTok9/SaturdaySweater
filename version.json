@@ -1,5 +1,5 @@
 {
-  "version": "1.162.0",
-  "notes": "The rest of the league looks ahead too: big favorites with a marquee game next week sometimes come out flat, and the newswire calls out the trap-game upsets. AI programs start their own traditions after big home wins. Weekly gauntlet: cashing the Vegas over is worth 10 points.",
-  "sha256": "0438e6191ee8a3e1686a74385fb94be7748ed57ab5990834a00669afc48f7b1a"
+  "version": "1.163.0",
+  "notes": "Season tab shows the Vegas line for this week and next, plus your career record against the spread. The game preview lists your own injured starters and when they are due back. Trap games get their own line in your career splits, and the season archive remembers each year's Vegas win total and whether you cashed it.",
+  "sha256": "58bab71407611f9591d311e2a0ec47cea47f8bdecbd4992a449c890ee3743135"
 }
