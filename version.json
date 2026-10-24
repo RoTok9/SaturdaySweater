@@ -1,5 +1,5 @@
 {
-  "version": "1.161.0",
-  "notes": "Game ball: the last-result card names the player of the game (or the bright spot in a loss) with his line. New Decides soonest sort on the recruiting board so you can see whose decision day is coming. Weeks sim faster, especially on phones: saves are batched into one write per action.",
-  "sha256": "5f768e08887f4d20bfafc384d34c9d44dfbea17afd9f210a06b1f270d8302211"
+  "version": "1.162.0",
+  "notes": "The rest of the league looks ahead too: big favorites with a marquee game next week sometimes come out flat, and the newswire calls out the trap-game upsets. AI programs start their own traditions after big home wins. Weekly gauntlet: cashing the Vegas over is worth 10 points.",
+  "sha256": "0438e6191ee8a3e1686a74385fb94be7748ed57ab5990834a00669afc48f7b1a"
 }
