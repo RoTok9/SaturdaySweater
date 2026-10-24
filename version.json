@@ -1,5 +1,5 @@
 {
-  "version": "1.160.1",
-  "notes": "League links and files: open a league link to load a whole custom league in one tap (great on a phone), or pick a league file in the league editor instead of pasting 136 lines.",
-  "sha256": "45a99483e3f453b8fae2d6a268026f8c48cef784784e30733e4d85a696fc50af"
+  "version": "1.160.2",
+  "notes": "Behind the scenes: groundwork for optional rewarded ads (watch one ad a week for 10 extra recruiting hours). It stays off until ad accounts are approved, so nothing changes yet.",
+  "sha256": "47af12d0ef367e14720d61e14f225bc918f5199298f8eefc934f8c614b1df017"
 }

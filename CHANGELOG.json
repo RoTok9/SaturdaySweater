@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.160.2",
+  "notes": "Behind the scenes: groundwork for optional rewarded ads (watch one ad a week for 10 extra recruiting hours). It stays off until ad accounts are approved, so nothing changes yet."
+ },
+ {
   "version": "1.160.1",
   "notes": "League links and files: open a league link to load a whole custom league in one tap (great on a phone), or pick a league file in the league editor instead of pasting 136 lines."
  },
