@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.165.1",
+  "notes": "The public version now uses fully fictional conferences, award and playoff names, and generic coach names, so nothing in the game points to a real league, trophy or person. Your own league editor still lets you rename anything."
+ },
+ {
   "version": "1.165.0",
   "notes": "Next call: a new button in live games fast-forwards to your next decision (halftime, the fourth quarter or crunch time). Player milestones: thousand-yard backs and receivers, 3,000-yard passers, 10-sack seasons and more get announced as they happen. Simming with 20 or more recruiting hours unused now reminds you once, since hours do not carry over."
  },
@@ -169,7 +173,7 @@
  },
  {
   "version": "1.145.0",
-  "notes": "Heisman campaigns: when one of your players is on the watch list (Weeks 4 to 12), Polls > Leaders lets you launch a campaign for /bin/bash.5M: highlight package, website, a bobblehead to every voter. It nudges the vote; a hothead might start reading his own press."
+  "notes": "Iron Helmet campaigns: when one of your players is on the watch list (Weeks 4 to 12), Polls > Leaders lets you launch a campaign for /bin/bash.5M: highlight package, website, a bobblehead to every voter. It nudges the vote; a hothead might start reading his own press."
  },
  {
   "version": "1.144.0",
@@ -329,7 +333,7 @@
  },
  {
   "version": "1.112.0",
-  "notes": "Heisman ceremony: after championship week, Home shows the finalists on the stage in New York. Tap for the envelope; vote shares appear and the winner lights up. If it is your player, confetti."
+  "notes": "Iron Helmet ceremony: after championship week, Home shows the finalists on the stage in New York. Tap for the envelope; vote shares appear and the winner lights up. If it is your player, confetti."
  },
  {
   "version": "1.111.0",
@@ -453,7 +457,7 @@
  },
  {
   "version": "1.84.0",
-  "notes": "Around the Country score tiles are now watchable: tap any ranked game for a replay with the drive feed and field strip, built from both rosters. Heisman moments: when a top candidate of yours scores big in a big game, the broadcast says so. Rivalry finals name the right trophy."
+  "notes": "Around the Country score tiles are now watchable: tap any ranked game for a replay with the drive feed and field strip, built from both rosters. Iron Helmet moments: when a top candidate of yours scores big in a big game, the broadcast says so. Rivalry finals name the right trophy."
  },
  {
   "version": "1.83.0",
@@ -465,7 +469,7 @@
  },
  {
   "version": "1.81.0",
-  "notes": "Game plan gets a Feature row: force-feed one back or receiver for more touches (and a Heisman case) at the cost of a little more wear and tear. His carries and targets climb, the backup's shrink."
+  "notes": "Game plan gets a Feature row: force-feed one back or receiver for more touches (and a Iron Helmet case) at the cost of a little more wear and tear. His carries and targets climb, the backup's shrink."
  },
  {
   "version": "1.80.0",
@@ -633,7 +637,7 @@
  },
  {
   "version": "1.41.0",
-  "notes": "December portal window: after the regular season your backups who plan to transfer say so, and you get one conversation each (2 hours) to keep them before January. Players on a deal or with a believable path to the field tend to stay. Conference Player of the Week for your guys after big Saturdays, with a Heisman bump. Live game on desktop gets a side panel: scoring by quarter, keys to the game from your plan, and your top performers and total yards at the final."
+  "notes": "December portal window: after the regular season your backups who plan to transfer say so, and you get one conversation each (2 hours) to keep them before January. Players on a deal or with a believable path to the field tend to stay. Conference Player of the Week for your guys after big Saturdays, with a Iron Helmet bump. Live game on desktop gets a side panel: scoring by quarter, keys to the game from your plan, and your top performers and total yards at the final."
  },
  {
   "version": "1.40.0",
@@ -641,7 +645,7 @@
  },
  {
   "version": "1.39.0",
-  "notes": "Storylines on Home: the week's live narratives (undefeated watch, Heisman campaign, playoff bubble or first four out, hot seat, contract year, rivalry week, ranked showdown, trap game, QB questions, bowl chase, class rank, injury bug) with why each one matters. Stat grids go single-column on phones so names stop truncating."
+  "notes": "Storylines on Home: the week's live narratives (undefeated watch, Iron Helmet campaign, playoff bubble or first four out, hot seat, contract year, rivalry week, ranked showdown, trap game, QB questions, bowl chase, class rank, injury bug) with why each one matters. Stat grids go single-column on phones so names stop truncating."
  },
  {
   "version": "1.38.0",
@@ -673,7 +677,7 @@
  },
  {
   "version": "1.31.0",
-  "notes": "Defensive game plans: Base, Stack the box, Two-high coverage or Blitz heavy, graded against the opponent's scheme and quarterback (stack a run team and it pays; stack a passing team and they go over the top; blitz a shaky QB for chaos, blitz a great one at your peril). The last-result card now shows your full plan and whether it worked or hurt you. Named rivalries can come with a trophy (the Iron Skillet, the Old Oaken Bucket and friends) that changes hands with the series. Heisman ceremony: five finalists with vote shares on the Polls tab. School records: when one of your players passes a single-season school mark midseason, it hits the newswire the week it happens."
+  "notes": "Defensive game plans: Base, Stack the box, Two-high coverage or Blitz heavy, graded against the opponent's scheme and quarterback (stack a run team and it pays; stack a passing team and they go over the top; blitz a shaky QB for chaos, blitz a great one at your peril). The last-result card now shows your full plan and whether it worked or hurt you. Named rivalries can come with a trophy (the Iron Skillet, the Old Oaken Bucket and friends) that changes hands with the series. Iron Helmet ceremony: five finalists with vote shares on the Polls tab. School records: when one of your players passes a single-season school mark midseason, it hits the newswire the week it happens."
  },
  {
   "version": "1.30.0",
@@ -737,7 +741,7 @@
  },
  {
   "version": "1.17.0",
-  "notes": "Saturday wrap: after every week a league show card on Home gives the game of the week, upset of the week, poll risers and fallers (with a new No. 1 call-out) and the Heisman top three. Signing day show: when the class closes you get a card with your national and conference class rank, star breakdown, headliner, gems found, steals (recruits you landed at long odds), the ones that got away and why, and the top five classes. Scores of 2 no longer happen."
+  "notes": "Saturday wrap: after every week a league show card on Home gives the game of the week, upset of the week, poll risers and fallers (with a new No. 1 call-out) and the Iron Helmet top three. Signing day show: when the class closes you get a card with your national and conference class rank, star breakdown, headliner, gems found, steals (recruits you landed at long odds), the ones that got away and why, and the top five classes. Scores of 2 no longer happen."
  },
  {
   "version": "1.16.0",

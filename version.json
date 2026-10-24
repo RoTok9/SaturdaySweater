@@ -1,5 +1,5 @@
 {
-  "version": "1.165.0",
-  "notes": "Next call: a new button in live games fast-forwards to your next decision (halftime, the fourth quarter or crunch time). Player milestones: thousand-yard backs and receivers, 3,000-yard passers, 10-sack seasons and more get announced as they happen. Simming with 20 or more recruiting hours unused now reminds you once, since hours do not carry over.",
-  "sha256": "759e85f4ac1e8deb04f455f452b46dc42b2b632615255d6c98523ad3f9c760ed"
+  "version": "1.165.1",
+  "notes": "The public version now uses fully fictional conferences, award and playoff names, and generic coach names, so nothing in the game points to a real league, trophy or person. Your own league editor still lets you rename anything.",
+  "sha256": "dcf6fb804fc0a0a2a938bc82fe285c5f7ab55911e8efc7b846b24e351a48bf15"
 }

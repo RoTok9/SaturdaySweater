@@ -12,6 +12,11 @@ v,notes=sys.argv[1],sys.argv[2]
 cl=json.load(open('/home/claude/saturdaysweater/CHANGELOG.json'))
 cl=[c for c in cl if c['version']!=v]
 cl.insert(0,{'version':v,'notes':notes})
+def pub(t):
+    t=re.sub(r'(?<![A-Za-z])Heisman','Iron Helmet',t)
+    for a,b in (('College Football Playoff','National Playoff'),('Big Ten','Great Lakes'),('Big 12','Plains'),('Pac-12','Pacific Rim'),('Sun Belt','Bayou'),('Mountain West','Rockies'),('Conference USA','Heritage')):t=t.replace(a,b)
+    return re.sub(r'\bSEC\b','Deep South',re.sub(r'\bACC\b','Seaboard',t))
+cl=[dict(c,notes=pub(c['notes'])) for c in cl]
 json.dump(cl,open('/home/claude/saturdaysweater/CHANGELOG.json','w'),indent=1)
 p='/home/claude/gridiron-dynasty.html';s=open(p).read()
 s=re.sub(r"const APP_VERSION='[^']*';","const APP_VERSION='%s';"%v,s,count=1)
