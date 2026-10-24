@@ -11,8 +11,16 @@
 <link rel="canonical" href="https://saturdaysweater.com/">
 <meta name="theme-color" content="#0d1014">
 <link rel="icon" href="icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
+<style>
+@font-face{font-family:"Barlow";font-weight:400;font-display:swap;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-weight:500;font-display:swap;src:url(fonts/barlow-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-weight:600;font-display:swap;src:url(fonts/barlow-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-weight:700;font-display:swap;src:url(fonts/barlow-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:800;font-display:swap;src:url(fonts/barlow-condensed-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Graduate";font-weight:400;font-display:swap;src:url(fonts/graduate-latin-400-normal.woff2) format("woff2")}
+</style>
 <style>
 /* Stadium night. Same language as the game: dark glass cards, condensed display type, one team accent that glows. */
 :root{--bg:#0d1014;--surface:#161a20;--surface2:#1b2029;--fg:#e8ebf0;--muted:#98a2b1;--line:#2a313c;--soft:#1e232c;--good:#4ec27a;--bad:#ef6b63;--gold:#e0b84d;--team:#5b3fd6;--accent:#a78bfa;--teamfg:#fff;--radius:14px;
@@ -294,7 +302,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 <section id="new"><div class="wrap">
   <div class="sh"><div><div class="eyebrow acc">Release notes</div><h2>What's new</h2><p class="sub">The game ships often. The latest updates, straight from the changelog.</p></div><a class="btn ghost sm" href="https://github.com/RoTok9/SaturdaySweater/blob/main/CHANGELOG.json">Full changelog</a></div>
-  <div class="wn" id="wn"><!--WN--><div class="item"><div class="v">1.160.2</div><div>Behind the scenes: groundwork for optional rewarded ads (watch one ad a week for 10 extra recruiting hours).</div></div><div class="item"><div class="v">1.160.1</div><div>League links and files: open a league link to load a whole custom league in one tap (great on a phone), or pick a league file in the league editor instead of pasting 136 lines.</div></div><div class="item"><div class="v">1.160.0</div><div>Vegas win total: every season opens with a betting line on your regular-season wins, tracked on the Home tab (need 3 of 4, over cashed, under locked).</div></div><div class="item"><div class="v">1.159.5</div><div>Safety net: simming a week, finishing a game and other big steps now run as a transaction.</div></div><div class="item"><div class="v">1.159.4</div><div>Phone apps keep a second copy of every save in the app&#x27;s private files, so a dynasty survives even if the phone clears web storage; it restores automatically.</div></div><div class="item"><div class="v">1.159.3</div><div>Version safety for online leagues: a coach on an older version is asked to update before they can ready up or advance, so mixed versions can never scramble a league save.</div></div><!--/WN--></div>
+  <div class="wn" id="wn"><!--WN--><div class="item"><div class="v">1.160.3</div><div>Privacy Policy, Terms of Use and a notices and credits page, linked from the game and the website.</div></div><div class="item"><div class="v">1.160.2</div><div>Behind the scenes: groundwork for optional rewarded ads (watch one ad a week for 10 extra recruiting hours).</div></div><div class="item"><div class="v">1.160.1</div><div>League links and files: open a league link to load a whole custom league in one tap (great on a phone), or pick a league file in the league editor instead of pasting 136 lines.</div></div><div class="item"><div class="v">1.160.0</div><div>Vegas win total: every season opens with a betting line on your regular-season wins, tracked on the Home tab (need 3 of 4, over cashed, under locked).</div></div><div class="item"><div class="v">1.159.5</div><div>Safety net: simming a week, finishing a game and other big steps now run as a transaction.</div></div><div class="item"><div class="v">1.159.4</div><div>Phone apps keep a second copy of every save in the app&#x27;s private files, so a dynasty survives even if the phone clears web storage; it restores automatically.</div></div><!--/WN--></div>
 </div></section>
 
 <section id="faq"><div class="wrap">
@@ -307,7 +315,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 </div></section>
 </main>
 
-<footer><div class="wrap"><span>Saturday Sweater: CFB Dynasty. Fictional schools and players; any resemblance is coincidental.</span><span><a href="https://github.com/RoTok9/SaturdaySweater">Source and releases on GitHub</a></span></div></footer>
+<footer><div class="wrap"><span>Saturday Sweater: CFB Dynasty. Fictional schools and players; any resemblance is coincidental. Not affiliated with the NCAA or any school.</span><span><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="legal.html">Notices</a> · <a href="https://github.com/RoTok9/SaturdaySweater">Source and releases on GitHub</a></span></div></footer>
 
 <script>
 (function(){

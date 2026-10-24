@@ -6,6 +6,17 @@ def rep(old,new):
     assert s.count(old)==1,(old[:70],s.count(old))
     s=s.replace(old,new)
 rep('<meta name="claude:viewport-fit-sides" content="cover">\n','')
+# fonts are self-hosted (no visitor data goes to Google Fonts)
+rep('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=Graduate&display=swap">\n','''<style id="ff">
+@font-face{font-family:"Barlow";font-weight:400;font-display:swap;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-weight:500;font-display:swap;src:url(fonts/barlow-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-weight:600;font-display:swap;src:url(fonts/barlow-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:800;font-display:swap;src:url(fonts/barlow-condensed-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Graduate";font-weight:400;font-display:swap;src:url(fonts/graduate-latin-400-normal.woff2) format("woff2")}
+</style>
+''')
 rep("""if(typeof window!=='undefined'&&app){
   window.claude?.hot?.snapshot?.(()=>({G,UI,SLOT}));
   window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});

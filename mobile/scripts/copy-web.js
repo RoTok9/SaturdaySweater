@@ -6,6 +6,7 @@ let html=fs.readFileSync(path.join(src,'index.html'),'utf8');
 // native shells do not need the service worker
 html=html.replace(/<script>if\("serviceWorker" in navigator\)[\s\S]*?<\/script>/,'');
 fs.writeFileSync(path.join(out,'index.html'),html);
+{const fd=path.join(src,'fonts');if(fs.existsSync(fd)){fs.mkdirSync(path.join(out,'fonts'),{recursive:true});for(const f of fs.readdirSync(fd))fs.copyFileSync(path.join(fd,f),path.join(out,'fonts',f));}}
 for(const f of ['manifest.json']){const p=path.join(src,f);if(fs.existsSync(p))fs.copyFileSync(p,path.join(out,f));}
 const icon=path.join(__dirname,'..','..','site','icon.png');if(fs.existsSync(icon))fs.copyFileSync(icon,path.join(out,'icon.png'));
 console.log('www ready:',fs.readdirSync(out).join(', '));

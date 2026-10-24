@@ -1,5 +1,5 @@
 {
-  "version": "1.160.2",
-  "notes": "Behind the scenes: groundwork for optional rewarded ads (watch one ad a week for 10 extra recruiting hours). It stays off until ad accounts are approved, so nothing changes yet.",
-  "sha256": "47af12d0ef367e14720d61e14f225bc918f5199298f8eefc934f8c614b1df017"
+  "version": "1.160.3",
+  "notes": "Privacy Policy, Terms of Use and a notices and credits page, linked from the game and the website. The website and browser game now host their own fonts, so nothing about your visit goes to a third-party font service.",
+  "sha256": "5ddfbfaf287a53b7bec4fea5f6f91f029ebba1e0373204f1fc5353917fa29a48"
 }
