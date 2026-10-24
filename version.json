@@ -1,5 +1,5 @@
 {
-  "version": "1.165.1",
-  "notes": "The public version now uses fully fictional conferences, award and playoff names, and generic coach names, so nothing in the game points to a real league, trophy or person. Your own league editor still lets you rename anything.",
-  "sha256": "dcf6fb804fc0a0a2a938bc82fe285c5f7ab55911e8efc7b846b24e351a48bf15"
+  "version": "1.165.2",
+  "notes": "League files and links can now rename the conferences and the player of the year award too, so a custom league can carry every name you want.",
+  "sha256": "164753c62403ab12d2335114b1b1d4fa17454bda930d4b158dc726f99822f602"
 }

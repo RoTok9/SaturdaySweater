@@ -66,7 +66,7 @@ head='''<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; img-src 'self' data:; font-src 'self' data:">
-<meta name="app-version" content="1.165.1">
+<meta name="app-version" content="1.165.2">
 '''
 s=head+s.replace('<div id="app"></div>','</head>\n<body>\n<div id="app"></div>',1)+'\n</body>\n</html>\n'
 
