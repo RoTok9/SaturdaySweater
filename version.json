@@ -1,5 +1,5 @@
 {
-  "version": "1.160.3",
-  "notes": "Privacy Policy, Terms of Use and a notices and credits page, linked from the game and the website. The website and browser game now host their own fonts, so nothing about your visit goes to a third-party font service.",
-  "sha256": "5ddfbfaf287a53b7bec4fea5f6f91f029ebba1e0373204f1fc5353917fa29a48"
+  "version": "1.161.0",
+  "notes": "Game ball: the last-result card names the player of the game (or the bright spot in a loss) with his line. New Decides soonest sort on the recruiting board so you can see whose decision day is coming. Weeks sim faster, especially on phones: saves are batched into one write per action.",
+  "sha256": "5f768e08887f4d20bfafc384d34c9d44dfbea17afd9f210a06b1f270d8302211"
 }

@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.161.0",
+  "notes": "Game ball: the last-result card names the player of the game (or the bright spot in a loss) with his line. New Decides soonest sort on the recruiting board so you can see whose decision day is coming. Weeks sim faster, especially on phones: saves are batched into one write per action."
+ },
+ {
   "version": "1.160.3",
   "notes": "Privacy Policy, Terms of Use and a notices and credits page, linked from the game and the website. The website and browser game now host their own fonts, so nothing about your visit goes to a third-party font service."
  },
