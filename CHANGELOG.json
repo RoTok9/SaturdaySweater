@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.160.1",
+  "notes": "League links and files: open a league link to load a whole custom league in one tap (great on a phone), or pick a league file in the league editor instead of pasting 136 lines."
+ },
+ {
   "version": "1.160.0",
   "notes": "Vegas win total: every season opens with a betting line on your regular-season wins, tracked on the Home tab (need 3 of 4, over cashed, under locked). Cash the over and the fans are buying; miss it badly and the radio shows notice."
  },
