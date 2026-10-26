@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.167.0",
+  "notes": "Recruit texts are fresh now. Threads react to what actually happened: your last result, your next opponent, your ranking, his visit, his decision date, the school pushing him hardest, his own Friday night game. Every persona has more to say, and nobody sends you the same message twice. Texts you ignore close at the end of the week instead of sitting there for a month, and no recruit will congratulate you on a win you did not get. Postseason press conferences ask postseason questions: every playoff round, bowl wins and losses, and losing the title game each get their own. The podium also stops asking the same question two weeks in a row."
+ },
+ {
   "version": "1.166.0",
   "notes": "Quick start: brand-new coaches can tap one button and be coaching a solid program in seconds. Your first week: a short checklist on Home walks new coaches through offers, media days, captains and the first Saturday."
  },
