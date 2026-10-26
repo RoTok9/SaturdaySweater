@@ -1,5 +1,5 @@
 {
-  "version": "1.167.0",
-  "notes": "Recruit texts are fresh now. Threads react to what actually happened: your last result, your next opponent, your ranking, his visit, his decision date, the school pushing him hardest, his own Friday night game. Every persona has more to say, and nobody sends you the same message twice. Texts you ignore close at the end of the week instead of sitting there for a month, and no recruit will congratulate you on a win you did not get. Postseason press conferences ask postseason questions: every playoff round, bowl wins and losses, and losing the title game each get their own. The podium also stops asking the same question two weeks in a row.",
-  "sha256": "e37af35bcc466a36b2d6c56e03da99660927032a6ef8496b7aa307dee14795b8"
+  "version": "1.168.0",
+  "notes": "Recruiting takes fewer taps. Build my board puts out offers to the best realistic targets at your biggest needs in one tap, and Work my board spends your hours on the recruits who can still swing, scouting the ones who decide soon first. Your phone: every waiting text now sits at the top of the Recruit tab, so you can answer them all in one place. The board shows 30 recruits at a time with a Show more button, and rows are easier to read on a phone. NIL retention buttons no longer get squeezed on small screens. On a wide screen there is only one Sim button now; the second one shows up in the tab bar only after you scroll past the header.",
+  "sha256": "c098fe5b15ab7f59c7b1bff1c2038188f80095d194fdfa347a40f7fbd26d9c6a"
 }

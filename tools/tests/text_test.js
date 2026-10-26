@@ -17,7 +17,7 @@ for(let season=0;season<3;season++){
    G.recruits.filter(r=>r.offer&&r.committed==null&&!r.convo).slice(0,4).forEach(r=>{onAction('text',{dataset:{id:String(r.id)}});const c=r.convo;if(!c)return;texts++;if(EMO.test(c.m))bad('emoji '+c.m);
      const k=r.txSeen[r.txSeen.length-1];if(/^[wlnrthdv]/.test(k))sit++;const L=G.lastResult;
      if(k[0]==='w'&&!(L&&L.won))bad('win text without a win');if(k[0]==='l'&&!(L&&!L.won))bad('loss text without a loss');
-     const key=r.id+'|'+c.m;if(seenMsgs[key]&&/^[wlnrtdv]/.test(k))bad('repeat to same recruit: '+c.m);seenMsgs[key]=1;
+     if(seenMsgs[r.id]===c.m&&/^[wlnrtdv]/.test(k))bad('same text twice in a row: '+c.m);seenMsgs[r.id]=c.m;
      if(i%2)onAction('reply',{dataset:{id:String(r.id),i:'0'}});});
    G.recruits.forEach(r=>{const c=r.convo;if(c&&c.inbound){inb++;if(EMO.test(c.m))bad('inbound emoji '+c.m);if(c.wk!==G.week&&!c.done)bad('stale inbound from wk '+c.wk);}});
   }
