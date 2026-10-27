@@ -2,7 +2,14 @@
 
 A tiny Cloudflare Worker (free tier) that holds online leagues: the shared save, each coach's pending week, ready flags and a version counter. The game client runs the sim; the last coach to ready up merges everyone's week and uploads the new save.
 
-## Deploy (one time, about five minutes)
+## Deploy from GitHub (no terminal)
+
+1. Create a free Cloudflare account and open Workers & Pages once so it sets up your workers.dev subdomain.
+2. Create an API token with the "Edit Cloudflare Workers" template, and copy your Account ID.
+3. In the GitHub repo: Settings > Secrets and variables > Actions, add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+4. Actions tab > "deploy league server" > Run workflow. It runs the server tests, deploys, and checks `/health`. Later changes under `server/` deploy on their own.
+
+## Deploy (from a terminal, about five minutes)
 
 1. Create a free Cloudflare account at https://dash.cloudflare.com/sign-up
 2. In this folder: `npm install` then `npx wrangler login` (opens a browser, click Allow)
