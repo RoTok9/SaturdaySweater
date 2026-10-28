@@ -39,7 +39,9 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
-        submit_to_testflight: true
+        # Internal testers get every build automatically. Turn this on once the
+        # TestFlight test information is filled in and outside testers are invited.
+        submit_to_testflight: false
   android-debug:
     name: Android test build
     max_build_duration: 45
