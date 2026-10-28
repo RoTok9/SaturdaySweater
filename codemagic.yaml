@@ -1,7 +1,7 @@
 # Codemagic builds for the mobile apps. The game itself lives in site/play;
 # mobile/ is a Capacitor shell that copies it into native iOS and Android projects.
 # Setup (one time, in the Codemagic web UI): add this repo, connect an App Store
-# Connect API key under Teams > Integrations and name it "SaturdaySweaterASC",
+# Connect API key under Settings > Integrations > Developer Portal and name it "SaturdaySweaterASC",
 # and enable automatic iOS code signing for the bundle id com.saturdaysweater.app.
 workflows:
   ios-testflight:
@@ -27,10 +27,11 @@ workflows:
         script: cd mobile && npm run web && npx cap sync ios
       - name: Signing
         script: xcode-project use-profiles
-      - name: Build number
+      - name: Version and build number
         script: |
           cd mobile/ios/App
-          agvtool new-version -all $BUILD_NUMBER
+          sed -i '' -E "s/CURRENT_PROJECT_VERSION = [0-9]+;/CURRENT_PROJECT_VERSION = ${BUILD_NUMBER:-1};/g; s/MARKETING_VERSION = [0-9.]+;/MARKETING_VERSION = 1.0.0;/g" App.xcodeproj/project.pbxproj
+          grep -E "CURRENT_PROJECT_VERSION|MARKETING_VERSION" App.xcodeproj/project.pbxproj
       - name: Build the IPA
         script: xcode-project build-ipa --project mobile/ios/App/App.xcodeproj --scheme App
     artifacts:
