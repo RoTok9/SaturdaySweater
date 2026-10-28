@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.169.2",
+  "notes": "On iPhone the top of the screen is no longer tucked under the scoreboard header, so the first card and its Hide button are fully visible."
+ },
+ {
   "version": "1.169.1",
   "notes": "Fits the screen on iPhone: no more sideways sliding, and text stays the size it was designed for. Online leagues are hidden in the phone app until the league server is live."
  },
