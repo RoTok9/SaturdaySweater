@@ -1,5 +1,5 @@
 {
-  "version": "1.169.0",
-  "notes": "Staff plan: one tap and your coordinators set offense, defense, tempo and practice for Saturday. Without a scouting report they lean on what they know and what fits your own team; scout the opponent first and the plan gets sharp. Better coordinators make better plans, and you can still change any of it. Home is shorter: what last week changed now sits inside the Last result card instead of its own. The message board stops reshuffling every time you tap, and in the postseason the fans talk about the playoff run, the bowl or the title game instead of regular-season stuff.",
-  "sha256": "6e95c9664069de85ee4489835fd42e26d3f811efe732e5befff72105048403d8"
+  "version": "1.169.1",
+  "notes": "Fits the screen on iPhone: no more sideways sliding, and text stays the size it was designed for. Online leagues are hidden in the phone app until the league server is live.",
+  "sha256": "eff8cb0e3cc6bf0a92bd600accaebb927b499413f31b32b4368695dc113959a8"
 }
