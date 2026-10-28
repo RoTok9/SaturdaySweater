@@ -1,5 +1,5 @@
 {
-  "version": "1.169.2",
-  "notes": "On iPhone the top of the screen is no longer tucked under the scoreboard header, so the first card and its Hide button are fully visible.",
-  "sha256": "51660cbab72f4e0f3a99e8c2da565daa78f61be1568ecb1b5543d8688d7eaced"
+  "version": "1.169.3",
+  "notes": "iPhone fix: header no longer pushed down, top of the screen no longer cut off, scrolling works normally",
+  "sha256": "f71220c35ba6feaae2af12333052eebc82823c743ae8efee371dec64bd92cec1"
 }
