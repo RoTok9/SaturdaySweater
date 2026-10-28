@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.169.4",
+  "notes": "iPhone: header is now pinned, so the top of the page is never hidden under it"
+ },
+ {
   "version": "1.169.3",
   "notes": "iPhone fix: header no longer pushed down, top of the screen no longer cut off, scrolling works normally"
  },

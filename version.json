@@ -1,5 +1,5 @@
 {
-  "version": "1.169.3",
-  "notes": "iPhone fix: header no longer pushed down, top of the screen no longer cut off, scrolling works normally",
-  "sha256": "f71220c35ba6feaae2af12333052eebc82823c743ae8efee371dec64bd92cec1"
+  "version": "1.169.4",
+  "notes": "iPhone: header is now pinned, so the top of the page is never hidden under it",
+  "sha256": "e110869577ae1cbb12caeb0f840fa36971cf4afbc822c9c1d349efcb4c9458b8"
 }
