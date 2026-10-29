@@ -6,7 +6,7 @@
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "test": "node test/stress.mjs && node test/stress.mjs --chaos",
+    "test": "node test/stress.mjs && node test/stress.mjs --chaos && node test/directory.mjs",
     "mock": "node mock.mjs 8787"
   },
   "devDependencies": {

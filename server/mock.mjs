@@ -3,7 +3,7 @@
 //   --latency adds a random delay to each storage call (shakes out ordering bugs)
 //   --fail makes that fraction of storage writes throw (shakes out crash-safety bugs)
 import http from 'node:http';
-import worker, { League } from './src/index.js';
+import worker, { League, Directory } from './src/index.js';
 const args = Object.fromEntries(process.argv.slice(3).map(a => a.replace(/^--/, '').split('=')));
 const LAT = +args.latency || 0, FAIL = +args.fail || 0;
 const wait = () => LAT ? new Promise(r => setTimeout(r, Math.random() * LAT)) : null;
@@ -13,12 +13,16 @@ class Storage {
   async get(k) { await wait(); if (Array.isArray(k)) { if (k.length > 128) throw new Error('too many keys'); const out = new Map(); k.forEach(x => { if (this.m.has(x)) out.set(x, clone(this.m.get(x))); }); return out; } return clone(this.m.get(k)); }
   async put(a, b) { await wait(); if (FAIL && Math.random() < FAIL) throw new Error('injected storage failure'); if (typeof a === 'object') { const ks = Object.keys(a); if (ks.length > 128) throw new Error('too many keys'); for (const k of ks) { const s = JSON.stringify(a[k]); if (s && s.length > 2 * 1024 * 1024) throw new Error('value too large: ' + k); } for (const k of ks) this.m.set(k, clone(a[k])); } else this.m.set(a, clone(b)); }
   async delete(k) { await wait(); if (Array.isArray(k)) { let n = 0; k.forEach(x => { if (this.m.delete(x)) n++; }); return n; } return this.m.delete(k); }
+  async list(o) { await wait(); const p = (o && o.prefix) || ''; const out = new Map(); [...this.m.keys()].filter(k => k.startsWith(p)).sort().forEach(k => out.set(k, clone(this.m.get(k)))); return out; }
   async deleteAll() { this.m.clear(); this.alarmAt = null; }
   async setAlarm(t) { this.alarmAt = t; }
   async getAlarm() { return this.alarmAt; }
 }
 const objs = new Map();
-export const env = { LEAGUE: { idFromName: n => n, get: id => { if (!objs.has(id)) objs.set(id, new League({ storage: new Storage() }, env)); const o = objs.get(id); return { fetch: r => o.fetch(r) }; } } };
+const dirs = new Map();
+export const env = { ADMIN_KEY: process.env.ADMIN_KEY || 'test-admin-key',
+  LEAGUE: { idFromName: n => n, get: id => { if (!objs.has(id)) objs.set(id, new League({ storage: new Storage() }, env)); const o = objs.get(id); return { fetch: r => o.fetch(r) }; } },
+  DIRECTORY: { idFromName: n => n, get: id => { if (!dirs.has(id)) dirs.set(id, new Directory({ storage: new Storage() }, env)); const o = dirs.get(id); return { fetch: r => o.fetch(r) }; } } };
 export const _objs = objs;
 const port = +process.argv[2] || 8787;
 if (!process.env.NO_LISTEN) http.createServer((req, res) => {

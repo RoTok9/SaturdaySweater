@@ -11,7 +11,10 @@
 // - Each coach's delta lives under its own key, so a big league never hits the per-value size limit.
 // - Inputs are validated (team ids, sizes, names), errors always come back as JSON with CORS headers,
 //   and idle leagues clean themselves up with an alarm.
-export const SERVER_VERSION = 2;
+import { Directory } from './directory.js';
+import { badName } from './names.js';
+export { Directory };
+export const SERVER_VERSION = 3;
 const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '86400' };
 const json = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: Object.assign({ 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, CORS) });
 const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -39,6 +42,16 @@ export default {
       if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
       const url = new URL(req.url); const parts = url.pathname.split('/').filter(Boolean);
       if (parts[0] === 'health' || parts.length === 0) return json({ ok: true, t: Date.now(), v: SERVER_VERSION });
+      if (parts[0] === 'dir') {
+        // public side: league search, leaderboard, reports. /sync is internal (leagues only).
+        if (!env.DIRECTORY || parts[1] === 'sync') return json({ error: 'not found' }, 404);
+        if (!['GET', 'POST'].includes(req.method)) return json({ error: 'method' }, 405);
+        if ((+req.headers.get('content-length') || 0) > 64 * 1024) return json({ error: 'too large' }, 413);
+        const dbody = req.method === 'POST' ? await req.text() : undefined;
+        if (dbody && dbody.length > 64 * 1024) return json({ error: 'too large' }, 413);
+        const h = { 'Content-Type': 'application/json' }; const ip = req.headers.get('cf-connecting-ip'); if (ip) h['cf-connecting-ip'] = ip;
+        return await env.DIRECTORY.get(env.DIRECTORY.idFromName('directory')).fetch(new Request('https://dir/' + parts.slice(1).join('/') + url.search, { method: req.method, headers: h, body: dbody }));
+      }
       if (parts[0] !== 'leagues') return json({ error: 'not found' }, 404);
       if (!['GET', 'POST'].includes(req.method)) return json({ error: 'method' }, 405);
       const len = +req.headers.get('content-length') || 0;
@@ -69,7 +82,17 @@ export default {
 };
 
 export class League {
-  constructor(state, env) { this.state = state; this.s = state.storage; this.q = Promise.resolve(); }
+  constructor(state, env) { this.state = state; this.s = state.storage; this.env = env || {}; this.q = Promise.resolve(); }
+
+  // keep the public league card in the directory up to date (best effort: never blocks or breaks league play)
+  async sync(meta, coaches, gone) {
+    const D = this.env.DIRECTORY; if (!D || !meta || !meta.id) return;
+    const listed = !gone && meta.listed === true;
+    if (!listed && !meta.wasListed) return;
+    const m = meta.meta || {};
+    const body = listed ? { op: 'put', id: meta.id, league: { name: meta.name, coaches: Object.values(coaches || {}).map(c => ({ tid: c.tid, name: c.name })), max: MAX_COACHES, season: m.season, label: m.label, app: m.app, created: meta.created } } : { op: 'del', id: meta.id };
+    try { await D.get(D.idFromName('directory')).fetch(new Request('https://dir/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })); } catch (e) {}
+  }
 
   // one request at a time per league
   fetch(req) {
@@ -81,7 +104,7 @@ export class League {
   async alarm() {
     const meta = await this.s.get('meta');
     if (!meta) return;
-    if (Date.now() - (meta.updated || 0) >= IDLE_MS) { await this.s.deleteAll(); return; }
+    if (Date.now() - (meta.updated || 0) >= IDLE_MS) { await this.sync(meta, null, true); await this.s.deleteAll(); return; }
     await this.arm(meta);
   }
   async arm(meta) { if (this.s.setAlarm) { try { await this.s.setAlarm((meta.updated || Date.now()) + IDLE_MS); } catch (e) {} } }
@@ -122,20 +145,21 @@ export class League {
       if (typeof body.base !== 'string' || !body.base) return json({ error: 'missing base' }, 400);
       if (body.base.length > MAX_BASE) return json({ error: 'save too large' }, 413);
       if (!validTid(tid)) return json({ error: 'bad team' }, 400);
+      if (badName(body.name) || badName(c0.name)) return json({ error: 'That name is not allowed. Pick a different one.' }, 400);
       const token = tok(); const now = Date.now();
       const ptr = await this.stageBase(body.base, 1);
-      meta = { id, name: cleanName(body.name, 40, 'League'), version: 1, created: now, updated: now, meta: smallMeta(body.meta), commissioner: tid, base: ptr };
+      meta = { id, name: cleanName(body.name, 40, 'League'), version: 1, created: now, updated: now, meta: smallMeta(body.meta), commissioner: tid, base: ptr, listed: body.listed === true, wasListed: body.listed === true };
       const coaches = { [tid]: { tid, name: cleanName(c0.name, 28, 'Coach'), token, ready: false, joined: now, seen: now } };
       await this.s.put({ meta, coaches });
-      await this.arm(meta);
-      return json({ id, token, version: 1, meta: meta.meta, name: meta.name });
+      await this.arm(meta); await this.sync(meta, coaches);
+      return json({ id, token, version: 1, meta: meta.meta, name: meta.name, listed: meta.listed });
     }
     if (!meta) return json({ error: 'no such league' }, 404);
     const coaches = (await this.s.get('coaches')) || {};
     const pub = () => Object.values(coaches).map(c => ({ tid: c.tid, name: c.name, ready: !!c.ready, joined: c.joined, seen: c.seen || c.joined })).sort((a, b) => a.joined - b.joined);
     const auth = () => { if (!validTid(body.tid)) return null; const c = coaches[body.tid]; return c && safeEq(c.token, body.token) ? c : null; };
     const touch = () => { meta.updated = Date.now(); };
-    const state = extra => Object.assign({ ok: true, id, name: meta.name, version: meta.version, meta: meta.meta, coaches: pub(), commissioner: meta.commissioner, updated: meta.updated }, extra || {});
+    const state = extra => Object.assign({ ok: true, id, name: meta.name, version: meta.version, meta: meta.meta, coaches: pub(), commissioner: meta.commissioner, updated: meta.updated, listed: meta.listed === true }, extra || {});
 
     if (path === '/') {
       if (req.method !== 'GET') return json({ error: 'method' }, 405);
@@ -153,11 +177,12 @@ export class League {
       if (!validTid(tid)) return json({ error: 'bad team' }, 400);
       if (coaches[tid]) return json({ error: 'team taken' }, 409);
       if (Object.keys(coaches).length >= MAX_COACHES) return json({ error: 'league full' }, 409);
+      if (badName(body.name)) return json({ error: 'That name is not allowed. Pick a different one.' }, 400);
       const token = tok(); const now = Date.now();
       // the joiner registers their team in the shared save with /register; until then nobody can advance past them
       coaches[tid] = { tid, name: cleanName(body.name, 28, 'Coach'), token, ready: false, joined: now, seen: now, pending: true };
       touch();
-      await this.s.put({ coaches, meta });
+      await this.s.put({ coaches, meta }); await this.sync(meta, coaches);
       return json(state({ token }));
     }
 
@@ -175,7 +200,7 @@ export class League {
       delete c.pending; c.ready = false; meta.version = v; touch();
       meta.meta = Object.assign({}, meta.meta, smallMeta(body.meta), { joined: ((meta.meta && meta.meta.joined) || []).concat([{ tid: c.tid, name: c.name, v }]).slice(-30) });
       await this.s.put({ meta, coaches });
-      await this.dropBase(old); await this.arm(meta);
+      await this.dropBase(old); await this.arm(meta); await this.sync(meta, coaches);
       return json(state());
     }
 
@@ -210,8 +235,15 @@ export class League {
       meta.version = v; touch(); meta.lastAdvance = { by: c.tid, t: Date.now() };
       meta.meta = Object.assign({}, smallMeta(body.meta), { joined: (meta.meta && meta.meta.joined) || [], kicked: (meta.meta && meta.meta.kicked) || [], moved: ((meta.meta && meta.meta.moved) || []).concat(moved).slice(-30) });
       await this.s.put({ meta, coaches });
-      await this.delMany(oldDeltaKeys); await this.dropBase(old); await this.arm(meta);
+      await this.delMany(oldDeltaKeys); await this.dropBase(old); await this.arm(meta); await this.sync(meta, coaches);
       return json(state({ moved }));
+    }
+
+    if (path === '/listed') {
+      if (meta.commissioner !== c.tid) return json({ error: 'only the commissioner can change this' }, 403);
+      meta.listed = body.listed === true; if (meta.listed) meta.wasListed = true;
+      await this.s.put({ meta, coaches }); await this.sync(meta, coaches);
+      return json(state());
     }
 
     if (path === '/kick' || path === '/leave') {
@@ -219,12 +251,12 @@ export class League {
       if (path === '/kick' && meta.commissioner !== c.tid) return json({ error: 'only the commissioner can remove a coach' }, 403);
       if (!validTid(target) || !coaches[target] || (path === '/kick' && target === c.tid)) return json({ error: 'bad target' }, 400);
       delete coaches[target];
-      if (!Object.keys(coaches).length) { await this.s.deleteAll(); return json({ ok: true, deleted: true }); }
+      if (!Object.keys(coaches).length) { await this.sync(meta, coaches, true); await this.s.deleteAll(); return json({ ok: true, deleted: true }); }
       if (meta.commissioner === target) meta.commissioner = pub()[0].tid;
       meta.version++; touch();
       meta.meta = Object.assign({}, meta.meta, { kicked: ((meta.meta && meta.meta.kicked) || []).concat([{ tid: target, v: meta.version, left: path === '/leave' }]).slice(-30) });
       // everyone else keeps their pending week and ready flag
-      await this.s.put({ coaches, meta }); await this.s.delete('d:' + target); await this.arm(meta);
+      await this.s.put({ coaches, meta }); await this.s.delete('d:' + target); await this.arm(meta); await this.sync(meta, coaches);
       return json(state({ allReady: Object.values(coaches).every(x => x.ready) }));
     }
     return json({ error: 'not found' }, 404);
