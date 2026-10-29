@@ -46,4 +46,4 @@ A tiny Cloudflare Worker (free tier) that holds online leagues: the shared save,
 
 ## Live URL
 
-https://saturday-sweater-league.tokarskirj.workers.dev (health check: /health)
+https://saturday-sweater-league.tokarskirj.workers.dev (health check: /health). Deploys from GitHub Actions on every push to server/.
