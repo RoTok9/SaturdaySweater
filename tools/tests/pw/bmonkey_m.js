@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');
 (async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
 const p=await b.newPage({viewport:{width:390,height:844}});const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/ERR_|net::|favicon|fonts/.test(m.text()))errs.push('C:'+m.text());});
-await p.goto('file:///home/claude/gridiron-dynasty.html');await p.waitForTimeout(400);
+await p.addInitScript(()=>{try{localStorage.setItem('gridiron-server','http://127.0.0.1:9');}catch(e){}});await p.goto('file:///home/claude/gridiron-dynasty.html');await p.waitForTimeout(400);
 await p.evaluate(()=>{document.getElementById('coachName').value='Coach';UI.pickTeam=+(localStorage.getItem('x')||5);onAction('start',{dataset:{}});});
 const SKIP=new Set(['reset','resetyes','newgame','share','export','import','leaguepreset','theme','slot','slotload','slotsave','slotdel','olcreate','oljoin','ollookup','oltoggle','olleave','olserver','coachadd','coachremove','coachswitch','sim','liveskip','livedone','tab','guideoff','leagueq','leagueapply','leaguerow','leagueimport','leagueexport','leagueopen','job','jobyes','cutyes','autotrim','realign','start','pick','checkupdate','update','confsel','leagueconf','tedit','switch','delslot','delslotyes','newslot','load','loadslot','leaguecopy','copy','halftime','fourth','livespeed','fxtoggle']);
 let clicks=0;

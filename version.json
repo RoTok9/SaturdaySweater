@@ -1,5 +1,5 @@
 {
-  "version": "1.170.0",
-  "notes": "Online leagues are live: create or join a league with a six-letter code, no setup needed",
-  "sha256": "b8b26a8d3daab23baf19bb197acac3ba1da18b8b912c725832dd40c821d18aba"
+  "version": "1.171.0",
+  "notes": "Play with friends: start an online league and text friends an invite link, join by code, or search for a friend's league by coach or league name. Bring any solo dynasty online from the Program tab. New public leaderboard ranked by national titles. Report and block for any name, plus a name filter.",
+  "sha256": "7847a769ff472923e86324a3f9db5f91f090a4ff865b3dc1f40ce2fd33490856"
 }
