@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.170.0",
+  "notes": "Online leagues are live: create or join a league with a six-letter code, no setup needed"
+ },
+ {
   "version": "1.169.4",
   "notes": "iPhone: header is now pinned, so the top of the page is never hidden under it"
  },

@@ -1,5 +1,5 @@
 {
-  "version": "1.169.4",
-  "notes": "iPhone: header is now pinned, so the top of the page is never hidden under it",
-  "sha256": "e110869577ae1cbb12caeb0f840fa36971cf4afbc822c9c1d349efcb4c9458b8"
+  "version": "1.170.0",
+  "notes": "Online leagues are live: create or join a league with a six-letter code, no setup needed",
+  "sha256": "b8b26a8d3daab23baf19bb197acac3ba1da18b8b912c725832dd40c821d18aba"
 }
