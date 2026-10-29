@@ -118,6 +118,22 @@ ok((await search('thursday')).some(x => x.id === A.j.id), 'restored league back'
 ok((await call('/dir/admin/act', { key: 'test-admin-key', kind: 'league', target: A.j.id, action: 'hide' })).status === 200, 'admin hide');
 ok(!(await search('thursday')).some(x => x.id === A.j.id), 'admin-hidden league gone');
 
+// ---------- longest dynasty board and old dynasties ----------
+{
+  const p6 = { pid: hex(32), token: hex(32) }, p7 = { pid: hex(32), token: hex(32) };
+  await call('/dir/profile', { ...p6, name: 'Ancient One', force: true, dyn: { did: 'old1', tid: 3, seasons: 340, titles: 61, playoffs: 150, conf: 120, w: 3400, l: 1100, season: 2365 } });
+  await call('/dir/profile', { ...p6, name: 'Ancient One', force: true, dyn: { did: 'old2', tid: 8, seasons: 12, titles: 1, playoffs: 4, conf: 2, w: 100, l: 40 } });
+  await call('/dir/profile', { ...p7, name: 'Middle', force: true, dyn: { did: 'm', tid: 5, seasons: 50, titles: 9, playoffs: 30, conf: 20, w: 450, l: 150 } });
+  const all = (await call('/dir/top')).j.rows; const a = all.find(x => x.pid === p6.pid);
+  ok(a && a.titles === 62 && a.seasons === 352 && a.dynasties === 2, 'old dynasties count in full on all time (340-season save)');
+  ok(all[0].pid === p6.pid, 'ancient save leads all time');
+  const L = (await call('/dir/top?sort=long')).j;
+  ok(L.sort === 'long' && L.rows[0].pid === p6.pid && L.rows[0].longest.seasons === 340 && L.rows[0].longest.tid === 3, 'longest board ranks the 340-season dynasty first');
+  ok(L.rows.findIndex(x => x.pid === p7.pid) === 1, 'longest board order');
+  await call('/dir/forget', p6);
+  ok(!(await call('/dir/top?sort=long')).j.rows.some(x => x.pid === p6.pid), 'forget clears longest board');
+}
+
 // ---------- monthly race ----------
 {
   const p4 = { pid: hex(32), token: hex(32) }, p5 = { pid: hex(32), token: hex(32) };

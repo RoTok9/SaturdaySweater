@@ -54,15 +54,25 @@ await click(A,'[data-act="unblock"]');ok((await text(A)).includes('Coach Bravo')
 await click(A,'[data-act="ollisted"]');await A.waitForTimeout(700);ok(await A.evaluate(()=>NET.listed===false),'commissioner unlists');
 await click(A,'[data-act="ollisted"]');await A.waitForTimeout(700);ok(await A.evaluate(()=>NET.listed===true),'commissioner relists');
 // ---------- leaderboard
-await click(A,'[data-act="hubopen"][data-id="lb"]');await A.waitForTimeout(700);
+// an old dynasty sitting on the device, never opened again
+const onlineSlot=await A.evaluate(()=>SLOT);
+await A.evaluate(()=>{onAction('quickstart',{dataset:{}});G.coach.years=45;G.coach.titles=7;G.coach.playoffs=20;G.coach.confTitles=12;G.coach.w=400;G.coach.l=150;save();flushSave();});
+await A.evaluate(id=>onAction('open',{dataset:{id}}),onlineSlot);await A.waitForTimeout(1500);
+ok(await A.evaluate(id=>SLOT===id&&!!G.online,onlineSlot),'back in the online dynasty');
+await A.evaluate(()=>onAction('hubopen',{dataset:{id:'lb'}}));await A.waitForTimeout(700);
 await A.fill('#lbName','Alpha Dog');await click(A,'[data-act="lbjoin"]');await A.waitForTimeout(2500);
+await A.waitForTimeout(1500);await click(A,'[data-act="lbload"]');await A.waitForTimeout(900);
+ok(await A.evaluate(()=>{const r=(UI.lb.rows||[]).find(x=>x.pid===profile().pid);return r&&r.dynasties===2&&r.titles===7&&r.seasons===46;}),'old dynasty counted on all time');
+ok(await A.evaluate(()=>UI.lbL&&UI.lbL.rows[0]&&UI.lbL.rows[0].longest.seasons===45),'old dynasty tops the longest board');
+await click(A,'[data-act="lbper"][data-id="long"]');ok(/Longest dynasties/i.test(await text(A))&&/45\s*seasons/i.test(await text(A)),'longest tab shows 45 seasons');
+await click(A,'[data-act="lbper"][data-id="month"]');
 ta=await text(A);ok(ta.includes('Posting as Alpha Dog'),'joined leaderboard');
 await click(A,'[data-act="lbload"]');await A.waitForTimeout(800);ta=await text(A);ok(/Alpha Dog/.test(ta)&&/#1/.test(ta),'on the board at #1: '+JSON.stringify(await A.evaluate(()=>({lb:UI.lb,p:profile().on}))).slice(0,400));
 await A.fill('#lbName','Alpha Prime');await click(A,'[data-act="lbname"]');await A.waitForTimeout(1200);ok((await text(A)).includes('Alpha Prime'),'rename');
-ta=await text(A);ok(/race/i.test(ta)&&/days? left/i.test(ta)&&/Nobody has scored this month/.test(ta),'month board is the default and starts empty');
+ta=await text(A);ok(/race/i.test(ta)&&/days? left/i.test(ta)&&await A.evaluate(()=>UI.lbM&&UI.lbM.rows.length===1&&UI.lbM.rows[0].titles===1),'month board is the default; old save credits one title');
 await A.evaluate(()=>{G.coach.titles=1;G.coach.playoffs=1;G.coach.confTitles=1;save();});await A.waitForTimeout(12500);await click(A,'[data-act="lbload"]');await A.waitForTimeout(900);
 ta=await text(A);ok(/Alpha Prime/.test(ta.split(/race/i)[1]||'')&&/this month/i.test(ta),'title shows up on this month board');
-ok(await A.evaluate(()=>UI.lbM&&UI.lbM.rank===1&&UI.lbM.rows[0].titles===1),'A leads the month with 1 title');
+ok(await A.evaluate(()=>UI.lbM&&UI.lbM.rank===1&&UI.lbM.rows[0].titles===2),'new title adds to the month (2)');
 await click(A,'[data-act="lbper"][data-id="all"]');ok(/all time/i.test(await text(A)),'all-time tab');
 await B.evaluate(()=>onAction('hubopen',{dataset:{id:'lb'}}));await B.waitForTimeout(900);tb=await text(B);ok(tb.includes('Alpha Prime'),'B sees A on the month leaderboard');await click(B,'[data-act="lbper"][data-id="all"]');ok((await text(B)).includes('Alpha Prime'),'B sees A all time');
 await click(B,'[data-act="report"][data-n="Alpha Prime"]');ok((await text(B)).includes('Report Alpha Prime?'),'report box');

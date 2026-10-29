@@ -74,6 +74,11 @@ export class Directory {
       const rows = (await this.s.get('M:' + m)) || []; const pm = prevMonth(m); const prev = (await this.s.get('M:' + pm)) || [];
       return json({ ok: true, period: 'month', month: m, ends: monthEnd(m), rows: rows.slice(0, n), total: rows.length, prev: { month: pm, rows: prev.slice(0, 3) } });
     }
+    if (path === '/top' && req.method === 'GET' && url.searchParams.get('sort') === 'long') {
+      const top = (await this.s.get('topLong')) || [];
+      const n = Math.min(int(url.searchParams.get('n'), TOP_N) || 100, TOP_N);
+      return json({ ok: true, sort: 'long', rows: top.slice(0, n), total: top.length });
+    }
     if (path === '/top' && req.method === 'GET') {
       const top = (await this.s.get('top')) || [];
       const n = Math.min(int(url.searchParams.get('n'), TOP_N) || 100, TOP_N);
@@ -99,8 +104,8 @@ export class Directory {
         if (!DID_RE.test(did)) return json({ error: 'bad dynasty' }, 400);
         const dk = 'D:' + pid + ':' + did; const old = await this.s.get(dk);
         if (!old) { const mine = await this.list('D:' + pid + ':'); if (mine.size >= MAX_DYN) return json({ error: 'too many dynasties' }, 409); }
-        const seasons = int(d.seasons, 200);
-        const row = { did, tid: int(d.tid, 999), seasons, titles: Math.min(int(d.titles, 200), seasons), playoffs: Math.min(int(d.playoffs, 200), seasons), conf: Math.min(int(d.conf, 200), seasons), w: int(d.w, seasons * 17 + 17), l: int(d.l, seasons * 17 + 17), online: !!d.online, diff: clean(d.diff, 12), season: int(d.season, 9999), at: now };
+        const seasons = int(d.seasons, 1000);
+        const row = { did, tid: int(d.tid, 999), seasons, titles: Math.min(int(d.titles, 1000), seasons), playoffs: Math.min(int(d.playoffs, 1000), seasons), conf: Math.min(int(d.conf, 1000), seasons), w: int(d.w, seasons * 17 + 17), l: int(d.l, seasons * 17 + 17), online: !!d.online, diff: clean(d.diff, 12), season: int(d.season, 9999), at: now };
         if (old) {
           // a season takes real time to play: allow at most one new season per two minutes since the last post
           const allowed = old.seasons + 1 + Math.floor((now - (old.at || now)) / 120000);
@@ -189,16 +194,19 @@ export class Directory {
     await this.s.put(mk, rows);
   }
   async dropMonth(pid) { const now = Date.now(); for (const m of [monthKey(now), prevMonth(monthKey(now))]) { const rows = (await this.s.get('M:' + m)) || []; const nr = rows.filter(r => r.pid !== pid); if (nr.length !== rows.length) await this.s.put('M:' + m, nr); } }
-  async dropTop(pid) { const top = (await this.s.get('top')) || []; const nt = top.filter(r => r.pid !== pid); if (nt.length !== top.length) await this.s.put({ top: nt, topAt: Date.now() }); }
+  async dropTop(pid) { const top = (await this.s.get('top')) || []; const nt = top.filter(r => r.pid !== pid); const lg = (await this.s.get('topLong')) || []; const nl = lg.filter(r => r.pid !== pid); if (nt.length !== top.length || nl.length !== lg.length) await this.s.put({ top: nt, topAt: Date.now(), topLong: nl }); }
   async rankOf(pid) { const top = (await this.s.get('top')) || []; const i = top.findIndex(r => r.pid === pid); return i < 0 ? null : i + 1; }
   // recompute one profile's totals and its place in the cached top list
   async refresh(pid, P) {
     const dyn = [...(await this.list('D:' + pid + ':')).values()];
-    const agg = { pid, name: P.name, titles: 0, playoffs: 0, conf: 0, w: 0, l: 0, seasons: 0, dynasties: dyn.length, online: false, best: null, since: P.created };
-    dyn.forEach(d => { agg.titles += d.titles; agg.playoffs += d.playoffs; agg.conf += d.conf; agg.w += d.w; agg.l += d.l; agg.seasons += d.seasons; if (d.online && d.titles) agg.online = true; if (!agg.best || d.titles > agg.best.titles || (d.titles === agg.best.titles && d.seasons > agg.best.seasons)) agg.best = { tid: d.tid, titles: d.titles, seasons: d.seasons, online: d.online }; });
+    const agg = { pid, name: P.name, titles: 0, playoffs: 0, conf: 0, w: 0, l: 0, seasons: 0, dynasties: dyn.length, online: false, best: null, longest: null, since: P.created };
+    dyn.forEach(d => { agg.titles += d.titles; agg.playoffs += d.playoffs; agg.conf += d.conf; agg.w += d.w; agg.l += d.l; agg.seasons += d.seasons; if (d.online && d.titles) agg.online = true; if (!agg.best || d.titles > agg.best.titles || (d.titles === agg.best.titles && d.seasons > agg.best.seasons)) agg.best = { tid: d.tid, titles: d.titles, seasons: d.seasons, online: d.online }; if (!agg.longest || d.seasons > agg.longest.seasons || (d.seasons === agg.longest.seasons && d.titles > agg.longest.titles)) agg.longest = { tid: d.tid, seasons: d.seasons, titles: d.titles, w: d.w, l: d.l, season: d.season }; });
     let top = ((await this.s.get('top')) || []).filter(r => r.pid !== pid);
     if (!P.hidden && agg.seasons > 0) { top.push(agg); top.sort(rowSort); top = top.slice(0, TOP_N); }
-    await this.s.put({ top, topAt: Date.now() });
+    // longest single dynasty board
+    let long = ((await this.s.get('topLong')) || []).filter(r => r.pid !== pid);
+    if (!P.hidden && agg.longest && agg.longest.seasons > 0) { long.push({ pid, name: P.name, longest: agg.longest, titles: agg.titles, dynasties: agg.dynasties, since: P.created }); long.sort((a, b) => (b.longest.seasons - a.longest.seasons) || (b.longest.titles - a.longest.titles) || (a.since - b.since)); long = long.slice(0, TOP_N); }
+    await this.s.put({ top, topAt: Date.now(), topLong: long });
     const i = top.findIndex(r => r.pid === pid); return i < 0 ? null : i + 1;
   }
 }
