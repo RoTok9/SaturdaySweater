@@ -28,6 +28,10 @@ jobs:
             echo "::error::Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID under Settings > Secrets and variables > Actions."
             exit 1
           fi
+          if [ "${#A}" -ne 32 ]; then
+            echo "::error::CLOUDFLARE_ACCOUNT_ID should be 32 characters (it is ${#A}). Check for spaces or a pasted label."
+            exit 1
+          fi
       - name: League server tests (normal and chaos)
         run: cd server && npm test
       - name: Deploy to Cloudflare
@@ -38,6 +42,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: server
           command: deploy
+          wranglerVersion: "4"
       - name: Health check
         env:
           URL: ${{ steps.deploy.outputs.deployment-url }}
