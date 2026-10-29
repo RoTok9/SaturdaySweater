@@ -43,3 +43,7 @@ A tiny Cloudflare Worker (free tier) that holds online leagues: the shared save,
 - `POST /leagues/:id/advance` `{tid, token, version, base, meta, force?}` -> `{version, moved}` (409 if stale or not all ready; only the commissioner may force)
 - `POST /leagues/:id/kick` `{tid, token, target}` commissioner only
 - `POST /leagues/:id/leave` `{tid, token}` the commissioner role passes to the longest-tenured coach; the last coach out deletes the league
+
+## Live URL
+
+https://saturday-sweater-league.tokarskirj.workers.dev (health check: /health)
