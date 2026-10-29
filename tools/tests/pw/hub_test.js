@@ -59,7 +59,12 @@ await A.fill('#lbName','Alpha Dog');await click(A,'[data-act="lbjoin"]');await A
 ta=await text(A);ok(ta.includes('Posting as Alpha Dog'),'joined leaderboard');
 await click(A,'[data-act="lbload"]');await A.waitForTimeout(800);ta=await text(A);ok(/Alpha Dog/.test(ta)&&/#1/.test(ta),'on the board at #1: '+JSON.stringify(await A.evaluate(()=>({lb:UI.lb,p:profile().on}))).slice(0,400));
 await A.fill('#lbName','Alpha Prime');await click(A,'[data-act="lbname"]');await A.waitForTimeout(1200);ok((await text(A)).includes('Alpha Prime'),'rename');
-await B.evaluate(()=>onAction('hubopen',{dataset:{id:'lb'}}));await B.waitForTimeout(900);tb=await text(B);ok(tb.includes('Alpha Prime'),'B sees A on the leaderboard');
+ta=await text(A);ok(/race/i.test(ta)&&/days? left/i.test(ta)&&/Nobody has scored this month/.test(ta),'month board is the default and starts empty');
+await A.evaluate(()=>{G.coach.titles=1;G.coach.playoffs=1;G.coach.confTitles=1;save();});await A.waitForTimeout(12500);await click(A,'[data-act="lbload"]');await A.waitForTimeout(900);
+ta=await text(A);ok(/Alpha Prime/.test(ta.split(/race/i)[1]||'')&&/this month/i.test(ta),'title shows up on this month board');
+ok(await A.evaluate(()=>UI.lbM&&UI.lbM.rank===1&&UI.lbM.rows[0].titles===1),'A leads the month with 1 title');
+await click(A,'[data-act="lbper"][data-id="all"]');ok(/all time/i.test(await text(A)),'all-time tab');
+await B.evaluate(()=>onAction('hubopen',{dataset:{id:'lb'}}));await B.waitForTimeout(900);tb=await text(B);ok(tb.includes('Alpha Prime'),'B sees A on the month leaderboard');await click(B,'[data-act="lbper"][data-id="all"]');ok((await text(B)).includes('Alpha Prime'),'B sees A all time');
 await click(B,'[data-act="report"][data-n="Alpha Prime"]');ok((await text(B)).includes('Report Alpha Prime?'),'report box');
 await click(B,'[data-act="reportsend"][data-id="Offensive name"]');await B.waitForTimeout(600);
 ok(!(await text(B)).includes('Alpha Prime'),'reported profile blocked for reporter');

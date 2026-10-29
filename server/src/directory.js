@@ -19,6 +19,11 @@ const LIST_STALE = 60 * 86400000;  // leagues idle this long drop out of search
 const SUBMIT_GAP = 5000;           // ms between leaderboard posts from one profile
 const safeEq = (a, b) => { if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false; let x = 0; for (let i = 0; i < a.length; i++) x |= a.charCodeAt(i) ^ b.charCodeAt(i); return x === 0; };
 async function sha(s) { const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(s))); return [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, '0')).join(''); }
+const monthKey = t => new Date(t).toISOString().slice(0, 7);
+const prevMonth = m => { const [y, mo] = m.split('-').map(Number); return mo === 1 ? `${y - 1}-12` : `${y}-${String(mo - 1).padStart(2, '0')}`; };
+const monthEnd = m => { const [y, mo] = m.split('-').map(Number); return Date.UTC(mo === 12 ? y + 1 : y, mo === 12 ? 0 : mo, 1); };
+const MONTH_RE = /^\d{4}-\d{2}$/;
+const monthSort = (a, b) => (b.titles - a.titles) || (b.playoffs - a.playoffs) || (b.conf - a.conf) || (b.w - a.w) || (a.at - b.at);
 const rowSort = (a, b) => (b.titles - a.titles) || (b.playoffs - a.playoffs) || (b.conf - a.conf) || ((b.w / Math.max(1, b.w + b.l)) - (a.w / Math.max(1, a.w + a.l))) || (b.w - a.w) || (a.since - b.since);
 
 export class Directory {
@@ -62,6 +67,13 @@ export class Directory {
     }
 
     // ---- leaderboard
+    if (path === '/top' && req.method === 'GET' && url.searchParams.get('period') === 'month') {
+      // this month's race: only what coaches won since the month began (UTC)
+      const now = Date.now(); let m = url.searchParams.get('m') || monthKey(now); if (!MONTH_RE.test(m)) m = monthKey(now);
+      const n = Math.min(int(url.searchParams.get('n'), TOP_N) || 100, TOP_N);
+      const rows = (await this.s.get('M:' + m)) || []; const pm = prevMonth(m); const prev = (await this.s.get('M:' + pm)) || [];
+      return json({ ok: true, period: 'month', month: m, ends: monthEnd(m), rows: rows.slice(0, n), total: rows.length, prev: { month: pm, rows: prev.slice(0, 3) } });
+    }
     if (path === '/top' && req.method === 'GET') {
       const top = (await this.s.get('top')) || [];
       const n = Math.min(int(url.searchParams.get('n'), TOP_N) || 100, TOP_N);
@@ -78,7 +90,9 @@ export class Directory {
       if (P && !safeEq(P.th, th)) return json({ error: 'unauthorized' }, 401);
       if (P && now - (P.last || 0) < SUBMIT_GAP && !body.force) return json({ ok: true, throttled: true, rank: await this.rankOf(pid) });
       if (!P) P = { pid, th, created: now, hidden: false };
+      const renamed = P.name && P.name !== name;
       P.name = name; P.last = now;
+      let gain = null;
       const d = body.dyn;
       if (d && typeof d === 'object') {
         const did = String(d.did || '');
@@ -93,8 +107,14 @@ export class Directory {
           if (row.seasons > allowed) { row.seasons = allowed; ['titles', 'playoffs', 'conf'].forEach(k => { row[k] = Math.min(row[k], Math.max(old[k], 0) + (allowed - old.seasons)); }); }
         }
         await this.s.put(dk, row);
+        // monthly race credit: what changed since this dynasty's last post. A dynasty's first post only counts
+        // its most recent achievements (at most one of each), so old dynasties can't flood a new month.
+        gain = old ? { titles: Math.max(0, row.titles - old.titles), playoffs: Math.max(0, row.playoffs - old.playoffs), conf: Math.max(0, row.conf - old.conf), w: Math.max(0, row.w - old.w), l: Math.max(0, row.l - old.l), seasons: Math.max(0, row.seasons - old.seasons) }
+          : { titles: Math.min(row.titles, 1), playoffs: Math.min(row.playoffs, 1), conf: Math.min(row.conf, 1), w: 0, l: 0, seasons: 0 };
+        if (!Object.values(gain).some(v => v > 0)) gain = null;
       }
       await this.s.put(pk, P);
+      if (!P.hidden && (gain || renamed)) await this.monthAdd(pid, P, gain, now);
       const rank = await this.refresh(pid, P);
       return json({ ok: true, rank, hidden: !!P.hidden });
     }
@@ -105,7 +125,7 @@ export class Directory {
       const mine = [...(await this.list('D:' + pid + ':')).keys()];
       for (let i = 0; i < mine.length; i += 100) await this.s.delete(mine.slice(i, i + 100));
       await this.s.delete('P:' + pid);
-      await this.dropTop(pid);
+      await this.dropTop(pid); await this.dropMonth(pid);
       return json({ ok: true });
     }
 
@@ -156,9 +176,19 @@ export class Directory {
       if (L) { L.hidden = on; await this.s.put('L:' + id, L); }
     } else if (kind === 'profile') {
       const P = await this.s.get('P:' + target);
-      if (P) { P.hidden = on; await this.s.put('P:' + target, P); if (on) await this.dropTop(target); else await this.refresh(target, P); }
+      if (P) { P.hidden = on; await this.s.put('P:' + target, P); if (on) { await this.dropTop(target); await this.dropMonth(target); } else await this.refresh(target, P); }
     }
   }
+  async monthAdd(pid, P, gain, now) {
+    const mk = 'M:' + monthKey(now); let rows = (await this.s.get(mk)) || [];
+    let r = rows.find(x => x.pid === pid);
+    if (!r) { if (!gain) return; r = { pid, titles: 0, playoffs: 0, conf: 0, w: 0, l: 0, seasons: 0, at: now }; rows.push(r); }
+    r.name = P.name;
+    if (gain) { Object.keys(gain).forEach(k => { r[k] = (r[k] || 0) + gain[k]; }); if (gain.titles || gain.playoffs || gain.conf) r.at = now; }
+    rows.sort(monthSort); rows = rows.slice(0, TOP_N);
+    await this.s.put(mk, rows);
+  }
+  async dropMonth(pid) { const now = Date.now(); for (const m of [monthKey(now), prevMonth(monthKey(now))]) { const rows = (await this.s.get('M:' + m)) || []; const nr = rows.filter(r => r.pid !== pid); if (nr.length !== rows.length) await this.s.put('M:' + m, nr); } }
   async dropTop(pid) { const top = (await this.s.get('top')) || []; const nt = top.filter(r => r.pid !== pid); if (nt.length !== top.length) await this.s.put({ top: nt, topAt: Date.now() }); }
   async rankOf(pid) { const top = (await this.s.get('top')) || []; const i = top.findIndex(r => r.pid === pid); return i < 0 ? null : i + 1; }
   // recompute one profile's totals and its place in the cached top list

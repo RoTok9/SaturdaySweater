@@ -118,5 +118,28 @@ ok((await search('thursday')).some(x => x.id === A.j.id), 'restored league back'
 ok((await call('/dir/admin/act', { key: 'test-admin-key', kind: 'league', target: A.j.id, action: 'hide' })).status === 200, 'admin hide');
 ok(!(await search('thursday')).some(x => x.id === A.j.id), 'admin-hidden league gone');
 
+// ---------- monthly race ----------
+{
+  const p4 = { pid: hex(32), token: hex(32) }, p5 = { pid: hex(32), token: hex(32) };
+  await call('/dir/profile', { ...p4, name: 'Veteran', force: true, dyn: { did: 'v', tid: 2, seasons: 10, titles: 5, playoffs: 8, conf: 6, w: 110, l: 20 } });
+  let M = (await call('/dir/top?period=month')).j; let v = M.rows.find(x => x.pid === p4.pid);
+  ok(M.period === 'month' && /^\d{4}-\d{2}$/.test(M.month) && M.ends > Date.now() && M.prev && Array.isArray(M.prev.rows), 'month board shape');
+  ok(v && v.titles === 1 && v.playoffs === 1 && v.conf === 1 && v.w === 0, 'first post credits at most one of each this month');
+  await call('/dir/profile', { ...p4, name: 'Veteran', force: true, dyn: { did: 'v', tid: 2, seasons: 11, titles: 6, playoffs: 9, conf: 6, w: 122, l: 21 } });
+  await call('/dir/profile', { ...p5, name: 'Rookie', force: true, dyn: { did: 'r', tid: 9, seasons: 2, titles: 0, playoffs: 0, conf: 0, w: 14, l: 10 } });
+  await call('/dir/profile', { ...p5, name: 'Rookie', force: true, dyn: { did: 'r', tid: 9, seasons: 3, titles: 1, playoffs: 1, conf: 1, w: 27, l: 11 } });
+  M = (await call('/dir/top?period=month')).j; v = M.rows.find(x => x.pid === p4.pid); const r = M.rows.find(x => x.pid === p5.pid);
+  ok(v && v.titles === 2 && v.playoffs === 2 && v.w === 12 && v.seasons === 1, 'gains add up within the month');
+  ok(r && r.titles === 1 && r.w === 13, 'rookie credited for this month only');
+  ok(M.rows.findIndex(x => x.pid === p4.pid) < M.rows.findIndex(x => x.pid === p5.pid), 'month sorted by titles');
+  await call('/dir/profile', { ...p5, name: 'Rookie Star', force: true });
+  M = (await call('/dir/top?period=month')).j; ok(M.rows.some(x => x.pid === p5.pid && x.name === 'Rookie Star'), 'rename shows on month board');
+  ok((await call('/dir/top?period=month&m=1999-01')).j.rows.length === 0, 'old month empty');
+  await call('/dir/forget', p5);
+  ok(!(await call('/dir/top?period=month')).j.rows.some(x => x.pid === p5.pid), 'forget clears month board');
+  await call('/dir/admin/act', { key: 'test-admin-key', kind: 'profile', target: p4.pid, action: 'hide' });
+  ok(!(await call('/dir/top?period=month')).j.rows.some(x => x.pid === p4.pid), 'hidden profile off month board');
+}
+
 console.log(fails ? `${fails}/${checks} checks FAILED` : `${checks}/${checks} checks passed`);
 process.exit(fails ? 1 : 0);

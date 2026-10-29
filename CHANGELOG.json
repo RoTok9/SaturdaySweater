@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.172.0",
+  "notes": "Monthly leaderboard race: everyone starts at zero on the 1st, with a countdown and last month's champion. Switch between This month and All time."
+ },
+ {
   "version": "1.171.0",
   "notes": "Play with friends: start an online league and text friends an invite link, join by code, or search for a friend's league by coach or league name. Bring any solo dynasty online from the Program tab. New public leaderboard ranked by national titles. Report and block for any name, plus a name filter."
  },
