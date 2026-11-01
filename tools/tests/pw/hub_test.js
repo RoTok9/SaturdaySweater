@@ -6,7 +6,7 @@ const SRC=process.argv[2]||'/home/claude/gridiron-dynasty.html';const PAGE='/tmp
 let html=fs.readFileSync(SRC,'utf8');if(!/<meta name="viewport"/.test(html))html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+html;fs.writeFileSync(PAGE,html);
 let fails=0,checks=0;const ok=(c,m)=>{checks++;if(!c){fails++;console.log('FAIL:',m);}};
 (async()=>{const b=await chromium.launch({executablePath:process.env.PW_CHROME||'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
-const mk=async(w,h)=>{const ctx=await b.newContext({viewport:{width:w,height:h}});await ctx.addInitScript(()=>{try{localStorage.setItem('gridiron-server','http://localhost:8787');}catch(e){}});const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));return p;};
+const mk=async(w,h)=>{const ctx=await b.newContext({viewport:{width:w,height:h}});await ctx.addInitScript(()=>{try{localStorage.setItem('gridiron-server','http://localhost:8787');localStorage.setItem('ss-portrait-ok','1');}catch(e){}});const p=await ctx.newPage();p.errs=[];p.on('pageerror',e=>p.errs.push(e.message));return p;};
 const click=async(p,sel)=>{await p.click(sel);await p.waitForTimeout(350);};
 const text=p=>p.evaluate(()=>document.body.innerText);
 // ---------- A creates a league from the start screen

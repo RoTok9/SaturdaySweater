@@ -1,5 +1,9 @@
 [
  {
+  "version": "1.180.0",
+  "notes": "New look, built for landscape: a Home hub with your next game, one big Play button, what needs you and your season goals; four tabs (Home, Team, Recruit, Program) in a side menu; schedule and rankings one tap from Home. The iPhone and Android apps now play sideways."
+ },
+ {
   "version": "1.173.0",
   "notes": "Leaderboard: every dynasty on your device counts, old saves and imported files included, and a new Longest dynasty board ranks the longest-running dynasty each coach has."
  },

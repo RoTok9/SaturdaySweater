@@ -1,5 +1,5 @@
 {
-  "version": "1.173.0",
-  "notes": "Leaderboard: every dynasty on your device counts, old saves and imported files included, and a new Longest dynasty board ranks the longest-running dynasty each coach has.",
-  "sha256": "0cbd3042aa89b019b6905dc3a5b7eac0dd6ca53fab5f5dc38e146714ee533401"
+  "version": "1.180.0",
+  "notes": "New look, built for landscape: a Home hub with your next game, one big Play button, what needs you and your season goals; four tabs (Home, Team, Recruit, Program) in a side menu; schedule and rankings one tap from Home. The iPhone and Android apps now play sideways.",
+  "sha256": "3c84395c795450f0a07ed85a841ff885e77cba43faff2003e3df1c11381b60fc"
 }
